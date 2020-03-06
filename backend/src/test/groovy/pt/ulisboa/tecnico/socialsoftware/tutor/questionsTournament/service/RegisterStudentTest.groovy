@@ -11,37 +11,37 @@ class RegisterStudentTest extends Specification {
         questionsTournamentService = new QuestionsTournamentService()
     }
 
-    def "the student exists and registers to a tournament which is related to a course who student is enrolled"() {
+    def "student creates a registration of a tournament whose course the student is enrolled"() {
         // StudentTournamentRegistration is created
         expect: false
     }
 
-    def "the student is null and creates a registration"() {
+    def "null student"() {
         // an exception is thrown
         expect: false
     }
 
-    def "a user that is not a student creates a registration"() {
+    def "not a student"() {
         // an exception is thrown
         expect: false
     }
 
-    def "a non existing user creates a registration"() {
+    def "non-existent student"() {
         // an exception is thrown
         expect: false
     }
 
-    def "student creates a registration in a non existing tournament"() {
+    def "null tournament" () {
         // an exception is thrown
         expect: false
     }
 
-    def "student creates a registration with a null tournament" () {
+    def "non-existent tournament"() {
         // an exception is thrown
         expect: false
     }
 
-    def "student creates a registration of a tournament of a course who the student isn't enrolled"() {
+    def "student creates a registration of a tournament whose course the student isn't enrolled"() {
         // an exception is thrown
         expect: false
     }
