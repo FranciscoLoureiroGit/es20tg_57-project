@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
@@ -71,7 +70,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR)
 
         when:
-        def result = clarificationService.createClarification(null, statDto, studOne)
+        clarificationService.createClarification(null, statDto, studOne)
 
         then:
         thrown(TutorException)
@@ -87,7 +86,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR)
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, statDto, null)
+        clarificationService.createClarification(questDtoOne, statDto, null)
 
         then:
         thrown(TutorException)
@@ -110,7 +109,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, null)
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, statDto, studOne)
+        clarificationService.createClarification(questDtoOne, statDto, studOne)
 
         then:
         thrown(TutorException)
@@ -133,7 +132,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         def statDto = new StatementClarificationDto(null, CLARIFY_ONE_DESCR)
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, statDto, studOne)
+        clarificationService.createClarification(questDtoOne, statDto, studOne)
 
         then:
         thrown(TutorException)
@@ -156,7 +155,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, "")
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, statDto, studOne)
+        clarificationService.createClarification(questDtoOne, statDto, studOne)
 
         then:
         thrown(TutorException)
@@ -179,7 +178,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         def statDto = new StatementClarificationDto("", CLARIFY_ONE_DESCR)
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, statDto, studOne)
+        clarificationService.createClarification(questDtoOne, statDto, studOne)
 
         then:
         thrown(TutorException)
@@ -202,7 +201,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR)
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, statDto, userDtoOne)
+        clarificationService.createClarification(questDtoOne, statDto, userDtoOne)
 
         then:
         thrown(TutorException)
