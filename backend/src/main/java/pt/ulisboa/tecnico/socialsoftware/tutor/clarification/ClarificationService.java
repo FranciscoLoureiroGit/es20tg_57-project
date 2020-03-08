@@ -9,6 +9,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 @Service
 public class ClarificationService {
     public ClarificationDto createClarification(QuestionDto questionDto, StatementClarificationDto statDto, UserDto user){
+        // check if input is ok
+        // verify if question and user exist and throw exception or create it
         return null;
     }
 }

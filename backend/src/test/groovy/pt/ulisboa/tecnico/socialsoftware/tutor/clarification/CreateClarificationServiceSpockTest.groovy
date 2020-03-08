@@ -37,7 +37,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         and: "a questionDto"
         def questDtoOne = new QuestionDto(questOne)
         and: "a studentDto"
-        def studOne = new StudentDto()
+        def studOne = new StudentDto(userOne)
         and: "a statementClarificationDto"
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR)
 
@@ -65,7 +65,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         userOne.setName(USER_ONE_NAME)
         userOne.setUsername(USER_ONE_USERNAME)
         and: "a studentDto"
-        def studOne = new StudentDto()
+        def studOne = new StudentDto(userOne)
         and: "a statementClarificationDto"
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR)
 
@@ -104,7 +104,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         and: "a questionDto"
         def questDtoOne = new QuestionDto(questOne)
         and: "a studentDto"
-        def studOne = new StudentDto()
+        def studOne = new StudentDto(userOne)
         and: "a statementClarificationDto"
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, null)
 
@@ -127,7 +127,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         and: "a questionDto"
         def questDtoOne = new QuestionDto(questOne)
         and: "a studentDto"
-        def studOne = new StudentDto()
+        def studOne = new StudentDto(userOne)
         and: "a statementClarificationDto"
         def statDto = new StatementClarificationDto(null, CLARIFY_ONE_DESCR)
 
@@ -150,7 +150,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         and: "a questionDto"
         def questDtoOne = new QuestionDto(questOne)
         and: "a studentDto"
-        def studOne = new StudentDto()
+        def studOne = new StudentDto(userOne)
         and: "a statementClarificationDto"
         def statDto = new StatementClarificationDto(CLARIFY_ONE_TITLE, "")
 
@@ -173,7 +173,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         and: "a questionDto"
         def questDtoOne = new QuestionDto(questOne)
         and: "a studentDto"
-        def studOne = new StudentDto()
+        def studOne = new StudentDto(userOne)
         and: "a statementClarificationDto"
         def statDto = new StatementClarificationDto("", CLARIFY_ONE_DESCR)
 
