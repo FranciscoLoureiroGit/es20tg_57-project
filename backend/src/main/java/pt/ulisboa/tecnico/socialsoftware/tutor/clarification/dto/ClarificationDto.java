@@ -16,6 +16,7 @@ public class ClarificationDto implements Serializable {
     private Integer questionId;
     private ImageDto image;
     private String creationDate = null;
+    private String status;
 
     public ClarificationDto() {}
 
@@ -25,6 +26,8 @@ public class ClarificationDto implements Serializable {
         this.title = clarification.getTitle();
         this.studentId = clarification.getStudent().getId();
         this.questionId = clarification.getQuestion().getId();
+        this.status = clarification.getStatus().name();
+
         if (clarification.getImage() != null)
             this.image = new ImageDto(clarification.getImage());
         if (clarification.getCreationDate() != null)
@@ -47,6 +50,10 @@ public class ClarificationDto implements Serializable {
     public void setKey(Integer key) {
         this.key = key;
     }
+
+    public String getStatus() { return status; }
+
+    public void setStatus(String status1) { this.status = status1; }
 
     public String getTitle() { return title; }
 

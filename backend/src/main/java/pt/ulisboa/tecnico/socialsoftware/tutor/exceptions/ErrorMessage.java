@@ -22,6 +22,8 @@ public enum ErrorMessage {
 
     CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty"),
     CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty"),
+    CLARIFICATION_MISSING_DATA("Clarification data not consistent"),
+    CLARIFICATION_NOT_FOUND("Clarification id was not found"),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),

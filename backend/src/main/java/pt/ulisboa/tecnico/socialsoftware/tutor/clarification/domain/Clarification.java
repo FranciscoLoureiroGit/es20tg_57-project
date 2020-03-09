@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -9,17 +10,29 @@ import javax.persistence.*;
 
 import java.time.LocalDateTime;
 
-// TODO SET creation date on the clarification service
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
+
+// TODO add list of answers (clarificationAnswer)
+// TODO see if assessment is needed (ask teacher)
+// TODO add possibility of removing an answer, a reason for that, etc
+// TODO maybe check if student answered a given question (add on consistent method)
 
 @Entity
 @Table(name = "clarifications")
 public class Clarification {
+    public enum Status {
+        OPEN, CLOSED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(unique=true, nullable = false)
     private Integer key;
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.OPEN;
 
     @Column(name = "title")
     private String title;
@@ -44,6 +57,7 @@ public class Clarification {
     public Clarification() {}
 
     public Clarification(ClarificationDto clarificationDto) {
+        checkConsistentClarification(clarificationDto);
         this.title = clarificationDto.getTitle();
         this.description = clarificationDto.getDescription();
         this.key = clarificationDto.getKey();
@@ -59,6 +73,14 @@ public class Clarification {
     public Integer getId() { return id; }
 
     public void setId(Integer id) { this.id = id; }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public String getTitle() { return title; }
 
@@ -98,5 +120,10 @@ public class Clarification {
                 '}';
     }
 
-    // TODO see if assessment is needed
+    private void checkConsistentClarification(ClarificationDto clarificationDto) {
+        if (clarificationDto.getTitle().trim().length() == 0 ||
+                clarificationDto.getDescription().trim().length() == 0)
+            throw new TutorException(CLARIFICATION_MISSING_DATA);
+    }
+
 }
