@@ -2,11 +2,11 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class StudentTournamentRegistrationDto {
     private Integer id;
-    private LocalDateTime registrationDate;
+    private String registrationDate;
     private Integer userId;
     private String userName;
     private Integer tournamentId;
@@ -16,7 +16,7 @@ public class StudentTournamentRegistrationDto {
 
     public StudentTournamentRegistrationDto(StudentTournamentRegistration registration) {
         this.id = registration.getId();
-        this.registrationDate = registration.getRegistrationDate();
+        this.registrationDate = registration.getRegistrationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.userId = registration.getStudent().getId();
         this.userName = registration.getStudent().getUsername();
         this.tournamentId = registration.getQuestionsTournament().getId();
@@ -30,12 +30,8 @@ public class StudentTournamentRegistrationDto {
         this.id = id;
     }
 
-    public LocalDateTime getRegistrationDate() {
+    public String getRegistrationDate() {
         return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
     }
 
     public Integer getUserId() {

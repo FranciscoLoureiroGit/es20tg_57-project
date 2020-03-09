@@ -18,6 +18,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
@@ -41,20 +44,29 @@ public class QuestionsTournamentService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public StudentTournamentRegistrationDto studentRegister(Integer userId, QuestionsTournamentDto questionsTournamentDto){
+    public StudentTournamentRegistrationDto studentRegister(int userId, int questionsTournamentId){
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
-        QuestionsTournament questionsTournament = tournamentRepository.findById(questionsTournamentDto.getId()).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, questionsTournamentDto.getId()));
-        if(user.getRole() == User.Role.STUDENT) {
-            StudentTournamentRegistration registration = new StudentTournamentRegistration();
-            registrationRepository.save(registration);
-        }
-        else {
+        QuestionsTournament questionsTournament = tournamentRepository.findById(questionsTournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_EXIST, questionsTournamentDto.getId()));
+        if(user.getRole() != User.Role.STUDENT) {
             throw new TutorException(USER_NOT_STUDENT);
         }
+        if(registrationRepository.findByTournamentStudent(questionsTournamentId, user.getUsername()).isPresent()) {
+            throw new TutorException(DUPLICATED_REGISTRATION);
+        }
+        if(questionsTournament.hasEnded()) {
+            throw new TutorException(TOURNAMENT_ENDED);
+        }
+        if(!questionsTournament.hasStarted()){
+            throw new TutorException(TOURNAMENT_NOT_STARTED);
+        }
+        StudentTournamentRegistration registration = new StudentTournamentRegistration();
+        registrationRepository.save(registration);
+        return new StudentTournamentRegistrationDto(registration);
 
         // check if input is OK
         // check if user is a student
         // check if student is enrolled on QuestionsTournament's course
-        return null;
+        // check if registration is duplicated
+        // check if tournament not started or already ended
     }
 }

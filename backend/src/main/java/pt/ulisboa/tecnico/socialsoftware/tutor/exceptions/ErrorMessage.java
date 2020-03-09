@@ -55,7 +55,14 @@ public enum ErrorMessage {
 
 
     ACCESS_DENIED("You do not have permission to view this resource"),
-    CANNOT_OPEN_FILE("Cannot open file");
+    CANNOT_OPEN_FILE("Cannot open file"),
+
+    USER_NOT_STUDENT("User is not a student"),
+    TOURNAMENT_ENDED("Tournament already ended"),
+    TOURNAMENT_NOT_STARTED("Tournament not started yet"),
+    TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
+    DUPLICATED_REGISTRATION("User already registered in tournament");
+
 
     public final String label;
 

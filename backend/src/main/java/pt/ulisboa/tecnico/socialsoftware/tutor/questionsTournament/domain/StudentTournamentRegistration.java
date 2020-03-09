@@ -16,10 +16,12 @@ public class StudentTournamentRegistration {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-    @ManyToOne(cascade = CascadeType.ALL, mappedBy = "tournamentRegistration", fetch=FetchType.LAZY, orphanRemoval=true)
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User student;
 
-    @ManyToOne(cascade = CascadeType.ALL, mappedBy = "tournamentRegistration", fetch=FetchType.LAZY, orphanRemoval=true)
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "questionsTournament_id")
     private QuestionsTournament questionsTournament;
 
     public StudentTournamentRegistration() {
