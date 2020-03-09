@@ -186,4 +186,8 @@ public class AnswerService {
     public void importAnswers(String answersXml) {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
     }
+
+    public void createClarificationAnswer(){
+        //TODO: Implement Method
+    }
 }
