@@ -61,7 +61,12 @@ public enum ErrorMessage {
 
 
     ACCESS_DENIED("You do not have permission to view this resource"),
-    CANNOT_OPEN_FILE("Cannot open file");
+    CANNOT_OPEN_FILE("Cannot open file"),
+
+    NO_CLARIFICATION_REQUEST("No such Clarification Request"),
+    NO_CLARIFICATION_ANSWER("Clarification answer is empty"),
+    CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request");
+
 
     public final String label;
 
