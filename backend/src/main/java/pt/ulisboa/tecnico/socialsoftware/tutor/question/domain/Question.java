@@ -1,3 +1,4 @@
+
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
@@ -74,6 +75,10 @@ public class Question {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @Column(name = "justification")
+    private String justification;
+
+
     public Question() {
     }
 
@@ -132,6 +137,14 @@ public class Question {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getJustification(){
+        return justification;
+    }
+
+    public void setJustification(String justification) {
+        this.justification = justification;
     }
 
     public List<Option> getOptions() {
@@ -218,6 +231,7 @@ public class Question {
         getTopics().forEach(topic -> topic.getQuestions().remove(this));
         getTopics().clear();
     }
+
 
     @Override
     public String toString() {
