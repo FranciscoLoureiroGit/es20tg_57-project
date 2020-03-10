@@ -1,53 +1,184 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import spock.lang.Specification
 
 class AnswerClarificationRequestTest extends Specification{
 
-    AnswerService answerService;
-    ClarificationService clarificationService;
+    static final String QUESTION_TITLE = "QUESTION TITLE"
+    static final String QUESTION_CONT = "QUESTION CONTENT"
+
+    def answerService
+    def clarificationService
+
+    def userStudent
+    def userTeacher
+    def clarificationRequest
+    def clarificationDto
+    def question
+    def questionDto
+    def course
+    def courseExec
+    def quiz
+    def quizQuestion
+
+
 
     def setup(){
+        answerService = new AnswerService();
+        clarificationService = new ClarificationService();
+
+        course = new Course('course', Course.Type.TECNICO)
+
+        userStudent = new User('nameStu', 'userStu', 1, User.Role.STUDENT)
+        userTeacher = new User('nameTch', 'userTch', 2, User.Role.TEACHER)
+
+        courseExec = new CourseExecution(course, 'COURSE_EXEC', 'TST_TERM',  Course.Type.TECNICO)
+        courseExec.addUser(userTeacher)
+        courseExec.addUser(userStudent)
+
+        question = new Question()
+        question.setCourse(course);
+        question.setTitle(QUESTION_TITLE)
+        question.setContent(QUESTION_CONT)
+        question.setId(1)
+
+        questionDto = new QuestionDto(question)
+
+        quiz = new Quiz()
+        quiz.setTitle("QUIZ TITLE")
+        quiz.setId(1)
+        quiz.setKey(1)
+        quiz.setCourseExecution(courseExec)
+
+        quizQuestion = new QuizQuestion(quiz, question, 1)
+
+        clarificationDto = new ClarificationDto()
+        clarificationDto.setDescription("CLARIFICATION DESC")
+        clarificationDto.setTitle("CLARIFICATION TITLE")
+        clarificationDto.setQuestionId(1)
+        clarificationDto.setId(2)
+        clarificationDto.setKey(2)
+        clarificationDto.setStudentId(1)
 
     }
 
-    def "clarification request exists and user is teacher or student that made request"() {
+    def "clarification request exists and user is teacher"() {
         // Clarification Answer is created
-        expect: false
+        given: 'a clarification'
+        clarificationRequest = new Clarification(clarificationDto)
+
+        when:
+        def result = answerService.createClarificationAnswer(clarificationRequest,  userTeacher, "RESPONSE")
+
+        then: 'Returned data is correct'
+        result.getRequest() == clarificationRequest
+        result.getUser() == userTeacher
+        result.getResponse() == "RESPONSE"
+
+        and: 'is created on service'
+        answerService.getClarificationAnswers().size() == 1
+
+        and: 'has correct value'
+        def clarificationAnswer = answerService.getClarificationAnswers.get(0)
+        clarificationAnswer.getRequest() == clarificationRequest
+        clarificationAnswer.getUser() == userTeacher
+        clarificationAnswer.getResponse() == "RESPONSE"
+    }
+
+    def "clarification request exists and user is student that made request"(){
+        given: 'a clarification'
+        clarificationRequest = new Clarification(clarificationDto)
+
+        when:
+        def result = answerService.createClarificationAnswer(clarificationRequest,  userStudent, "RESPONSE")
+
+        then: 'User is correct'
+        result.getUser() == userStudent
+
+
+        and: 'is created on service'
+        answerService.getClarificationAnswers().size() == 1
+
+        and: 'has correct user'
+        def clarificationAnswer = answerService.getClarificationAnswers.get(0)
+
+        clarificationAnswer.getUser() == userStudent
+
     }
 
     def "clarification request is answered and is linked with the request"(){
         // Clarification Answer is linked with Clarification Request
-        expect: false
+        given: 'a clarification'
+        clarificationRequest = new Clarification(clarificationDto)
+
+        when:
+        def result = answerService.createClarificationAnswer(clarificationRequest, userTeacher, "RESPONSE")
+
+        then: 'answer is linked with request'
+        clarificationRequest.getAnswers().size() == 1
+        clarificationRequest.getAnswers().get(0) == result
+
     }
 
     def "clarification request doesn't exist"(){
         //Exception is thrown
-        expect: false
+        given: 'null clarification'
+        clarificationRequest = null
+
+        when:
+        def result = answerService.createClarificationAnswer(clarificationRequest,  userStudent, "RESPONSE")
+
+        then: 'throw exception'
+        thrown(TutorException)
     }
 
     def "clarification request exists but user is null or not student that made request and answers the request"() {
         //Exception is thrown
-        expect: false
+        given: 'a request'
+        clarificationRequest = new Clarification(clarificationDto)
+        and: 'new student'
+        def user2 = new User("User2", "User2", 5, User.Role.STUDENT)
+
+        when:
+        answerService.createClarificationRequest(clarificationRequest, user2, "RESPONSE")
+
+        then:
+        thrown(TutorException)
     }
 
-    def "clarification request exists, user is teacher or student that made requesr but answer is empty or null"() {
+    def "clarification request exists, user is teacher or student that made request but answer is empty "() {
         //Exception is thrown
-        expect: false
+        given: 'a request'
+        clarificationRequest = new Clarification(clarificationDto)
+
+        when:
+        answerService.createClarificationRequest(clarificationRequest, userTeacher, "")
+
+        then:
+        thrown(TutorException)
     }
 
-    def "try to link null answer to request"() {
+    def "clarification request exists, user is teacher or student that made request but answer is null "() {
         //Exception is thrown
-        expect: false
+        given: 'a request'
+        clarificationRequest = new Clarification(clarificationDto)
+
+        when:
+        answerService.createClarificationRequest(clarificationRequest, userTeacher, null)
+
+        then:
+        thrown(TutorException)
     }
-
-    def ""() {
-        // Dummy Test for Potential Extra Test
-        expect: false
-    }
-
-
-
 
 }

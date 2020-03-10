@@ -25,6 +25,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
@@ -187,7 +189,7 @@ public class AnswerService {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
     }
 
-    public void createClarificationAnswer(){
+    public void createClarificationAnswer(Clarification request, User user, String answer ){
         //TODO: Implement Method
     }
 }
