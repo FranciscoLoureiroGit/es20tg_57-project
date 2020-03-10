@@ -6,16 +6,23 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.ClarificationAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.ClarificationAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -26,6 +33,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -34,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
@@ -57,6 +66,12 @@ public class AnswerService {
 
     @Autowired
     private OptionRepository optionRepository;
+
+    @Autowired
+    private ClarificationRepository clarificationRepository;
+
+    @Autowired
+    private ClarificationAnswerRepository clarificationAnswerRepository;
 
     @Autowired
     private AnswersXmlImport xmlImporter;
@@ -189,7 +204,53 @@ public class AnswerService {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
     }
 
-    public void createClarificationAnswer(Clarification request, User user, String answer ){
-        //TODO: Implement Method
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer ){
+        //Input Validation: request and answer
+        if(request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
+        if(answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
+
+        //User Validation is done here
+
+
+        if(user == null || user.getRole() != User.Role.TEACHER)  throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+
+
+        User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
+
+        Question question = questionRepository.findById(request.getQuestionId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, request.getQuestionId()));
+
+        if(!usr.getCourseExecutions().stream().anyMatch(                                                    //Find a courseExec, any, that
+                courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
+                       quiz -> quiz.getQuizQuestions().stream().filter(                                     //Quiz questions have
+                               quizQuestion -> quizQuestion.getQuestion().getKey() == question.getKey())    //A question that matches the questionKey from the arguments
+                               .count() != 0))){
+            // Teacher cannot answer this question, not from the same course
+            throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+        }
+
+        //Fetched needed objects from database
+
+        Clarification clarification = clarificationRepository.findClarifications(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
+
+
+
+
+
+        //Create the Answer
+
+        ClarificationAnswer clarificationAnswer = new ClarificationAnswer(answer);
+        clarificationAnswer.setUser(usr);
+        clarificationAnswer.setClarification(clarification);
+
+        //TODO Link answer to request
+
+
+        return new ClarificationAnswerDto(clarificationAnswer);
+        
     }
 }
