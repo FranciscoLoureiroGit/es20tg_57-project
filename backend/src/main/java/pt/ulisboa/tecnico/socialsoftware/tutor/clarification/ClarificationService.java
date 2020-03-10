@@ -6,14 +6,14 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuestionAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
@@ -30,7 +30,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 public class ClarificationService {
 
     @Autowired
-    private QuestionRepository questionRepository;
+    private QuestionAnswerRepository questionAnswerRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -67,7 +67,18 @@ public class ClarificationService {
         return clarificationRepository.findClarifications(questionId).stream().map(ClarificationDto::new).collect(Collectors.toList());
     }
 
-    public ClarificationDto createClarification(QuestionDto questionDto, String title, String description, UserDto userDto){
+    public ClarificationDto createClarification(QuestionAnswerDto questionAnswerDto, String title, String description, UserDto userDto){
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerDto.getId()).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerDto.getId()));
+        if (title.equals("")) {
+            throw new TutorException(CLARIFICATION_TITLE_IS_EMPTY);
+        } else if (description.equals("")) {
+            throw new TutorException(CLARIFICATION_DESCRP_IS_EMPTY);
+        } else if(userDto.getId() != questionAnswer.getId()) {
+            throw new TutorException(USER_NOT_FOUND);
+        }
+
+
+
         Question question = questionRepository.findById(questionDto.getId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionDto.getId()));
         //User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
 
@@ -85,3 +96,6 @@ public class ClarificationService {
         return new ClarificationDto(clarification);
     }
 }
+
+// TODO maybe check if student answered a given question (add on consistent method) studentAnswerId = answerId
+// TODO finish service, and fix test cases

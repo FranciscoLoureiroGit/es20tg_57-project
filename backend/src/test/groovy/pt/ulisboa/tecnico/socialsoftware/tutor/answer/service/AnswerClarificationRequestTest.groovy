@@ -66,7 +66,7 @@ class AnswerClarificationRequestTest extends Specification{
         clarificationDto = new ClarificationDto()
         clarificationDto.setDescription("CLARIFICATION DESC")
         clarificationDto.setTitle("CLARIFICATION TITLE")
-        clarificationDto.setQuestionId(1)
+        clarificationDto.setQuestionAnswerId(1)
         clarificationDto.setId(2)
         clarificationDto.setKey(2)
         clarificationDto.setStudentId(1)
