@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -39,8 +40,9 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(columnDefinition = "TEXT")
-    private String teacherAnswer;
+    @ManyToOne
+    @Column(columnDefinition = "Author")
+    private User user;
 
     private String title;
 
@@ -145,10 +147,6 @@ public class Question {
         image.setQuestion(this);
     }
 
-    public void setTeacherAnswer(String teacherAnswer){ this.teacherAnswer = teacherAnswer;}
-
-    public String getTeacherAnswer(){return this.teacherAnswer;}
-
     public String getTitle() {
         return title;
     }
@@ -208,6 +206,10 @@ public class Question {
     public void addTopic(Topic topic) {
         topics.add(topic);
     }
+
+    public void setUser(User user) { this.user = user; }
+
+    public User getUser() { return this.user; }
 
     public void remove() {
         canRemove();

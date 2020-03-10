@@ -24,6 +24,11 @@ class CreateTopicQuestionTest extends Specification{
     static final String STUDENT_NAME = "Name"
     static final String STUDENT_USERNAME = "UserName"
     static final String QUESTION_TITLE = "Question about JMeter"
+    static final String OPTION_1 = "Option 1"
+    static final String OPTION_2 = "Option 2"
+    static final String OPTION_3 = "Option 3"
+    static final String OPTION_4 = "Option 4"
+    static final String OPTION_5 = "Option 5"
     static final String QUESTION_CONTENT = "What is JMeter?"
     static final String QUESTION_ANSWER = "It is a tool used on load testing."
     static final int KEY_TEACHER = 1
@@ -59,13 +64,13 @@ class CreateTopicQuestionTest extends Specification{
         question = new Question()
         question.setCourse(course)
         question.addTopic(topic)
-        question.setHasNoOptions()
         question.setTitle(topic.getName())
         question.setContent(QUESTION_CONTENT)
         question.setId(1)
         question.setKey(123)
         question.setNumberOfAnswers(0)
         question.setNumberOfCorrect(0)
+        question.setUser(student)
         questionDto = new QuestionDto(question)
 
         when:
@@ -92,13 +97,13 @@ class CreateTopicQuestionTest extends Specification{
         question = new Question()
         question.setCourse(course)
         question.addTopic(topic)
-        question.setHasNoOptions()
         question.setTitle(topic.getName())
         question.setContent(QUESTION_CONTENT)
         question.setId(1)
         question.setKey(123)
         question.setNumberOfAnswers(0)
         question.setNumberOfCorrect(0)
+        question.setUser(student)
         questionDto = new QuestionDto(question)
 
         when: "create a question for a course whose id is different of 1 (the course id)"
@@ -120,13 +125,13 @@ class CreateTopicQuestionTest extends Specification{
         question = new Question()
         question.setCourse(course)
         question.addTopic(topic)
-        question.setHasNoOptions()
         question.setTitle(topic.getName())
         question.setContent(QUESTION_CONTENT)
         question.setId(1)
         question.setKey(123)
         question.setNumberOfAnswers(0)
         question.setNumberOfCorrect(0)
+        question.setUser(student)
         questionDto = new QuestionDto(question)
 
         when: "add a question"
