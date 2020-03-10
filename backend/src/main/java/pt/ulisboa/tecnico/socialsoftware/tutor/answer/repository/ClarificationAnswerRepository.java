@@ -13,5 +13,5 @@ import java.util.List;
 @Transactional
 public interface ClarificationAnswerRepository extends JpaRepository<ClarificationAnswer, Integer> {
     @Query(value = "SELECT * FROM clarification_answer ca WHERE ca.clarification_answer_id = :id", nativeQuery = true)
-    List<ClarificationAnswer> findClarificationAnswer(int id);
+    ClarificationAnswer findClarificationAnswer(int id);
 }

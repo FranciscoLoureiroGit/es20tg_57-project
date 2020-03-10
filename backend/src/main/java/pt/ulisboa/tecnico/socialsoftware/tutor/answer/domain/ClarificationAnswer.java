@@ -1,59 +1,87 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "clarification_answer")
 public class ClarificationAnswer {
 
-    private Integer _id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    private ClarificationDto _clarification_dto;
+    @Column(unique=true, nullable = false)
+    private Integer key;
 
-    private UserDto _user_dto;
+    @Column(name = "clarification")
+    private Clarification clarification;
 
-    private String _answer;
+    @Column(name = "user")
+    private User user;
+
+    @Column(name = "answer")
+    private String answer;
+
 
     public ClarificationAnswer(){}
 
-    public ClarificationAnswer(ClarificationDto request, UserDto user, String answer){
-        if(request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
-        if(answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
-        _clarification_dto = request;
-        _user_dto = user;
-        _answer = answer;
+    public ClarificationAnswer(String answer){
+        this.answer = answer;
     }
 
-    public Integer get_id() {
-        return _id;
+    public ClarificationAnswer(ClarificationAnswerDto clarificationAnswerDto){
+        this.answer = clarificationAnswerDto.getAnswer();
+        this.id = clarificationAnswerDto.getId();
+        this.key = clarificationAnswerDto.getKey();
     }
 
-    public void set_id(Integer id) {
-        this._id = id;
+    public Integer getId() {
+        return id;
     }
 
-    public ClarificationDto get_clarification_dto() {
-        return _clarification_dto;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void set_clarification_dto(ClarificationDto clarification_dto) {
-        this._clarification_dto = clarification_dto;
+    public Integer getKey() {
+        return key;
     }
 
-    public UserDto get_user_dto() {
-        return _user_dto;
+    public void setKey(Integer key) {
+        this.key = key;
     }
 
-    public void set_user_dto(UserDto user_dto) {
-        this._user_dto = user_dto;
+    public Clarification getClarification() {
+        return clarification;
     }
 
-    public String get_answer() {
-        return _answer;
+    public void setClarification(Clarification clarification) {
+        this.clarification = clarification;
     }
 
-    public void set_answer(String answer) {
-        this._answer = answer;
+    public User getUser() {
+        return user;
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+
 }
