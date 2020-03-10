@@ -44,8 +44,6 @@ public class Question {
 
     private String title;
 
-    private boolean hasOptions;
-
     @Column(name = "number_of_answers", columnDefinition = "integer default 0")
     private Integer numberOfAnswers = 0;
 
@@ -75,7 +73,6 @@ public class Question {
     private Course course;
 
     public Question() {
-        this.teacherAnswer = "";
     }
 
     public Question(Course course, QuestionDto questionDto) {
@@ -84,8 +81,6 @@ public class Question {
         this.key = questionDto.getKey();
         this.content = questionDto.getContent();
         this.status = Status.valueOf(questionDto.getStatus());
-        this.hasOptions = true;
-        this.teacherAnswer = "";
 
         this.course = course;
         course.addQuestion(this);
@@ -153,13 +148,6 @@ public class Question {
     public void setTeacherAnswer(String teacherAnswer){ this.teacherAnswer = teacherAnswer;}
 
     public String getTeacherAnswer(){return this.teacherAnswer;}
-
-    public void setHasNoOptions(){
-        this.hasOptions = false;
-        this.status = Status.PENDING;
-    }
-
-    public boolean getHasOptions(){ return this.hasOptions; }
 
     public String getTitle() {
         return title;
