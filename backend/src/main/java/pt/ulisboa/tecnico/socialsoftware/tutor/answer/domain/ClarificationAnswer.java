@@ -21,11 +21,14 @@ public class ClarificationAnswer {
     @Column(unique=true, nullable = false)
     private Integer key;
 
+    @OneToOne
     @Column(name = "clarification")
     private Clarification clarification;
 
+    @ManyToOne
     @Column(name = "user")
     private User user;
+
 
     @Column(name = "answer")
     private String answer;
