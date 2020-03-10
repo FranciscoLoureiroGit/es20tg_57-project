@@ -42,7 +42,7 @@ class ChangeQuestionStateTest extends Specification{
     static final String QUESTION_CONTENT = "What is the value of something?"
     static final String QUESTION_ANSWER = "The value is high."
 
-    static final String QUESTION_JUSTIFICATION = "The question has no problems"
+    static final String QUESTION_JUSTIFICATION = "The question has no problems."
     static final String CURRENT_STATUS = "PENDING"
 
     static final int KEY_TEACHER = 1
@@ -58,7 +58,7 @@ class ChangeQuestionStateTest extends Specification{
     def setUp(){
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
         course.setId(1)
-        courseExecution = new CourseExecution(COURSE_NAME, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
+        courseExecution = new CourseExecution(COURSE_NAME as Course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
         teacher = new User(TEACHER_NAME, TEACHER_USERNAME, KEY_TEACHER, User.Role.TEACHER)
         question = new Question()
         question.setCourse(course)
