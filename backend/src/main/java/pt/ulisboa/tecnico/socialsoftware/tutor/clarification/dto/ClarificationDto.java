@@ -81,10 +81,10 @@ public class ClarificationDto implements Serializable {
     @Override
     public String toString() {
         return "ClarificationDto{" +
-                ", id=" + id +
-                ", title=" + title + '\'' +
-                ", studentId=" + studentId + '\'' +
-                ", questionId=" + questionAnswerId + '\'' +
+                "id=" + id +
+                ", title=" + title +
+                ", studentId=" + studentId +
+                ", questionId=" + questionAnswerId +
                 ", image=" + image +
                 '}';
     }

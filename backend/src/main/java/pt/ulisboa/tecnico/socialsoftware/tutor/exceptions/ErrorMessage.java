@@ -20,11 +20,11 @@ public enum ErrorMessage {
     COURSE_EXECUTION_ACADEMIC_TERM_IS_EMPTY("The course execution academic term is empty"),
     USERNAME_NOT_FOUND("Username %s not found"),
 
-    CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty"),
-    CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty"),
-    CLARIFICATION_MISSING_DATA("Clarification data not consistent"),
-    CLARIFICATION_NOT_FOUND("Clarification id was not found"),
-    CLARIFICATION_USER_NOT_ALLOWED
+    CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty %d"),
+    CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty %d"),
+    CLARIFICATION_MISSING_DATA("Clarification data not consistent %d"),
+    CLARIFICATION_NOT_FOUND("Clarification id was not found %d"),
+    CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed %d"),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),

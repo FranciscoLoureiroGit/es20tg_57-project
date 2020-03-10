@@ -14,6 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDt
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
@@ -68,34 +69,36 @@ public class ClarificationService {
     }
 
     public ClarificationDto createClarification(QuestionAnswerDto questionAnswerDto, String title, String description, UserDto userDto){
-        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerDto.getId()).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerDto.getId()));
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerDto.getId()).orElseThrow(() ->
+                new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerDto.getId()));
+        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
+
+        //Input Validation
         if (title.equals("")) {
             throw new TutorException(CLARIFICATION_TITLE_IS_EMPTY);
         } else if (description.equals("")) {
             throw new TutorException(CLARIFICATION_DESCRP_IS_EMPTY);
-        } else if(userDto.getId() != questionAnswer.getId()) {
-            throw new TutorException(USER_NOT_FOUND);
+        } else if (userDto.getId() != questionAnswer.getId() || user.getRole() == User.Role.STUDENT) {
+            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED);
         }
 
 
-
-        Question question = questionRepository.findById(questionDto.getId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionDto.getId()));
-        //User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
-
-        if (questionDto.getKey() == null) {
+        if (questionAnswerDto.getKey() == null) {
             int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
                     questionRepository.getMaxQuestionNumber() : 0;
             questionDto.setKey(maxQuestionNumber + 1);
         }
 
+        // Creates the clarification object and returns its Dto
         Clarification clarification = new Clarification();
-        //clarification.setDescription();
-        //clarification.setTitle();
+        clarification.setDescription(description);
+        clarification.setTitle(title);
+        clarification.setQuestionAnswer(questionAnswer);
+        clarification.setHasAnswer(false);
+        clarification.setStatus(Clarification.Status.OPEN);
         clarification.setCreationDate(LocalDateTime.now());
-        this.entityManager.persist(question);
+        clarification.setStudent(user);
+        this.entityManager.persist(clarification);
         return new ClarificationDto(clarification);
     }
 }
-
-// TODO maybe check if student answered a given question (add on consistent method) studentAnswerId = answerId
-// TODO finish service, and fix test cases
