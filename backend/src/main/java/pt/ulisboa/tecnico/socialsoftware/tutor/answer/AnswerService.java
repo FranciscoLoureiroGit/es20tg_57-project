@@ -212,34 +212,32 @@ public class AnswerService {
     public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer ){
         //Input Validation: request and answer
         if(request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
+
+        //Fetch Clarification from database
+        Clarification clarification = clarificationRepository.findClarifications(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
+
+        if(clarification.hasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
+
         if(answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
 
         //User Validation is done here
 
-
         if(user == null || user.getRole() != User.Role.TEACHER)  throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
 
-
+        //Get user and question from database
         User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
-
         Question question = questionRepository.findById(request.getQuestionId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, request.getQuestionId()));
 
-        if(!usr.getCourseExecutions().stream().anyMatch(                                                    //Find a courseExec, any, that
+
+
+        if(!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
                 courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
-                       quiz -> quiz.getQuizQuestions().stream().filter(                                     //Quiz questions have
+                       quiz -> quiz.getQuizQuestions().stream().anyMatch(                                     //Quiz questions have
                                quizQuestion -> quizQuestion.getQuestion().getKey() == question.getKey())    //A question that matches the questionKey from the arguments
-                               .count() != 0))){
+                               ))){
             // Teacher cannot answer this question, not from the same course
             throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
         }
-
-        //Fetched needed objects from database
-
-        Clarification clarification = clarificationRepository.findClarifications(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
-
-
-
-
 
         //Create the Answer
 
@@ -247,10 +245,12 @@ public class AnswerService {
         clarificationAnswer.setUser(usr);
         clarificationAnswer.setClarification(clarification);
 
-        //TODO Link answer to request
+        //Link answer to request
 
+        clarification.setClarificationAnswer(clarificationAnswer);
+
+        entityManager.persist(clarificationAnswer);
 
         return new ClarificationAnswerDto(clarificationAnswer);
-        
     }
 }
