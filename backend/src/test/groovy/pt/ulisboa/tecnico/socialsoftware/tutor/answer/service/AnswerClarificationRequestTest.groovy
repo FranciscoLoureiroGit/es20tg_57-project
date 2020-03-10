@@ -87,35 +87,15 @@ class AnswerClarificationRequestTest extends Specification{
         result.getResponse() == "RESPONSE"
 
         and: 'is created on service'
-        answerService.getClarificationAnswers().size() == 1
+        answerService.getAllClarificationAnswers().size() == 1
 
         and: 'has correct value'
-        def clarificationAnswer = answerService.getClarificationAnswers.get(0)
+        def clarificationAnswer = answerService.getAllClarificationAnswers().get(0)
         clarificationAnswer.getRequest() == clarificationRequest
         clarificationAnswer.getUser() == userTeacher
         clarificationAnswer.getResponse() == "RESPONSE"
     }
 
-    def "clarification request exists and user is student that made request"(){
-        given: 'a clarification'
-        clarificationRequest = new Clarification(clarificationDto)
-
-        when:
-        def result = answerService.createClarificationAnswer(clarificationRequest,  userStudent, "RESPONSE")
-
-        then: 'User is correct'
-        result.getUser() == userStudent
-
-
-        and: 'is created on service'
-        answerService.getClarificationAnswers().size() == 1
-
-        and: 'has correct user'
-        def clarificationAnswer = answerService.getClarificationAnswers.get(0)
-
-        clarificationAnswer.getUser() == userStudent
-
-    }
 
     def "clarification request is answered and is linked with the request"(){
         // Clarification Answer is linked with Clarification Request
@@ -126,8 +106,8 @@ class AnswerClarificationRequestTest extends Specification{
         def result = answerService.createClarificationAnswer(clarificationRequest, userTeacher, "RESPONSE")
 
         then: 'answer is linked with request'
-        clarificationRequest.getAnswers().size() == 1
-        clarificationRequest.getAnswers().get(0) == result
+        clarificationRequest.getHasAnswer() == true
+        clarificationRequest.getClarificationAnswer() == result
 
     }
 
@@ -143,7 +123,21 @@ class AnswerClarificationRequestTest extends Specification{
         thrown(TutorException)
     }
 
-    def "clarification request exists but user is null or not student that made request and answers the request"() {
+    def "clarification request exists but user is null and answers the request"() {
+        //Exception is thrown
+        given: 'a request'
+        clarificationRequest = new Clarification(clarificationDto)
+        and: 'a null student'
+        def user2 = null
+
+        when:
+        answerService.createClarificationRequest(clarificationRequest, user2, "RESPONSE")
+
+        then:
+        thrown(TutorException)
+    }
+
+    def "clarification request exists but user is not teacher and answers the request"() {
         //Exception is thrown
         given: 'a request'
         clarificationRequest = new Clarification(clarificationDto)
@@ -157,7 +151,7 @@ class AnswerClarificationRequestTest extends Specification{
         thrown(TutorException)
     }
 
-    def "clarification request exists, user is teacher or student that made request but answer is empty "() {
+    def "clarification request exists, user is teacher but answer is empty "() {
         //Exception is thrown
         given: 'a request'
         clarificationRequest = new Clarification(clarificationDto)

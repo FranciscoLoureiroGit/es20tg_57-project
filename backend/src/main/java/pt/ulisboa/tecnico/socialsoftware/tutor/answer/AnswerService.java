@@ -214,9 +214,9 @@ public class AnswerService {
         if(request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
 
         //Fetch Clarification from database
-        Clarification clarification = clarificationRepository.findClarifications(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
+        Clarification clarification = clarificationRepository.findClarification(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
 
-        if(clarification.hasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
+        if(clarification.getHasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
 
         if(answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
 
@@ -226,13 +226,13 @@ public class AnswerService {
 
         //Get user and question from database
         User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
-        Question question = questionRepository.findById(request.getQuestionId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, request.getQuestionId()));
+        Question question = questionRepository.findById(request.getQuestionAnswerId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, request.getQuestionAnswerId()));
 
 
 
         if(!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
                 courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
-                       quiz -> quiz.getQuizQuestions().stream().anyMatch(                                     //Quiz questions have
+                       quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions have
                                quizQuestion -> quizQuestion.getQuestion().getKey() == question.getKey())    //A question that matches the questionKey from the arguments
                                ))){
             // Teacher cannot answer this question, not from the same course
@@ -252,5 +252,13 @@ public class AnswerService {
         entityManager.persist(clarificationAnswer);
 
         return new ClarificationAnswerDto(clarificationAnswer);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationAnswer> getAllClarificationAnswers(){
+        return clarificationAnswerRepository.findAll();
     }
 }
