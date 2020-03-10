@@ -43,4 +43,13 @@ public class ClarificationAnswerDto implements Serializable {
     public void setAnswer(String answer) {
         this.answer = answer;
     }
+
+    @Override
+    public String toString(){
+        return "ClarificationAnswerDto{" +
+                "id=" + id +
+                ", key=" + key +
+                ". answer=\'" + answer + "\'" +
+                "}";
+    }
 }
