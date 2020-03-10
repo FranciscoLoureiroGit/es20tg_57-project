@@ -1,9 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "question_answers")
@@ -26,6 +30,9 @@ public class QuestionAnswer {
     @ManyToOne
     @JoinColumn(name = "option_id")
     private Option option;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question_answer", fetch = FetchType.EAGER, orphanRemoval=true)
+    private List<Clarification> clarificationList = new ArrayList<>();
 
     private Integer sequence;
 
@@ -66,6 +73,30 @@ public class QuestionAnswer {
         }
     }
 
+    public List<Clarification> getClarificationList() {
+        return clarificationList;
+    }
+
+    public void setClarificationList(List<Clarification> clarificationList) {
+        this.clarificationList = clarificationList;
+    }
+
+    public Clarification getClarificationById(Integer clarificationId) {
+        for (Clarification clarification : clarificationList) {
+            if (clarification.getId().intValue() == clarificationId.intValue())
+                return clarification;
+        }
+        return null;
+    }
+
+    public void addClarification(Clarification clarification) {
+        this.clarificationList.add(clarification);
+    }
+
+    public void removeClarifications(Clarification clarification) {
+        this.clarificationList.remove(clarification);
+    }
+
     public Integer getId() {
         return id;
     }
@@ -81,8 +112,6 @@ public class QuestionAnswer {
     public void setTimeTaken(Integer timeTaken) {
         this.timeTaken = timeTaken;
     }
-
-
 
     public QuizQuestion getQuizQuestion() {
         return quizQuestion;
@@ -115,6 +144,8 @@ public class QuestionAnswer {
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
+
+    public User getStudent() { return getQuizAnswer().getUser();}
 
     @Override
     public String toString() {

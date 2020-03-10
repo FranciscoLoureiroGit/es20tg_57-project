@@ -1,9 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.ClarificationAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -11,11 +12,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
-
-// TODO add list of answers (clarificationAnswer)
-// TODO see if assessment is needed (ask teacher)
-// TODO add possibility of removing an answer, a reason for that, etc
-// TODO maybe check if student answered a given question (add on consistent method)
 
 @Entity
 @Table(name = "clarifications")
@@ -40,6 +36,9 @@ public class Clarification {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "has_answer")
+    private Boolean hasAnswer;
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
     private Image image;
 
@@ -47,12 +46,16 @@ public class Clarification {
     private LocalDateTime creationDate;
 
     @ManyToOne
-    @Column(name = "student")
-    private User student;
+    @JoinColumn(name = "question_answer_id")
+    private QuestionAnswer questionAnswer;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
+    private ClarificationAnswer clarificationAnswer;
 
     @ManyToOne
-    @Column(name = "question")
-    private Question question;
+    @JoinColumn(name = "student_id")
+    private User student;
+
 
     public Clarification() {}
 
@@ -68,6 +71,34 @@ public class Clarification {
             setImage(img);
             img.setClarification(this);
         }
+    }
+
+    public ClarificationAnswer getClarificationAnswer() {
+        return clarificationAnswer;
+    }
+
+    public void setClarificationAnswer(ClarificationAnswer clarificationAnswer) {
+        this.clarificationAnswer = clarificationAnswer;
+    }
+
+    public Boolean getHasAnswer() {
+        return hasAnswer;
+    }
+
+    public void setHasAnswer(Boolean hasAnswer) {
+        this.hasAnswer = hasAnswer;
+    }
+
+    public void setQuestionAnswer(QuestionAnswer questionAnswer) {
+        this.questionAnswer = questionAnswer;
+    }
+
+    public Integer getKey() {
+        return key;
+    }
+
+    public void setKey(Integer key) {
+        this.key = key;
     }
 
     public Integer getId() { return id; }
@@ -97,13 +128,13 @@ public class Clarification {
         image.setClarification(this);
     }
 
-    public User getStudent() { return student;}
+    public User getStudent() { return student; }
 
-    public void setStudent(User student1) { this.student = student1; }
+    public void setStudent(User student1) { this.student = student1;}
 
-    public Question getQuestion() { return question; }
+    public QuestionAnswer getQuestionAnswer() { return questionAnswer; }
 
-    public void setQuestion(Question question1) { this.question = question1; }
+    public void setQuestion(QuestionAnswer questionAnswer1) { this.questionAnswer = questionAnswer1; }
 
     public LocalDateTime getCreationDate() { return creationDate; }
 

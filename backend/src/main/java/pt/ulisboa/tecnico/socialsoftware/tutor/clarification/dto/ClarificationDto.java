@@ -13,7 +13,7 @@ public class ClarificationDto implements Serializable {
     private String title;
     private String description;
     private Integer studentId;
-    private Integer questionId;
+    private Integer questionAnswerId;
     private ImageDto image;
     private String creationDate = null;
     private String status;
@@ -25,7 +25,7 @@ public class ClarificationDto implements Serializable {
         this.description = clarification.getDescription();
         this.title = clarification.getTitle();
         this.studentId = clarification.getStudent().getId();
-        this.questionId = clarification.getQuestion().getId();
+        this.questionAnswerId = clarification.getQuestionAnswer().getId();
         this.status = clarification.getStatus().name();
 
         if (clarification.getImage() != null)
@@ -34,6 +34,7 @@ public class ClarificationDto implements Serializable {
             this.creationDate = clarification.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
     }
+
 
     public Integer getId() {
         return id;
@@ -73,9 +74,9 @@ public class ClarificationDto implements Serializable {
 
     public void setStudentId(Integer studentId1) { this.studentId = studentId1; }
 
-    public Integer getQuestionId() { return questionId; }
+    public Integer getQuestionAnswerId() { return questionAnswerId; }
 
-    public void setQuestionId(Integer questionId1) {this.questionId = questionId1; }
+    public void setQuestionAnswerId(Integer questionAnswerId1) {this.questionAnswerId = questionAnswerId1; }
 
     @Override
     public String toString() {
@@ -83,7 +84,7 @@ public class ClarificationDto implements Serializable {
                 ", id=" + id +
                 ", title=" + title + '\'' +
                 ", studentId=" + studentId + '\'' +
-                ", questionId=" + questionId + '\'' +
+                ", questionId=" + questionAnswerId + '\'' +
                 ", image=" + image +
                 '}';
     }
