@@ -9,21 +9,41 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.Questions
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
+@Entity
+@Table(name = "questionsTournaments")
 public class QuestionsTournament {
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique=true, nullable = false)
     private Integer key;
+
+    @Column(name = "starting_date")
     private LocalDateTime startingDate;
+
+    @Column(name = "ending_date")
     private LocalDateTime endingDate;
+
+    @ManyToOne
     private Quiz quiz = null;
+
+    @ManyToMany
     private List<Topic> topics = new ArrayList<>();
+
+    @OneToMany
     private CourseExecution courseExecution;
+
     private int numberOfQuestions;
+
+    @OneToMany
     private User studentTournamentCreator;
 
     public QuestionsTournament(){

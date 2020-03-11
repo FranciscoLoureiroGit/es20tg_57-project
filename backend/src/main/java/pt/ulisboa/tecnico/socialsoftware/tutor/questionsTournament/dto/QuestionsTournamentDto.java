@@ -18,10 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class QuestionsTournamentDto {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
-
     private Integer key;
     private String startingDate = null;
     private String endingDate = null;
