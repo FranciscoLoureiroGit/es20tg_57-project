@@ -68,7 +68,6 @@ class CreateTopicQuestionTest extends Specification{
     def option2
     def option3
     def option4
-    def option5
 
     def setup(){
         /* Setup options*/
@@ -93,11 +92,6 @@ class CreateTopicQuestionTest extends Specification{
         option4.setContent(OPTION_4)
         option4.setId(OPTION4_ID)
 
-        /* Setup option 5 */
-        option5 = new Option()
-        option5.setContent(OPTION_5)
-        option5.setId(OPTION5_ID)
-
         /*Setup for student and teacher. Both users have to belong to a course */
         teacher = new User(TEACHER_NAME, TEACHER_USERNAME, KEY_TEACHER, User.Role.TEACHER)
         teacher.setId(TEACHER_ID)
@@ -115,7 +109,6 @@ class CreateTopicQuestionTest extends Specification{
 
         /* Setup course execution */
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
-        courseExecution.setCourse(course)
         courseExecution.addUser(teacher)
         courseExecution.addUser(student)
         courseExecution.setId(COURSE_EXECUTION_ID)
@@ -139,9 +132,6 @@ class CreateTopicQuestionTest extends Specification{
         question.addOption(option2)
         question.addOption(option3)
         question.addOption(option4)
-        question.addOption(option5)
-        question.setNumberOfAnswers(1)
-        question.setNumberOfCorrect(1)
         question.setUser(student)
         and:"instantiate a question dto"
         questionDto = new QuestionDto(question)
@@ -152,7 +142,6 @@ class CreateTopicQuestionTest extends Specification{
         option2.setQuestion(question)
         option3.setQuestion(question)
         option4.setQuestion(question)
-        option5.setQuestion(question)
 
         when:
         def result = questionService.createQuestion(course.getId(), questionDto)
@@ -187,9 +176,6 @@ class CreateTopicQuestionTest extends Specification{
         question.addOption(option2)
         question.addOption(option3)
         question.addOption(option4)
-        question.addOption(option5)
-        question.setNumberOfAnswers(1)
-        question.setNumberOfCorrect(1)
         question.setUser(student)
         and:"instantiate a question dto"
         questionDto = new QuestionDto(question)
@@ -225,9 +211,6 @@ class CreateTopicQuestionTest extends Specification{
         question.addOption(option2)
         question.addOption(option3)
         question.addOption(option4)
-        question.addOption(option5)
-        question.setNumberOfAnswers(1)
-        question.setNumberOfCorrect(1)
         question.setUser(student)
         and:"instantiate a question dto"
         questionDto = new QuestionDto(question)
@@ -238,7 +221,6 @@ class CreateTopicQuestionTest extends Specification{
         option2.setQuestion(question)
         option3.setQuestion(question)
         option4.setQuestion(question)
-        option5.setQuestion(question)
 
         when: "add a question"
         questionService.createQuestion(course.getId(), questionDto)
@@ -288,9 +270,6 @@ class CreateTopicQuestionTest extends Specification{
         question.addOption(option2)
         question.addOption(option3)
         question.addOption(option4)
-        question.addOption(option5)
-        question.setNumberOfAnswers(1)
-        question.setNumberOfCorrect(1)
         question.setUser(student)
         and:"instantiate a question dto"
         questionDto = new QuestionDto(question)
@@ -301,7 +280,6 @@ class CreateTopicQuestionTest extends Specification{
         option2.setQuestion(question)
         option3.setQuestion(question)
         option4.setQuestion(question)
-        option5.setQuestion(question)
 
         when: "update a question"
         questionService.updateQuestion(-1, questionDto)
