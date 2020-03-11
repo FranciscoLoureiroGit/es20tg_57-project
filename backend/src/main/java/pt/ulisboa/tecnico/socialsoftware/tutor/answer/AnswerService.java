@@ -81,8 +81,8 @@ public class AnswerService {
 
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuizAnswerDto createQuizAnswer(Integer userId, Integer quizId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
@@ -96,14 +96,14 @@ public class AnswerService {
     }
 
     @Retryable(
-            value = { SQLException.class },
+            value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<CorrectAnswerDto> concludeQuiz(User user, Integer quizId) {
         QuizAnswer quizAnswer = user.getQuizAnswers().stream().filter(qa -> qa.getQuiz().getId().equals(quizId)).findFirst().orElseThrow(() ->
                 new TutorException(QUIZ_NOT_FOUND, quizId));
 
-        if(quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
             throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
         }
 
@@ -114,8 +114,8 @@ public class AnswerService {
 
         // When student submits before conclusionDate
         if (quizAnswer.getQuiz().getConclusionDate() != null &&
-            quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
-            LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
+                quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
+                LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
 
             return new ArrayList<>();
         }
@@ -127,7 +127,7 @@ public class AnswerService {
     }
 
     @Retryable(
-            value = { SQLException.class },
+            value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void submitAnswer(User user, Integer quizId, StatementAnswerDto answer) {
@@ -186,8 +186,8 @@ public class AnswerService {
     }
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public String exportAnswers() {
         AnswersXmlExport xmlExport = new AnswersXmlExport();
@@ -197,8 +197,8 @@ public class AnswerService {
 
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void importAnswers(String answersXml) {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
@@ -206,23 +206,23 @@ public class AnswerService {
 
 
     @Retryable(
-            value = { SQLException.class },
+            value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer ){
+    public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer) {
         //Input Validation: request and answer
-        if(request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
+        if (request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
 
         //Fetch Clarification from database
-        Clarification clarification = clarificationRepository.findClarification(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
+        Clarification clarification = clarificationRepository.findById(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
 
-        if(clarification.getHasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
+        if (clarification.getHasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
 
-        if(answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
+        if (answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
 
         //User Validation is done here
 
-        if(user == null || user.getRole() != User.Role.TEACHER)  throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+        if (user == null || user.getRole() != User.Role.TEACHER) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
 
         //Get user and quizQuestion from database
         User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
@@ -230,12 +230,12 @@ public class AnswerService {
 
         QuizQuestion quizQuest = questionAnswer.getQuizQuestion();
 
-        if(!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
+        if (!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
                 courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
-                       quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions matches
-                               quizQuestion -> quizQuestion.getId() == quizQuest.getId())                   //The quizQuestion obtained from the request
+                        quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions matches
+                                quizQuestion -> quizQuestion.getId() == quizQuest.getId())                   //The quizQuestion obtained from the request
 
-                               ))){
+                ))) {
             // Teacher cannot answer this question, not from the same course
             throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
         }
@@ -253,13 +253,5 @@ public class AnswerService {
         entityManager.persist(clarificationAnswer);
 
         return new ClarificationAnswerDto(clarificationAnswer);
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationAnswer> getAllClarificationAnswers(){
-        return clarificationAnswerRepository.findAll();
     }
 }

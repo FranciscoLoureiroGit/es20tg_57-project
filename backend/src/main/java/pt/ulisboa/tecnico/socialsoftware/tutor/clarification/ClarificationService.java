@@ -89,7 +89,7 @@ public class ClarificationService {
             clarification.setHasAnswer(false);
             clarification.setStatus(Clarification.Status.OPEN);
             clarification.setCreationDate(LocalDateTime.now());
-            clarification.setStudent(user);
+            clarification.setUser(user);
             this.entityManager.persist(clarification);
             return new ClarificationDto(clarification);
         }
