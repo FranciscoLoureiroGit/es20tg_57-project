@@ -29,8 +29,8 @@ public class QuestionsTournamentController {
 
     @GetMapping("/executions/{executionId}/questionsTournament/studentRegister")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#userId, 'USER.ACCESS')")
-    public StudentTournamentRegistrationDto studentRegister(@PathVariable Integer userId, @Valid @RequestBody QuestionsTournamentDto questionsTournamentDto) {
-        return questionsTournamentService.studentRegister(userId, questionsTournamentDto);
+    public StudentTournamentRegistrationDto studentRegister(@PathVariable Integer userId, @PathVariable Integer questionsTournamentId) {
+        return questionsTournamentService.studentRegister(userId, questionsTournamentId);
     }
 
     private void formatDates(QuestionsTournamentDto tournament) {

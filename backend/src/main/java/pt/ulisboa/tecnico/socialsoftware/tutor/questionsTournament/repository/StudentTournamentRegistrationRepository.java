@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface StudentTournamentRegistrationRepository extends JpaRepository<StudentTournamentRegistration, Integer> {
-    @Query(value = "select * from tournamentRegistrations t where t.tournamentId = :tournamentId and t.username = :username", nativeQuery = true)
-    Optional<StudentTournamentRegistration> findByTournamentStudent(Integer tournamentId, String username);
+    @Query(value = "select * from student_tournament_registration t where t.questions_tournament_id = :tournamentId and t.user_id = :userId", nativeQuery = true)
+    Optional<StudentTournamentRegistration> findByTournamentAndStudent(Integer tournamentId, Integer userId);
 }

@@ -3,18 +3,15 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.StudentTournamentRegistrationDto;
@@ -26,16 +23,15 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
-
-
+import java.util.List;
 
 @Service
 public class QuestionsTournamentService {
+
 
     @Autowired
     private CourseExecutionRepository courseExecutionRepository;
@@ -52,10 +48,10 @@ public class QuestionsTournamentService {
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
 
-    @PersistenceContext
+    @Autowired
     EntityManager entityManager;
 
-    public Integer getMaxQuestionsTournamentKey(){
+    public Integer getMaxQuestionsTournamentKey() {
         Integer maxQuestionsTournamentKey = tournamentRepository.getMaxQuestionsTournamentKey();
         return maxQuestionsTournamentKey != null ? maxQuestionsTournamentKey : 0;
     }
@@ -93,23 +89,30 @@ public class QuestionsTournamentService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public StudentTournamentRegistrationDto studentRegister(int userId, int questionsTournamentId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
-        QuestionsTournament questionsTournament = tournamentRepository.findById(questionsTournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_EXIST, questionsTournamentDto.getId()));
-        if(user.getRole() != User.Role.STUDENT) {
-            throw new TutorException(USER_NOT_STUDENT);
+    public StudentTournamentRegistrationDto studentRegister(Integer userId, Integer questionsTournamentId){
+        if(userId == null || questionsTournamentId == null) {
+            throw new TutorException(NULLUSERID);
         }
-        if(registrationRepository.findByTournamentStudent(questionsTournamentId, user.getUsername()).isPresent()) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        QuestionsTournament questionsTournament = tournamentRepository.findById(questionsTournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_EXIST, questionsTournamentId));
+        /*
+        if(registrationRepository.findByTournamentAndStudent(questionsTournamentId, userId).isPresent()) {
             throw new TutorException(DUPLICATED_REGISTRATION);
         }
-        if(questionsTournament.hasEnded()) {
-            throw new TutorException(TOURNAMENT_ENDED);
+        */
+
+        List<StudentTournamentRegistration> registrationList = registrationRepository.findAll();
+        for(StudentTournamentRegistration registration : registrationList){
+            if(registration.getQuestionsTournament().getId().intValue() == (questionsTournamentId) && registration.getStudent().getId().intValue() == userId){
+                throw new TutorException(DUPLICATED_REGISTRATION);
+            }
         }
-        if(!questionsTournament.hasStarted()){
-            throw new TutorException(TOURNAMENT_NOT_STARTED);
-        }
-        StudentTournamentRegistration registration = new StudentTournamentRegistration();
-        registrationRepository.save(registration);
+
+
+        StudentTournamentRegistration registration = new StudentTournamentRegistration(user, questionsTournament);
+        entityManager.persist(registration);
+        user.addStudentTournamentRegistration(registration);
+        questionsTournament.addStudentTournamentRegistration(registration);
         return new StudentTournamentRegistrationDto(registration);
 
         // check if input is OK

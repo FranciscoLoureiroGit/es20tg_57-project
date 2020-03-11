@@ -12,7 +12,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -47,6 +49,9 @@ public class QuestionsTournament {
     @ManyToOne
     @JoinColumn(name= "user_id")
     private User studentTournamentCreator;
+
+    @OneToMany
+    private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
 
     public QuestionsTournament(){
     }
@@ -138,6 +143,14 @@ public class QuestionsTournament {
     public void setStudentTournamentCreator(User studentTournamentCreator) {
         checkStudentTournamentCreator(studentTournamentCreator);
         this.studentTournamentCreator = studentTournamentCreator;
+    }
+
+    public Set<StudentTournamentRegistration> getStudentTournamentRegistrations() {
+        return studentTournamentRegistrations;
+    }
+
+    public void addStudentTournamentRegistration(StudentTournamentRegistration studentTournamentRegistration) {
+        this.studentTournamentRegistrations.add(studentTournamentRegistration);
     }
 
     private void checkStartingDate(LocalDateTime startingDate) {

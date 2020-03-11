@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 
 import javax.persistence.*;
@@ -56,6 +57,9 @@ public class User implements UserDetails {
 
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
+
+    @OneToMany
+    private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
 
     public User() {
     }
@@ -346,6 +350,15 @@ public class User implements UserDetails {
 
     public void addCourse(CourseExecution course) {
         this.courseExecutions.add(course);
+    }
+
+
+    public Set<StudentTournamentRegistration> getStudentTournamentRegistrations() {
+        return studentTournamentRegistrations;
+    }
+
+    public void addStudentTournamentRegistration(StudentTournamentRegistration studentTournamentRegistration) {
+        this.studentTournamentRegistrations.add(studentTournamentRegistration);
     }
 
     @Override
