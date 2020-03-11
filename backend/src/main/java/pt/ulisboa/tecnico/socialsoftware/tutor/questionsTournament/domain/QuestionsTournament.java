@@ -17,7 +17,7 @@ import java.util.List;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
-@Table(name = "questionsTournaments")
+@Table(name = "QUESTIONSTOURNAMENTS")
 public class QuestionsTournament {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -38,12 +38,14 @@ public class QuestionsTournament {
     @ManyToMany
     private List<Topic> topics = new ArrayList<>();
 
-    @OneToMany
+    @ManyToOne
+    @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
 
     private int numberOfQuestions;
 
-    @OneToMany
+    @ManyToOne
+    @JoinColumn(name= "user_id")
     private User studentTournamentCreator;
 
     public QuestionsTournament(){

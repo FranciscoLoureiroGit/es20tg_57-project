@@ -52,14 +52,21 @@ public class QuestionsTournamentService {
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
 
+    @PersistenceContext
+    EntityManager entityManager;
+
     public Integer getMaxQuestionsTournamentKey(){
         Integer maxQuestionsTournamentKey = tournamentRepository.getMaxQuestionsTournamentKey();
         return maxQuestionsTournamentKey != null ? maxQuestionsTournamentKey : 0;
     }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuestionsTournamentDto createQuestionsTournament(int executionId, int userId, QuestionsTournamentDto questionsTournamentDto){
-        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
 
         if(questionsTournamentDto.getKey() == null) {
             questionsTournamentDto.setKey(getMaxQuestionsTournamentKey() + 1);
@@ -68,22 +75,21 @@ public class QuestionsTournamentService {
         questionsTournament.setStudentTournamentCreator(user);
         questionsTournament.setCourseExecution(courseExecution);
 
-        if(questionsTournamentDto.getTopics() != null){
+        if(questionsTournamentDto.getTopics() != null
+                && questionsTournamentDto.getTopics().size() != 0){
             for (TopicDto topicDto : questionsTournamentDto.getTopics()){
                 Topic topic = topicRepository.findById(topicDto.getId())
                         .orElseThrow(() -> new TutorException(TOPIC_NOT_FOUND,topicDto.getId()));
                 questionsTournament.addTopic(topic);
             }
+        } else{
+            throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT,"topics");
         }
-        tournamentRepository.save(questionsTournament);
+        entityManager.persist((questionsTournament));
         return new QuestionsTournamentDto(questionsTournament);
-
-
-        //check if input is OK
-        //create questions tournament instance
     }
 
-    /*@Retryable(
+    @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -111,5 +117,5 @@ public class QuestionsTournamentService {
         // check if student is enrolled on QuestionsTournament's course
         // check if registration is duplicated
         // check if tournament not started or already ended
-    }*/
+    }
 }

@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class QuestionsTournamentDto {
     private String startingDate = null;
     private String endingDate = null;
     private int numberOfQuestions;
-    private List<TopicDto> topics;
+    private List<TopicDto> topics = new ArrayList<>();
     private UserDto studentTournamentCreator;
     private CourseDto course;
 
