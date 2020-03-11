@@ -13,6 +13,6 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface ClarificationAnswerRepository extends JpaRepository<ClarificationAnswer, Integer> {
-    @Query(value = "SELECT * FROM clarification_answer ca WHERE ca.clarification_answer_id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM clarification_answer ca WHERE ca.id = :id", nativeQuery = true)
     Optional<ClarificationAnswer> findClarificationAnswer(int id);
 }

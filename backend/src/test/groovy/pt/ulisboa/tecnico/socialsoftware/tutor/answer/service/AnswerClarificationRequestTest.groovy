@@ -1,5 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer
 
+import org.springframework.beans.factory.annotation.Autowire
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto
@@ -13,13 +16,18 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import spock.lang.Specification
 
+
+@DataJpaTest
 class AnswerClarificationRequestTest extends Specification{
 
     static final String QUESTION_TITLE = "QUESTION TITLE"
     static final String QUESTION_CONT = "QUESTION CONTENT"
 
-    def answerService
-    def clarificationService
+    @Autowired
+    AnswerService answerService
+
+    @Autowired
+    ClarificationService clarificationService
 
     def userStudent
     def userTeacher

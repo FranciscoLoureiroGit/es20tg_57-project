@@ -224,16 +224,17 @@ public class AnswerService {
 
         if(user == null || user.getRole() != User.Role.TEACHER)  throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
 
-        //Get user and question from database
+        //Get user and quizQuestion from database
         User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
-        Question question = questionRepository.findById(request.getQuestionAnswerId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, request.getQuestionAnswerId()));
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(request.getQuestionAnswerId()).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, request.getQuestionAnswerId()));
 
-
+        QuizQuestion quizQuest = questionAnswer.getQuizQuestion();
 
         if(!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
                 courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
-                       quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions have
-                               quizQuestion -> quizQuestion.getQuestion().getKey() == question.getKey())    //A question that matches the questionKey from the arguments
+                       quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions matches
+                               quizQuestion -> quizQuestion.getId() == quizQuest.getId())                   //The quizQuestion obtained from the request
+
                                ))){
             // Teacher cannot answer this question, not from the same course
             throw new TutorException(CANNOT_ANSWER_CLARIFICATION);

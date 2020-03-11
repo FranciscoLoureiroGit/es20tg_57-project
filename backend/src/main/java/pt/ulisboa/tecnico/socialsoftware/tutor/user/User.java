@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.ClarificationAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
@@ -56,6 +57,9 @@ public class User implements UserDetails {
 
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<ClarificationAnswer> clarificationAnswers = new HashSet<>();
 
     public User() {
     }
@@ -444,5 +448,21 @@ public class User implements UserDetails {
         }
 
         return result;
+    }
+
+    public Set<ClarificationAnswer> getClarificationAnswers() {
+        return clarificationAnswers;
+    }
+
+    public void setClarificationAnswers(Set<ClarificationAnswer> clarificationAnswers) {
+        this.clarificationAnswers = clarificationAnswers;
+    }
+
+    public void addClarificationAnswer(ClarificationAnswer clarificationAnswer){
+        this.clarificationAnswers.add(clarificationAnswer);
+    }
+
+    public void removeClarificationAnswer(ClarificationAnswer clarificationAnswer){
+        this.clarificationAnswers.remove(clarificationAnswer);
     }
 }
