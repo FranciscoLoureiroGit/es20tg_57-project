@@ -19,9 +19,9 @@ public class QuestionsTournamentController {
     @Autowired
     QuestionsTournamentService questionsTournamentService;
 
-    @GetMapping("/executions/{executionId}/questionsTournament/studentRegister")
+    /*@GetMapping("/executions/{executionId}/questionsTournament/studentRegister")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#userId, 'USER.ACCESS')")
     public StudentTournamentRegistrationDto studentRegister(@PathVariable Integer userId, @Valid @RequestBody QuestionsTournamentDto questionsTournamentDto) {
         return questionsTournamentService.studentRegister(userId, questionsTournamentDto);
-    }
+    }*/
 }

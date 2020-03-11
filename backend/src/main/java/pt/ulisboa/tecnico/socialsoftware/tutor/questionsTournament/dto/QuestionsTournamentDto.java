@@ -1,33 +1,62 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto;
 
+import org.springframework.data.annotation.Transient;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuestionsTournamentDto {
-    private int id;
-    //private String creationDate = null;
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Integer id;
+
+    private Integer key;
     private String startingDate = null;
     private String endingDate = null;
     private int numberOfQuestions;
-    private List<Topic> topics;
-    private UserDto studentUser;
+    private List<TopicDto> topics;
+    private UserDto studentTournamentCreator;
+    private CourseDto course;
+
+    @Transient
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public QuestionsTournamentDto(){
     }
 
     public QuestionsTournamentDto(QuestionsTournament questionsTournament){
+        this.id = questionsTournament.getId();
+        this.key = questionsTournament.getKey();
+        this.startingDate = questionsTournament.getStartingDate().format(formatter);
+        this.endingDate = questionsTournament.getEndingDate().format(formatter);
+        this.numberOfQuestions = questionsTournament.getNumberOfQuestions();
+        this.topics = questionsTournament.getTopics().stream().map(TopicDto::new).collect(Collectors.toList());
+        this.studentTournamentCreator = new UserDto(questionsTournament.getStudentTournamentCreator());
+        this.course = new CourseDto(questionsTournament.getCourseExecution());
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getKey() {
+        return key;
+    }
+
+    public void setKey(Integer key) {
+        this.key = key;
     }
 
     public String getStartingDate() {
@@ -54,19 +83,43 @@ public class QuestionsTournamentDto {
         this.numberOfQuestions = numberOfQuestions;
     }
 
-    public List<Topic> getTopics() {
+    public List<TopicDto> getTopics() {
         return topics;
     }
 
-    public void setTopics(List<Topic> topics) {
+    public void setTopics(List<TopicDto> topics) {
         this.topics = topics;
     }
 
     public UserDto getStudentUser() {
-        return studentUser;
+        return studentTournamentCreator;
     }
 
     public void setStudentUser(UserDto studentUser) {
-        this.studentUser = studentUser;
+        this.studentTournamentCreator = studentUser;
     }
+
+    public LocalDateTime getStartingDateDate() {
+        if (getStartingDate() == null || getStartingDate().isEmpty()) {
+            return null;
+        }
+        return LocalDateTime.parse(getStartingDate(), formatter);
+    }
+
+    public LocalDateTime getEndingDateDate() {
+        if (getEndingDate() == null || getEndingDate().isEmpty()) {
+            return null;
+        }
+        return LocalDateTime.parse(getEndingDate(), formatter);
+    }
+
+    public CourseDto getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseDto course) {
+        this.course = course;
+    }
+
+
 }

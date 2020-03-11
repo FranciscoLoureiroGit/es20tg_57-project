@@ -41,6 +41,9 @@ public enum ErrorMessage {
     QUIZ_NO_LONGER_AVAILABLE("This quiz is no longer available"),
     QUIZ_NOT_YET_AVAILABLE("This quiz is not yet available"),
 
+    QUESTIONSTOURNAMENT_NOT_CONSISTENT("Field %s of questions tournament is not consistent"),
+    TOPIC_IN_COURSE_NOT_FOUND("Topic in specific course not found with id %d"),
+
     NO_CORRECT_OPTION("Question does not have a correct option"),
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"),

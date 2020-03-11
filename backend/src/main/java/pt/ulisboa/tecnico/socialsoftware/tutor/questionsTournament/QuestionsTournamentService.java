@@ -1,22 +1,29 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.StudentTournamentRegistrationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.QuestionsTournamentRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.StudentTournamentRegistrationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,7 +32,16 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
 
+
+
+@Service
 public class QuestionsTournamentService {
+
+    @Autowired
+    private CourseExecutionRepository courseExecutionRepository;
+
+    @Autowired
+    private TopicRepository topicRepository;
 
     @Autowired
     private StudentTournamentRegistrationRepository registrationRepository;
@@ -36,11 +52,38 @@ public class QuestionsTournamentService {
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
 
-    public QuestionsTournamentDto createQuestionsTournament(Integer userId, QuestionsTournamentDto questionsTournamentDto){
-        return null;
+    public Integer getMaxQuestionsTournamentKey(){
+        Integer maxQuestionsTournamentKey = tournamentRepository.getMaxQuestionsTournamentKey();
+        return maxQuestionsTournamentKey != null ? maxQuestionsTournamentKey : 0;
+    }
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public QuestionsTournamentDto createQuestionsTournament(int executionId, int userId, QuestionsTournamentDto questionsTournamentDto){
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+
+        if(questionsTournamentDto.getKey() == null) {
+            questionsTournamentDto.setKey(getMaxQuestionsTournamentKey() + 1);
+        }
+        QuestionsTournament questionsTournament = new QuestionsTournament(questionsTournamentDto,user,courseExecution);
+        questionsTournament.setStudentTournamentCreator(user);
+        questionsTournament.setCourseExecution(courseExecution);
+
+        if(questionsTournamentDto.getTopics() != null){
+            for (TopicDto topicDto : questionsTournamentDto.getTopics()){
+                Topic topic = topicRepository.findById(topicDto.getId())
+                        .orElseThrow(() -> new TutorException(TOPIC_NOT_FOUND,topicDto.getId()));
+                questionsTournament.addTopic(topic);
+            }
+        }
+        tournamentRepository.save(questionsTournament);
+        return new QuestionsTournamentDto(questionsTournament);
+
+
+        //check if input is OK
+        //create questions tournament instance
     }
 
-    @Retryable(
+    /*@Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -68,5 +111,5 @@ public class QuestionsTournamentService {
         // check if student is enrolled on QuestionsTournament's course
         // check if registration is duplicated
         // check if tournament not started or already ended
-    }
+    }*/
 }

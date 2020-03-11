@@ -1,7 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.service
 
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.QuestionsTournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament
@@ -11,16 +13,18 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@DataJpaTest
 class CreateQuestionsTournamentTest extends Specification{
 
+    def formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     def questionsTournamentService
     def startingDate = LocalDateTime.now()
     def endingDate = LocalDateTime.now().plusDays(1)
-    def topic1 = Mock(Topic)
-    def topic2 = Mock(Topic)
+    def topic1 = new TopicDto()
+    def topic2 = new TopicDto()
 
     def setup(){
-        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
         questionsTournamentService = new QuestionsTournamentService()
     }
 
@@ -130,7 +134,7 @@ class CreateQuestionsTournamentTest extends Specification{
 
     def "empty number of questions"(){
         given: "a questions tournament with starting and ending date, topics and number of questions"
-        def questionsTournament = new QuestionsTournament()
+        def questionsTournament = new QuestionsTournamentDto()
         questionsTournament.setStartingDate(startingDate)
         questionsTournament.setEndingDate(endingDate)
         questionsTournament.getTopics().add(topic1)
@@ -139,11 +143,9 @@ class CreateQuestionsTournamentTest extends Specification{
         def student = new User();
         student.setRole(User.Role.STUDENT)
         student.setId(112233)
-        and: "a questions tournament dto"
-        def questionsTournamentDto = new QuestionsTournamentDto(questionsTournament)
 
         when:
-        def result = questionsTournamentService.createQuestionsTournament(student.getId(),questionsTournamentDto)
+        def result = questionsTournamentService.createQuestionsTournament(student.getId(),questionsTournament)
 
         then:
         thrown(TutorException)
