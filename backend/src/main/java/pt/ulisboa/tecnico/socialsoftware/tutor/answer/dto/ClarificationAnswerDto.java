@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.ClarificationAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.io.Serializable;
 

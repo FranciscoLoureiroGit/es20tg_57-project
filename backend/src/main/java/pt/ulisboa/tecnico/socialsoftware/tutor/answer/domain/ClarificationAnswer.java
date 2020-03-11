@@ -22,11 +22,11 @@ public class ClarificationAnswer {
     private Integer key;
 
     @OneToOne
-    @Column(name = "clarification")
+    @JoinColumn(name="clarification_id")
     private Clarification clarification;
 
     @ManyToOne
-    @Column(name = "user")
+    @JoinColumn(name = "user_id")
     private User user;
 
 
@@ -67,7 +67,9 @@ public class ClarificationAnswer {
     }
 
     public void setClarification(Clarification clarification) {
+        if(this.clarification != null) this.clarification.setClarificationAnswer(null);
         this.clarification = clarification;
+        this.clarification.setClarificationAnswer(this);
     }
 
     public User getUser() {
@@ -75,7 +77,9 @@ public class ClarificationAnswer {
     }
 
     public void setUser(User user) {
+        if(this.user != null) this.user.removeClarificationAnswer(this);
         this.user = user;
+        this.user.addClarificationAnswer(this);
     }
 
     public String getAnswer() {
