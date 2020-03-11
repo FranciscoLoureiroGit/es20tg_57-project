@@ -1,3 +1,5 @@
+package groovy.pt.ulisboa.tecnico.socialsoftware.tutor.question.service
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
@@ -68,7 +70,7 @@ class CreateTopicQuestionTest extends Specification{
     def option4
     def option5
 
-    def setUp(){
+    def setup(){
         /* Setup options*/
         /* Setup option 1 --> correct one */
         option1 = new Option()
@@ -98,9 +100,9 @@ class CreateTopicQuestionTest extends Specification{
 
         /*Setup for student and teacher. Both users have to belong to a course */
         teacher = new User(TEACHER_NAME, TEACHER_USERNAME, KEY_TEACHER, User.Role.TEACHER)
-        teacher.setId(TEACHER_ID);
+        teacher.setId(TEACHER_ID)
         student = new User(STUDENT_NAME, STUDENT_USERNAME, KEY_STUDENT, User.Role.STUDENT)
-        student.setId(STUDENT_ID);
+        student.setId(STUDENT_ID)
 
         /* Setup for topic */
         topic = new Topic()
@@ -201,7 +203,7 @@ class CreateTopicQuestionTest extends Specification{
         option5.setQuestion(question)
 
         when:
-        def result = questionService.createQuestion(2, questionDto)
+        questionService.createQuestion(2, questionDto)
 
         then: "the exception is thrown"
         thrown(TutorException)
@@ -239,17 +241,17 @@ class CreateTopicQuestionTest extends Specification{
         option5.setQuestion(question)
 
         when: "add a question"
-        def result = questionService.createQuestion(course.getId(), questionDto)
+        questionService.createQuestion(course.getId(), questionDto)
         and: "add the same question"
-        def result2 = questionService.createQuestion(course.getId(), questionDto)
+        questionService.createQuestion(course.getId(), questionDto)
 
         then: "The exception is thrown"
         thrown(TutorException)
     }
 
-    def "remove a inexistent question"(){
+    def "remove an inexistent question"(){
         when: "question id does not exists"
-        def result = questionService.removeQuestion(5555)
+        questionService.removeQuestion(5555)
 
         then: "the exception is thrown"
         thrown(TutorException)
@@ -257,7 +259,7 @@ class CreateTopicQuestionTest extends Specification{
 
     def "find a question whose id does not exist"(){
         when: "find a question on service"
-        def result = questionService.findQuestionById(100)
+        questionService.findQuestionById(100)
 
         then: "The exception is thrown"
         thrown(TutorException)
@@ -265,7 +267,7 @@ class CreateTopicQuestionTest extends Specification{
 
     def "update a question with a null question dto"(){
         when: "trying to update a question"
-        def result = questionService.updateQuestion(1, null)
+        questionService.updateQuestion(1, null)
 
         then: "The exception is thrown"
         thrown(TutorException)
@@ -302,7 +304,7 @@ class CreateTopicQuestionTest extends Specification{
         option5.setQuestion(question)
 
         when: "update a question"
-        def result = questionService.updateQuestion(-1, questionDto)
+        questionService.updateQuestion(-1, questionDto)
 
         then: "The exception is thrown"
         thrown(TutorException)

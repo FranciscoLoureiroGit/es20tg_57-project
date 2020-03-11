@@ -1,13 +1,11 @@
 /*CLASSE PARA FEATURE Ppa2.1 - ChangeQuestionStateTest*/
 
-//imports a mais
+package groovy.pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
@@ -53,7 +51,7 @@ class ChangeQuestionStateTest extends Specification{
     def teacher
     def student
 
-    def setUp(){
+    def setup(){
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
         course.setId(1)
         courseExecution = new CourseExecution(COURSE_NAME as Course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
@@ -114,17 +112,27 @@ class ChangeQuestionStateTest extends Specification{
     }
 
     /*
+    NAO E NECESSARIA
     def "user is not a teacher"(){
-        given: "a student"
+        given: "add a student to a course execution"
         student = new User(STUDENT_NAME, STUDENT_USERNAME, KEY_STUDENT, User.Role.STUDENT)
+        courseExecution.addUser(student)
+        and: "add a course execution to a course"
+        course.addCourseExecution(courseExecution)
 
 
         when:
+        def result = student.getRole()
+        result == //role que nao o esperado
+        questionDto.setStatus("AVAILABLE")
 
-        then:
+        then: "Incorrect role and an exception is thrown"
+        thrown(TutorException)
 
     }
+    */
 
+    /*
     def "teacher is not in this course"(){
 
         given:

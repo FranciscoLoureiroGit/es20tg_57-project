@@ -136,6 +136,15 @@ public class QuestionService {
         question.setStatus(status);
     }
 
+    //NEW
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void questionSetJustification(Integer questionId, String justification) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        question.setJustification(justification);
+    }
 
     @Retryable(
       value = { SQLException.class },
