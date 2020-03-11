@@ -160,9 +160,13 @@ public class QuestionDto implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public void setJustification(String justification){ this.justification = justification; }
+    public void setJustification(String justification){
+        this.justification = justification;
+    }
 
-    public String getJustification() { return this.justification; }
+    public String getJustification() {
+        return this.justification;
+    }
 
     @Override
     public String toString() {
