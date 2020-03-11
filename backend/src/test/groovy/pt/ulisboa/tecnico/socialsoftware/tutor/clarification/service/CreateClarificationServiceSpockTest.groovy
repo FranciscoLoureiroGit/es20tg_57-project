@@ -1,16 +1,29 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.clarification
+package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.service
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
+@DataJpaTest
 class CreateClarificationServiceSpockTest extends Specification {
-    static final String QUEST_ONE_TITLE = "QuestTitle"
+    static final String QUIZ_NAME = "Quiz1"
     static final String QUEST_ONE_CONTENT = "QuestContent"
     static final String USER_ONE_NAME = "StudOneName"
     static final String USER_ONE_USERNAME = "StudOneUsername"
@@ -18,30 +31,70 @@ class CreateClarificationServiceSpockTest extends Specification {
     static final String CLARIFY_ONE_DESCR = "ClarifyOneDescr"
 
 
-    def clarificationService
+    @Autowired
+    ClarificationService clarificationService
+
+    @Autowired
+    UserRepository userRepository
+
+    @Autowired
+    QuizAnswerRepository quizAnswerRepository
+
+    @Autowired
+    QuestionAnswerRepository questionAnswerRepository
+
+    def questAnswer
+    def questAnswerDto
+    def user
+    def student
+    def result
+    def quiz
+    def quizDto
 
     def setup() {
-        clarificationService = new ClarificationService()
+        def QuizAnswer quizAnswer = new QuizAnswer()
+        quizAnswerRepository.save(quizAnswer)
+
+
+
+
     }
 
+    def "given valid quizAnswer, questionAnswer and student, a clarification request is created wih valid inputs" () {
+        and: "a questionAnswer"
+
+        and: "a User"
+
+        and: "a quizAnswerDto"
+
+        and: "a questionAnswerDto"
+
+        and: "a UserDto"
+
+        when:
+        result = clarificationService
+
+    }
+
+
     // TODO see if more data is needed and if the Student needs to see the question
-    def "question and student exist, clarification is created and description is not null and not duplicated"() {
+    def "questionAnswer and student exist, clarification is created with valid inputs"() {
         given: "a question"
-        def questOne = new Question()
-        questOne.setTitle(QUEST_ONE_TITLE)
-        questOne.setContent(QUEST_ONE_CONTENT)
+        def questionAnswer = new QuestionAnswer()
+        questionAnswer.(QUEST_ONE_TITLE)
+        questionAnswer.setContent(QUEST_ONE_CONTENT)
         and: "a user that is a student"
         def userOne = new User();
         userOne.setRole(User.Role.STUDENT)
         userOne.setName(USER_ONE_NAME)
         userOne.setUsername(USER_ONE_USERNAME)
         and: "a questionDto"
-        def questDtoOne = new QuestionDto(questOne)
+        def questDtoOne = new QuestionDto(questionAnswer)
         and: "a studentDto"
-        def studOne = new StudentDto(userOne)
+        def student = new StudentDto(userOne)
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR, studOne)
+        def result = clarificationService.createClarification(questDtoOne, CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR, student)
 
         then: "the returned data are correct"
         result.getTitle() == CLARIFY_ONE_TITLE
@@ -159,5 +212,25 @@ class CreateClarificationServiceSpockTest extends Specification {
 
     def ""() {
         expect: false
+    }
+
+    @TestConfiguration
+    static class ServiceImplTestContextConfiguration {
+
+        @Bean
+        ClarificationService clarificationService() {
+            return new ClarificationService()
+        }
+
+        @Bean
+        UserService userService() {
+            return new UserService()
+        }
+
+        @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+
     }
 }
