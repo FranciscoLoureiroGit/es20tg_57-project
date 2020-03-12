@@ -211,15 +211,44 @@ public class AnswerService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer) {
         //Input Validation: request and answer
+        Clarification clarification = validateClarification(request);
+
+        if (answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
+
+        User usr = validateUser(request, user);
+        ClarificationAnswer clarificationAnswer = getCreateClarificationAnswer(answer, clarification, usr);
+
+        return new ClarificationAnswerDto(clarificationAnswer);
+    }
+    
+
+    private ClarificationAnswer getCreateClarificationAnswer(String answer, Clarification clarification, User usr) {
+        //Create the Answer
+
+        ClarificationAnswer clarificationAnswer = new ClarificationAnswer(answer);
+        clarificationAnswer.setUser(usr);
+        clarificationAnswer.setClarification(clarification);
+
+        //Link answer to request
+
+        clarification.setClarificationAnswer(clarificationAnswer);
+
+        //Register is database
+        entityManager.persist(clarificationAnswer);
+        return clarificationAnswer;
+    }
+
+    private Clarification validateClarification(ClarificationDto request) {
         if (request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
 
         //Fetch Clarification from database
         Clarification clarification = clarificationRepository.findById(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
 
         if (clarification.getHasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
+        return clarification;
+    }
 
-        if (answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
-
+    private User validateUser(ClarificationDto request, UserDto user) {
         //User Validation is done here
 
         if (user == null || user.getRole() != User.Role.TEACHER) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
@@ -239,19 +268,6 @@ public class AnswerService {
             // Teacher cannot answer this question, not from the same course
             throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
         }
-
-        //Create the Answer
-
-        ClarificationAnswer clarificationAnswer = new ClarificationAnswer(answer);
-        clarificationAnswer.setUser(usr);
-        clarificationAnswer.setClarification(clarification);
-
-        //Link answer to request
-
-        clarification.setClarificationAnswer(clarificationAnswer);
-
-        entityManager.persist(clarificationAnswer);
-
-        return new ClarificationAnswerDto(clarificationAnswer);
+        return usr;
     }
 }
