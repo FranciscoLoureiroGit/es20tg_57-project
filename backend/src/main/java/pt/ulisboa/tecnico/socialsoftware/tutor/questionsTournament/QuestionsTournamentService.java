@@ -60,8 +60,8 @@ public class QuestionsTournamentService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuestionsTournamentDto createQuestionsTournament(int executionId, int userId, QuestionsTournamentDto questionsTournamentDto){
-        CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
-        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        CourseExecution courseExecution = getCourseExecution(executionId);
+        User user = getUserFromRepository(userId);
 
         if(questionsTournamentDto.getKey() == null) {
             questionsTournamentDto.setKey(getMaxQuestionsTournamentKey() + 1);
@@ -69,17 +69,8 @@ public class QuestionsTournamentService {
         QuestionsTournament questionsTournament = new QuestionsTournament(questionsTournamentDto,user,courseExecution);
         questionsTournament.setStudentTournamentCreator(user);
         questionsTournament.setCourseExecution(courseExecution);
+        addTopics(questionsTournamentDto, questionsTournament);
 
-        if(questionsTournamentDto.getTopics() != null
-                && questionsTournamentDto.getTopics().size() != 0){
-            for (TopicDto topicDto : questionsTournamentDto.getTopics()){
-                Topic topic = topicRepository.findById(topicDto.getId())
-                        .orElseThrow(() -> new TutorException(TOPIC_NOT_FOUND,topicDto.getId()));
-                questionsTournament.addTopic(topic);
-            }
-        } else{
-            throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT,"topics");
-        }
         entityManager.persist((questionsTournament));
         return new QuestionsTournamentDto(questionsTournament);
     }
@@ -95,6 +86,23 @@ public class QuestionsTournamentService {
         QuestionsTournament questionsTournament = getTournamentFromRepository(questionsTournamentId);
         StudentTournamentRegistration registration = createStudentTournamentRegistration(user, questionsTournament);
         return new StudentTournamentRegistrationDto(registration);
+    }
+
+    private void addTopics(QuestionsTournamentDto questionsTournamentDto, QuestionsTournament questionsTournament) {
+        if(questionsTournamentDto.getTopics() != null
+                && questionsTournamentDto.getTopics().size() != 0){
+            for (TopicDto topicDto : questionsTournamentDto.getTopics()){
+                Topic topic = topicRepository.findById(topicDto.getId())
+                        .orElseThrow(() -> new TutorException(TOPIC_NOT_FOUND,topicDto.getId()));
+                questionsTournament.addTopic(topic);
+            }
+        } else{
+            throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT,"topics");
+        }
+    }
+
+    private CourseExecution getCourseExecution(int executionId) {
+        return courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
     }
 
     private void checkNullInput(Integer userId, Integer questionsTournamentId) {

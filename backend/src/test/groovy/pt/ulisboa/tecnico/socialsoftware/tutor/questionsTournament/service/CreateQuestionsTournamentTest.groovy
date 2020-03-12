@@ -19,6 +19,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.Questi
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.QuestionsTournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.StudentTournamentRegistrationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
@@ -126,7 +127,8 @@ class CreateQuestionsTournamentTest extends Specification{
         questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament)
 
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.errorMessage == QUESTIONSTOURNAMENT_NOT_CONSISTENT
     }
 
     def "empty ending date"(){
@@ -140,7 +142,8 @@ class CreateQuestionsTournamentTest extends Specification{
         when:
         questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.errorMessage == QUESTIONSTOURNAMENT_NOT_CONSISTENT
     }
 
     def "starting date greater than ending date"(){
@@ -155,7 +158,8 @@ class CreateQuestionsTournamentTest extends Specification{
         when:
         def result = questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.errorMessage == QUESTIONSTOURNAMENT_NOT_CONSISTENT
     }
 
     def "empty topics"(){
@@ -168,7 +172,8 @@ class CreateQuestionsTournamentTest extends Specification{
         when:
         def result = questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.errorMessage == QUESTIONSTOURNAMENT_NOT_CONSISTENT
     }
 
     def "empty number of questions"(){
@@ -182,7 +187,8 @@ class CreateQuestionsTournamentTest extends Specification{
         when:
         def result = questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.errorMessage == QUESTIONSTOURNAMENT_NOT_CONSISTENT
     }
 
     @TestConfiguration
