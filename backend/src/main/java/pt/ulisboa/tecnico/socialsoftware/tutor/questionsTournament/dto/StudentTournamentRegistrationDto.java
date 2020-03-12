@@ -17,8 +17,8 @@ public class StudentTournamentRegistrationDto {
     public StudentTournamentRegistrationDto(StudentTournamentRegistration registration) {
         this.id = registration.getId();
         this.registrationDate = registration.getRegistrationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.userId = registration.getStudent().getId();
-        this.userName = registration.getStudent().getUsername();
+        this.userId = registration.getUser().getId();
+        this.userName = registration.getUser().getUsername();
         this.tournamentId = registration.getQuestionsTournament().getId();
     }
 
@@ -56,5 +56,16 @@ public class StudentTournamentRegistrationDto {
 
     public void setTournamentId(Integer tournamentId) {
         this.tournamentId = tournamentId;
+    }
+
+    @Override
+    public String toString() {
+        return "StudentTournamentRegistrationDto{" +
+                "id=" + id +
+                ", registrationDate='" + registrationDate + '\'' +
+                ", userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", tournamentId=" + tournamentId +
+                '}';
     }
 }

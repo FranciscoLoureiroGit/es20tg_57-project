@@ -17,10 +17,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.St
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 import spock.lang.Specification
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @DataJpaTest
 class RegisterStudentTest extends Specification {
@@ -50,12 +50,10 @@ class RegisterStudentTest extends Specification {
     @Autowired
     QuestionsTournamentRepository questionsTournamentRepository
 
-    def formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     def courseExecution
     def student
     def tournament
     def course
-
 
     def setup() {
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
@@ -70,43 +68,45 @@ class RegisterStudentTest extends Specification {
         tournament.setKey(1)
         questionsTournamentRepository.save(tournament)
 
-    }
-
-    def "student creates a registration of a tournament whose course the student is enrolled"() {
-        given: "a student in courseExecution"
         courseExecution.addUser(student)
         student.addCourse(courseExecution)
         tournament.setStudentTournamentCreator(student)
         tournament.setCourseExecution(courseExecution)
-        tournament.setStartingDate(LocalDateTime.now().minusDays(1))
-        tournament.setEndingDate(LocalDateTime.now().plusDays(2))
+        def now = LocalDateTime.now()
+        tournament.setStartingDate(now.plusDays(1))
+        tournament.setEndingDate(now.plusDays(2))
+    }
 
-        and: "a userDto"
+    def "student creates a registration of a tournament whose course the student is enrolled"() {
+        given: "a userDto"
         def userDto = new UserDto(student)
 
         and: "a open tournamentDto"
         def tournamentDto = new QuestionsTournamentDto(tournament)
 
         when:
-        def result = questionsTournamentService.studentRegister(student.getId(), tournamentDto.id)
+        def result = questionsTournamentService.studentRegister(userDto.id, tournamentDto.id)
 
         then: "the returned data is correct"
         result.userName == USERNAME
         result.tournamentId == tournamentDto.id
         result.userId == student.getId()
         and: "userDto has correct data"
-        student.getUsername() == USERNAME
-        student.getName() == NAME
-        student.getRole() == User.Role.STUDENT
+        userDto.getUsername() == USERNAME
+        userDto.getName() == NAME
+        userDto.getRole() == User.Role.STUDENT
         and: "is in the database"
         registrationRepository.findAll().size() == 1
         def registration = registrationRepository.findAll().get(0)
         registration != null
-        registration.student.id == userDto.id
-        registration.student.getId() == userDto.getId()
-        registration.student.getName() == userDto.getName()
-        registration.student.getUsername() == userDto.getUsername()
-        registration.student.getRole() == userDto.getRole()
+        registration.user.id == userDto.id
+        registration.user.getId() == userDto.getId()
+        registration.user.getName() == userDto.getName()
+        registration.user.getUsername() == userDto.getUsername()
+        registration.user.getRole() == userDto.getRole()
+        registration.questionsTournament == tournament
+        registration.questionsTournament.courseExecution == courseExecution
+        registration.questionsTournament.studentTournamentCreator == student
         and: "the tournament has the registration"
         def registrationsOnTournament = new ArrayList<>(tournament.getStudentTournamentRegistrations()).get(0)
         registrationsOnTournament != null
@@ -116,13 +116,14 @@ class RegisterStudentTest extends Specification {
     }
 
     def "nullstudent"() {
-        def tournamentDto = new QuestionsTournamentDto()
+        def tournamentDto = new QuestionsTournamentDto(tournament)
 
         when:
         questionsTournamentService.studentRegister(null, tournamentDto.id)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == NULLID
     }
 
     def "not a student"() {
@@ -131,42 +132,38 @@ class RegisterStudentTest extends Specification {
         userRepository.save(teacher)
         and: "a teacher in courseExecution"
         courseExecution.addUser(teacher)
+        teacher.addCourse(courseExecution)
         and: "a userDto"
         def userDto = new UserDto(teacher)
         and: "a tournamentDto"
-        def tournamentDto = new QuestionsTournamentDto()
+        def tournamentDto = new QuestionsTournamentDto(tournament)
 
         when:
-        questionsTournamentService.studentRegister(userDto.getId(), tournamentDto.id)
+        questionsTournamentService.studentRegister(userDto.id, tournamentDto.id)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == USER_NOT_STUDENT
     }
 
     def "null tournament" () {
-        given: "a student in courseExecution"
-        courseExecution.addUser(student)
-        and: "a studentDto"
+        given: "a studentDto"
         def userDto = new UserDto(student)
 
         when:
-        questionsTournamentService.studentRegister(userDto.getId(), null)
+        questionsTournamentService.studentRegister(userDto.id, null)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == NULLID
 
 
     }
 
-    def "tournament not started or already ends"() {
-        given: "a student in courseExecution"
-        courseExecution.addUser(student)
-        student.addCourse(courseExecution)
-        and: "a studentDto"
+    def "tournament already started"() {
+        given: "a studentDto"
         def userDto = new UserDto(student)
         and: "a finished tournament"
-        tournament.setStudentTournamentCreator(student)
-        tournament.setCourseExecution(courseExecution)
         tournament.setStartingDate(beginDate)
         tournament.setEndingDate(endDate)
         and: "a tournamentDto"
@@ -176,12 +173,13 @@ class RegisterStudentTest extends Specification {
         questionsTournamentService.studentRegister(userDto.getId(), tournamentDto.id)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == errorMessage
 
         where:
-        beginDate                                   | endDate
-        LocalDateTime.now().plusDays(1)             | LocalDateTime.now().plusDays(3)
-        LocalDateTime.now().minusDays(3)            | LocalDateTime.now().minusDays(1)
+        beginDate                           | endDate                           || errorMessage
+        LocalDateTime.now().minusDays(1)    | LocalDateTime.now().plusDays(3)   || TOURNAMENT_ALREADY_STARTED
+        LocalDateTime.now().minusDays(3)    | LocalDateTime.now().minusDays(1)  || TOURNAMENT_ENDED
     }
 
     def "student creates a registration of a tournament whose course the student isn't enrolled"() {
@@ -190,32 +188,19 @@ class RegisterStudentTest extends Specification {
         userRepository.save(user)
         and: "a studentDto"
         def userDto = new UserDto(user)
-        and: "other student in courseExecution"
-        courseExecution.addUser(student)
-        student.addCourse(courseExecution)
         and: "a tournamentDto"
-        tournament.setStudentTournamentCreator(student)
-        tournament.setCourseExecution(courseExecution)
-        tournament.setStartingDate(LocalDateTime.now().minusDays(1))
-        tournament.setEndingDate(LocalDateTime.now().plusDays(2))
         def tournamentDto = new QuestionsTournamentDto(tournament)
 
         when:
         questionsTournamentService.studentRegister(userDto.getId(), tournamentDto.id)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == STUDENT_NOT_ON_COURSE_EXECUTION
     }
 
     def "students tries to register twice"() {
-        given: "a student in courseExecution"
-        courseExecution.addUser(student)
-        student.addCourse(courseExecution)
-        tournament.setStudentTournamentCreator(student)
-        tournament.setCourseExecution(courseExecution)
-        tournament.setStartingDate(LocalDateTime.now().minusDays(1))
-        tournament.setEndingDate(LocalDateTime.now().plusDays(2))
-        and: "a studentDto"
+        given: "a studentDto"
         def userDto = new UserDto(student)
         and: "a tournamentDto"
         def tournamentDto = new QuestionsTournamentDto(tournament)
@@ -226,8 +211,8 @@ class RegisterStudentTest extends Specification {
 
         then:
         registrationRepository.findAll().size() == 1
-        thrown(TutorException)
-
+        def error = thrown(TutorException)
+        error.errorMessage == DUPLICATED_REGISTRATION
     }
 
     @TestConfiguration

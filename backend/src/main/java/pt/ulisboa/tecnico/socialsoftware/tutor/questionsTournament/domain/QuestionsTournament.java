@@ -50,7 +50,7 @@ public class QuestionsTournament {
     @JoinColumn(name= "user_id")
     private User studentTournamentCreator;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionsTournament", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
 
     public QuestionsTournament(){

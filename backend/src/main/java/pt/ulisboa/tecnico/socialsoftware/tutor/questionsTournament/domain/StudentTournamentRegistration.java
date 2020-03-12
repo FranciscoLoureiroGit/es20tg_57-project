@@ -1,18 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.StudentTournamentRegistrationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
-@Table(name = "studentTournamentRegistrations", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "questionsTournament_id"}))
+@Table(name = "student_tournament_registrations", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "questions_tournament_id"}))
 public class StudentTournamentRegistration {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -22,10 +19,10 @@ public class StudentTournamentRegistration {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User student;
+    private User user;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "questionsTournament_id")
+    @JoinColumn(name = "questions_tournament_id")
     private QuestionsTournament questionsTournament;
 
     public StudentTournamentRegistration() {
@@ -33,15 +30,30 @@ public class StudentTournamentRegistration {
     }
 
     public StudentTournamentRegistration(User user, QuestionsTournament questionsTournament) {
-        if(questionsTournament.getEndingDate().isBefore(LocalDateTime.now())) {
+        LocalDateTime now = LocalDateTime.now();
+        checkStartedOrEndedTournament(questionsTournament, now);
+        setupRegistration(user, questionsTournament, now);
+    }
+
+    private void checkStartedOrEndedTournament(QuestionsTournament questionsTournament, LocalDateTime now) {
+        checkEndedTournament(questionsTournament, now);
+        checkStartedTournament(questionsTournament, now);
+    }
+
+    private void checkEndedTournament(QuestionsTournament questionsTournament, LocalDateTime now) {
+        if(questionsTournament.getEndingDate().isBefore(now))
             throw new TutorException(TOURNAMENT_ENDED);
-        }
-        if(questionsTournament.getStartingDate().isAfter(LocalDateTime.now())){
-            throw new TutorException(TOURNAMENT_NOT_STARTED);
-        }
-        this.questionsTournament = questionsTournament;
-        setStudent(user);
-        registrationDate = LocalDateTime.now();
+    }
+
+    private void checkStartedTournament(QuestionsTournament questionsTournament, LocalDateTime now) {
+        if (questionsTournament.getStartingDate().isBefore(now))
+            throw new TutorException(TOURNAMENT_ALREADY_STARTED);
+    }
+
+    private void setupRegistration(User user, QuestionsTournament questionsTournament, LocalDateTime now) {
+        setQuestionsTournament(questionsTournament);
+        setUser(user);
+        setRegistrationDate(now);
     }
 
     public Integer getId() {
@@ -60,18 +72,24 @@ public class StudentTournamentRegistration {
         this.registrationDate = registrationDate;
     }
 
-    public User getStudent() {
-        return student;
+    public User getUser() {
+        return user;
     }
 
-    public void setStudent(User student) {
-        if(student.getRole() != User.Role.STUDENT) {
+    public void setUser(User student) {
+        checkUserIsStudent(student);
+        checkStudentInCourse(student);
+        this.user = student;
+    }
+
+    private void checkUserIsStudent(User student) {
+        if(student.getRole() != User.Role.STUDENT)
             throw new TutorException(USER_NOT_STUDENT);
-        }
-        if(!student.getCourseExecutions().contains(questionsTournament.getCourseExecution())){
+    }
+
+    private void checkStudentInCourse(User student) {
+        if(!student.getCourseExecutions().contains(questionsTournament.getCourseExecution()))
             throw new TutorException(STUDENT_NOT_ON_COURSE_EXECUTION);
-        }
-        this.student = student;
     }
 
     public QuestionsTournament getQuestionsTournament() {

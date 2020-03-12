@@ -27,7 +27,6 @@ import javax.persistence.EntityManager;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
-import java.util.List;
 
 @Service
 public class QuestionsTournamentService {
@@ -90,35 +89,45 @@ public class QuestionsTournamentService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public StudentTournamentRegistrationDto studentRegister(Integer userId, Integer questionsTournamentId){
-        if(userId == null || questionsTournamentId == null) {
-            throw new TutorException(NULLUSERID);
-        }
-        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
-        QuestionsTournament questionsTournament = tournamentRepository.findById(questionsTournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_EXIST, questionsTournamentId));
-        /*
-        if(registrationRepository.findByTournamentAndStudent(questionsTournamentId, userId).isPresent()) {
-            throw new TutorException(DUPLICATED_REGISTRATION);
-        }
-        */
-
-        List<StudentTournamentRegistration> registrationList = registrationRepository.findAll();
-        for(StudentTournamentRegistration registration : registrationList){
-            if(registration.getQuestionsTournament().getId().intValue() == (questionsTournamentId) && registration.getStudent().getId().intValue() == userId){
-                throw new TutorException(DUPLICATED_REGISTRATION);
-            }
-        }
-
-
-        StudentTournamentRegistration registration = new StudentTournamentRegistration(user, questionsTournament);
-        entityManager.persist(registration);
-        user.addStudentTournamentRegistration(registration);
-        questionsTournament.addStudentTournamentRegistration(registration);
+        checkNullInput(userId, questionsTournamentId);
+        checkDuplicatedRegistration(userId, questionsTournamentId);
+        User user = getUserFromRepository(userId);
+        QuestionsTournament questionsTournament = getTournamentFromRepository(questionsTournamentId);
+        StudentTournamentRegistration registration = createStudentTournamentRegistration(user, questionsTournament);
         return new StudentTournamentRegistrationDto(registration);
+    }
 
-        // check if input is OK
-        // check if user is a student
-        // check if student is enrolled on QuestionsTournament's course
-        // check if registration is duplicated
-        // check if tournament not started or already ended
+    private void checkNullInput(Integer userId, Integer questionsTournamentId) {
+        if(userId == null || questionsTournamentId == null)
+            throw new TutorException(NULLID);
+    }
+
+    private User getUserFromRepository(Integer userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+    }
+
+    private QuestionsTournament getTournamentFromRepository(Integer questionsTournamentId) {
+        return tournamentRepository.findById(questionsTournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_EXIST, questionsTournamentId));
+    }
+
+    private void checkDuplicatedRegistration(Integer userId, Integer questionsTournamentId) {
+        if(registrationRepository.findByTournamentAndStudent(questionsTournamentId, userId).isPresent())
+            throw new TutorException(DUPLICATED_REGISTRATION);
+    }
+
+    private StudentTournamentRegistration createStudentTournamentRegistration(User user, QuestionsTournament questionsTournament) {
+        StudentTournamentRegistration registration = new StudentTournamentRegistration(user, questionsTournament);
+        addRegistrationToUser(user, registration);
+        addRegistrationToTournament(questionsTournament, registration);
+        entityManager.persist(registration);
+        return registration;
+    }
+
+    private void addRegistrationToUser(User user, StudentTournamentRegistration registration) {
+        user.addStudentTournamentRegistration(registration);
+    }
+
+    private void addRegistrationToTournament(QuestionsTournament questionsTournament, StudentTournamentRegistration registration) {
+        questionsTournament.addStudentTournamentRegistration(registration);
     }
 }

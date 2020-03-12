@@ -63,10 +63,10 @@ public enum ErrorMessage {
     USER_NOT_STUDENT("User is not a student"),
     STUDENT_NOT_ON_COURSE_EXECUTION("Student is not on the course execution"),
     TOURNAMENT_ENDED("Tournament already ended"),
-    TOURNAMENT_NOT_STARTED("Tournament not started yet"),
+    TOURNAMENT_ALREADY_STARTED("Tournament already started"),
     TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
     DUPLICATED_REGISTRATION("User already registered in tournament"),
-    NULLUSERID("null userId or questionsTournamentId");
+    NULLID("null userId or questionsTournamentId");
 
     public final String label;
 
