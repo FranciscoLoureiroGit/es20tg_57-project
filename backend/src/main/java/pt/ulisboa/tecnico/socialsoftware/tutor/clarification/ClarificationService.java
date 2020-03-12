@@ -68,30 +68,36 @@ public class ClarificationService {
     }
 
     public ClarificationDto createClarification(QuestionAnswerDto questionAnswerDto, String title, String description, UserDto userDto){
-        // Gets user and question answer from database
-        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerDto.getId()).orElseThrow(() ->
-                new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerDto.getId()));
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
-
         //Input Validation
         if (title.equals("")) {
             throw new TutorException(CLARIFICATION_TITLE_IS_EMPTY);
         } else if (description.equals("")) {
             throw new TutorException(CLARIFICATION_DESCRP_IS_EMPTY);
-        } else if (userDto.getId() != questionAnswer.getId() || user.getRole() == User.Role.STUDENT) {
-            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED);
-        } else {
-            // Creates the clarification object and returns its Dto
-            Clarification clarification = new Clarification();
-            clarification.setDescription(description);
-            clarification.setTitle(title);
-            clarification.setQuestionAnswer(questionAnswer);
-            clarification.setHasAnswer(false);
-            clarification.setStatus(Clarification.Status.OPEN);
-            clarification.setCreationDate(LocalDateTime.now());
-            clarification.setStudent(user);
-            this.entityManager.persist(clarification);
-            return new ClarificationDto(clarification);
+        } else if (questionAnswerDto == null) {
+            throw new TutorException(QUESTION_ANSWER_NOT_FOUND);
+        } else if (userDto == null) {
+            throw new TutorException(USER_NOT_FOUND);
         }
+
+        // Gets user and question answer from database
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerDto.getId()).orElseThrow(() ->
+                new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerDto.getId()));
+        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
+
+        // User validation
+        if (userDto.getId() != questionAnswer.getId() || user.getRole() == User.Role.STUDENT)
+            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED);
+
+        // Creates the clarification object and returns its Dto
+        Clarification clarification = new Clarification();
+        clarification.setDescription(description);
+        clarification.setTitle(title);
+        clarification.setQuestionAnswer(questionAnswer);
+        clarification.setHasAnswer(false);
+        clarification.setStatus(Clarification.Status.OPEN);
+        clarification.setCreationDate(LocalDateTime.now());
+        clarification.setStudent(user);
+        this.entityManager.persist(clarification);
+        return new ClarificationDto(clarification);
     }
 }

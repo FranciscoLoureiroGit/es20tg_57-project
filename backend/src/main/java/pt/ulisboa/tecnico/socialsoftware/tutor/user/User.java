@@ -368,6 +368,9 @@ public class User implements UserDetails {
         this.courseExecutions.add(course);
     }
 
+    public void addClarification(Clarification clarification) { this.clarifications.add(clarification); }
+
+
     @Override
     public String toString() {
         return "User{" +

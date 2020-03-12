@@ -14,7 +14,7 @@ public class ClarificationDto implements Serializable {
     private String description;
     private Integer studentId;
     private Integer questionAnswerId;
-    private ImageDto image;
+    private ImageDto image = null;
     private String creationDate = null;
     private String status;
 

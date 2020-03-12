@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuestionAnswerDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
-
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
@@ -23,12 +23,11 @@ import spock.lang.Specification
 
 @DataJpaTest
 class CreateClarificationServiceSpockTest extends Specification {
-    static final String QUIZ_NAME = "Quiz1"
-    static final String QUEST_ONE_CONTENT = "QuestContent"
-    static final String USER_ONE_NAME = "StudOneName"
-    static final String USER_ONE_USERNAME = "StudOneUsername"
-    static final String CLARIFY_ONE_TITLE = "ClarifyOneTitle"
-    static final String CLARIFY_ONE_DESCR = "ClarifyOneDescr"
+    static final String USERNAME = "StudUsername"
+    static final String USER_NAME = "StudName"
+    static final Integer USER_KEY = 1
+    static final String TITLE = "ClarifyOneTitle"
+    static final String DESCRIPTION = "ClarifyOneDescr"
 
 
     @Autowired
@@ -43,176 +42,172 @@ class CreateClarificationServiceSpockTest extends Specification {
     @Autowired
     QuestionAnswerRepository questionAnswerRepository
 
+    @Autowired
+    ClarificationRepository clarificationRepository
+
+    def quizAnswer
     def questAnswer
     def questAnswerDto
-    def user
+    def studentDto
     def student
     def result
-    def quiz
-    def quizDto
 
     def setup() {
-        def QuizAnswer quizAnswer = new QuizAnswer()
+        student = new User(USER_NAME, USERNAME, USER_KEY, User.Role.STUDENT)
+        userRepository.save(student)
+
+        quizAnswer = new QuizAnswer()
         quizAnswerRepository.save(quizAnswer)
-
-
-
-
     }
 
-    def "given valid quizAnswer, questionAnswer and student, a clarification request is created wih valid inputs" () {
+    def "create a clarification request with valid inputs" () {
+        given: "a StudentDto"
+        studentDto = new StudentDto(student)
+        quizAnswer.setUser(student)
         and: "a questionAnswer"
-
-        and: "a User"
-
-        and: "a quizAnswerDto"
-
+        questAnswer = new QuestionAnswer()
+        questAnswer.setQuizAnswer(quizAnswer)
+        questionAnswerRepository.save(questAnswer)
         and: "a questionAnswerDto"
-
-        and: "a UserDto"
+        questAnswerDto = new QuestionAnswerDto(questAnswer)
 
         when:
-        result = clarificationService
+        clarificationService.createClarification(questAnswerDto, TITLE, DESCRIPTION, studentDto)
 
+        then: "the correct clarification is inside the clarificationRepository and quizAnswerRepository"
+        clarificationRepository.count() == 1L
+        def result = clarificationRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Clarification.Status.OPEN
+        result.getTitle() == TITLE
+        result.getDescription() == DESCRIPTION
+        result.getImage() == null
+        result.getStudent() == student
+        result.getQuestionAnswer() == questAnswer
+        def questAnswerTest = questionAnswerRepository.findAll().get(0)
+        questAnswerTest.getClarificationList().size() == 1
+        questAnswerTest.getClarificationList().get(0) == result
+        questAnswerTest.getStudent() == result.getStudent() // checks if it contains the same student
+        def studentTest = userRepository.findAll().get(0)
+        studentTest.getClarifications().size() == 0
+        studentTest.getClarifications().contains(result)
     }
 
-
-    // TODO see if more data is needed and if the Student needs to see the question
-    def "questionAnswer and student exist, clarification is created with valid inputs"() {
-        given: "a question"
-        def questionAnswer = new QuestionAnswer()
-        questionAnswer.(QUEST_ONE_TITLE)
-        questionAnswer.setContent(QUEST_ONE_CONTENT)
-        and: "a user that is a student"
-        def userOne = new User();
-        userOne.setRole(User.Role.STUDENT)
-        userOne.setName(USER_ONE_NAME)
-        userOne.setUsername(USER_ONE_USERNAME)
-        and: "a questionDto"
-        def questDtoOne = new QuestionDto(questionAnswer)
-        and: "a studentDto"
-        def student = new StudentDto(userOne)
+    def "create a clarification with an empty title" () {
+        given: "a StudentDto"
+        studentDto = new StudentDto(student)
+        quizAnswer.setUser(student)
+        and: "a questionAnswer"
+        questAnswer = new QuestionAnswer()
+        questAnswer.setQuizAnswer(quizAnswer)
+        questionAnswerRepository.save(questAnswer)
+        and: "a questionAnswerDto"
+        questAnswerDto = new QuestionAnswerDto(questAnswer)
 
         when:
-        def result = clarificationService.createClarification(questDtoOne, CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR, student)
-
-        then: "the returned data are correct"
-        result.getTitle() == CLARIFY_ONE_TITLE
-        result.getDescription() == CLARIFY_ONE_DESCR
-        and: "clarification is created on service and question"
-        questDtoOne.getClarifications().size() == 1
-        clarificationService.getClarifications().size() == 1
-        // TODO check if student has clarification request
-        def clarification = new ArrayList<>(questDtoOne.getClarifications()).get(0)
-        def clarification2 = new ArrayList<>(clarificationService.getClarifications()).get(0)
-        and: "has the correct value"
-        clarification.getTitle() == CLARIFY_ONE_TITLE
-        clarification.getDescription() == CLARIFY_ONE_DESCR
-        clarification2.getTitle() == CLARIFY_ONE_TITLE
-        clarification2.getDescription() == CLARIFY_ONE_DESCR
-    }
-    def "question is null, student exists and creates clarification"() {
-        given: "a user that is a student"
-        def userOne = new User();
-        userOne.setRole(User.Role.STUDENT)
-        userOne.setName(USER_ONE_NAME)
-        userOne.setUsername(USER_ONE_USERNAME)
-        and: "a studentDto"
-        def studOne = new StudentDto(userOne)
-
-        when:
-        clarificationService.createClarification(null, CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR, studOne)
-
-        then:
-        thrown(TutorException)
-    }
-    def "question exists, student is null and creates clarification"() {
-        given: "a question"
-        def questOne = new Question()
-        questOne.setTitle(QUEST_ONE_TITLE)
-        questOne.setContent(QUEST_ONE_CONTENT)
-        and: "a questionDto"
-        def questDtoOne = new QuestionDto(questOne)
-
-        when:
-        clarificationService.createClarification(questDtoOne, CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR, null)
+        clarificationService.createClarification(questAnswerDto, "", DESCRIPTION, studentDto)
 
         then:
         thrown(TutorException)
     }
 
-    def "student creates a clarification with an empty description"() {
-        given: "a question"
-        def questOne = new Question()
-        questOne.setTitle(QUEST_ONE_TITLE)
-        questOne.setContent(QUEST_ONE_CONTENT)
-        and: "a user that is a student"
-        def userOne = new User();
-        userOne.setRole(User.Role.STUDENT)
-        userOne.setName(USER_ONE_NAME)
-        userOne.setUsername(USER_ONE_USERNAME)
-        and: "a questionDto"
-        def questDtoOne = new QuestionDto(questOne)
-        and: "a studentDto"
-        def studOne = new StudentDto(userOne)
+    def "create a clarification with an empty description" () {
+        given: "a StudentDto"
+        studentDto = new StudentDto(student)
+        quizAnswer.setUser(student)
+        and: "a questionAnswer"
+        questAnswer = new QuestionAnswer()
+        questAnswer.setQuizAnswer(quizAnswer)
+        questionAnswerRepository.save(questAnswer)
+        and: "a questionAnswerDto"
+        questAnswerDto = new QuestionAnswerDto(questAnswer)
 
         when:
-        clarificationService.createClarification(questDtoOne, CLARIFY_ONE_TITLE,"", studOne)
+        clarificationService.createClarification(questAnswerDto, TITLE, "", studentDto)
 
         then:
         thrown(TutorException)
     }
-    def "student creates a clarification with an empty title"() {
-        given: "a question"
-        def questOne = new Question()
-        questOne.setTitle(QUEST_ONE_TITLE)
-        questOne.setContent(QUEST_ONE_CONTENT)
-        and: "a user that is a student"
-        def userOne = new User();
-        userOne.setRole(User.Role.STUDENT)
-        userOne.setName(USER_ONE_NAME)
-        userOne.setUsername(USER_ONE_USERNAME)
-        and: "a questionDto"
-        def questDtoOne = new QuestionDto(questOne)
-        and: "a studentDto"
-        def studOne = new StudentDto(userOne)
+
+    def "create a clarification with questionAnswer that is not on the database" () {
+        given: "a StudentDto"
+        studentDto = new StudentDto(student)
+        quizAnswer.setUser(student)
+        and: "a questionAnswerDto"
+        def questAnswerTestDto = new QuestionAnswerDto()
 
         when:
-        clarificationService.createClarification(questDtoOne, "", CLARIFY_ONE_DESCR, studOne)
+        clarificationService.createClarification(questAnswerTestDto, TITLE, DESCRIPTION, studentDto)
 
         then:
         thrown(TutorException)
     }
-    def "a user that is not a student created a clarification"() {
-        given: "a question"
-        def questOne = new Question()
-        questOne.setTitle(QUEST_ONE_TITLE)
-        questOne.setContent(QUEST_ONE_CONTENT)
-        and: "a user that is not a student"
-        def userOne = new User();
-        userOne.setRole(User.Role.TEACHER)
-        userOne.setName(USER_ONE_NAME)
-        userOne.setUsername(USER_ONE_USERNAME)
-        and: "a questionDto"
-        def questDtoOne = new QuestionDto(questOne)
+
+    def "create a clarification with a user that is not on the database" () {
+        given: "a user"
+        def userDto = new UserDto()
+        and: "a questionAnswer"
+        questAnswer = new QuestionAnswer()
+        questAnswer.setQuizAnswer(quizAnswer)
+        questionAnswerRepository.save(questAnswer)
+        and: "a questionAnswerDto"
+        questAnswerDto = new QuestionAnswerDto(questAnswer)
+
+        when:
+        clarificationService.createClarification(questAnswerTestDto, TITLE, DESCRIPTION, studentDto)
+
+        then:
+        thrown(TutorException)
+    }
+
+    def "create a clarification with an invalid user" () {
+        given: "a questionAnswer"
+        questAnswer = new QuestionAnswer()
+        questAnswer.setQuizAnswer(quizAnswer)
+        questionAnswerRepository.save(questAnswer)
+        and: "a questionAnswerDto"
+        questAnswerDto = new QuestionAnswerDto(questAnswer)
+
+        when:
+        clarificationService.createClarification(questAnswerDto, TITLE, DESCRIPTION, null)
+
+        then:
+        thrown(TutorException)
+    }
+
+    def "create a clarification with an invalid questionAnswer" () {
+        given: "a StudentDto"
+        studentDto = new StudentDto(student)
+        quizAnswer.setUser(student)
+
+        when:
+        clarificationService.createClarification(null, TITLE, DESCRIPTION, studentDto)
+
+        then:
+        thrown(TutorException)
+    }
+
+    def "create a clarification with a user that is not a student" () {
+        given: "a user"
+        User notStudent = new User(USER_NAME, USERNAME, USER_KEY, User.Role.TEACHER)
         and: "a userDto"
-        def userDtoOne = new UserDto(userOne)
+        UserDto notStudentDto = new UserDto(notStudent)
+        quizAnswer.setUser(notStudent)
+        and: "a questionAnswer"
+        questAnswer = new QuestionAnswer()
+        questAnswer.setQuizAnswer(quizAnswer)
+        questionAnswerRepository.save(questAnswer)
+        and: "a questionAnswerDto"
+        questAnswerDto = new QuestionAnswerDto(questAnswer)
 
         when:
-        clarificationService.createClarification(questDtoOne, CLARIFY_ONE_TITLE, CLARIFY_ONE_DESCR, userDtoOne)
+        clarificationService.createClarification(questAnswerTestDto, TITLE, DESCRIPTION, notStudentDto)
 
         then:
         thrown(TutorException)
     }
 
-    def "a student doesn't have the correct questionAnswerId"() {
-        expect: false
-        // TODO wait for answer
-    }
-
-    def ""() {
-        expect: false
-    }
 
     @TestConfiguration
     static class ServiceImplTestContextConfiguration {
