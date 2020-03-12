@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
@@ -234,7 +235,8 @@ class AnswerClarificationRequestTest extends Specification{
         answerService.createClarificationAnswer(clarificationDto,  userTeacherDto, "RESPONSE")
 
         then: 'throw exception'
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == ErrorMessage.NO_CLARIFICATION_REQUEST
     }
 
     def "clarification request exists but user is null and answers the request"() {
@@ -245,10 +247,11 @@ class AnswerClarificationRequestTest extends Specification{
         def userTeacherDto = null
 
         when:
-        def result = answerService.createClarificationAnswer(clarificationDto, userTeacherDto, "RESPONSE")
+        answerService.createClarificationAnswer(clarificationDto, userTeacherDto, "RESPONSE")
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == ErrorMessage.CANNOT_ANSWER_CLARIFICATION
     }
 
     def "clarification request exists but user is not teacher and answers the request"() {
@@ -260,11 +263,12 @@ class AnswerClarificationRequestTest extends Specification{
         def userStudent2Dto = new UserDto(userStudent2)
 
         when:
-        def result = answerService.createClarificationAnswer(clarificationDto, userStudent2Dto, "RESPONSE")
+        answerService.createClarificationAnswer(clarificationDto, userStudent2Dto, "RESPONSE")
 
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == ErrorMessage.CANNOT_ANSWER_CLARIFICATION
     }
 
     def "clarification request exists, user is teacher but answer is empty "() {
@@ -278,7 +282,8 @@ class AnswerClarificationRequestTest extends Specification{
         answerService.createClarificationAnswer(clarificationDto, userTeacherDto, "")
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == ErrorMessage.NO_CLARIFICATION_ANSWER
     }
 
     def "clarification request exists, user is teacher or student that made request but answer is null "() {
@@ -292,7 +297,8 @@ class AnswerClarificationRequestTest extends Specification{
         answerService.createClarificationAnswer(clarificationDto, userTeacherDto, null)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == ErrorMessage.NO_CLARIFICATION_ANSWER
     }
 
     @TestConfiguration
