@@ -37,7 +37,7 @@ public class Clarification {
     private String description;
 
     @Column(name = "has_answer")
-    private Boolean hasAnswer;
+    private Boolean hasAnswer = false;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
     private Image image;
@@ -46,15 +46,15 @@ public class Clarification {
     private LocalDateTime creationDate;
 
     @ManyToOne
-    @JoinColumn(name = "question_answer_id")
+    @JoinColumn(name = "questionAnswer_id")
     private QuestionAnswer questionAnswer;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
     private ClarificationAnswer clarificationAnswer;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
-    private User student;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
     public Clarification() {}
@@ -79,6 +79,7 @@ public class Clarification {
 
     public void setClarificationAnswer(ClarificationAnswer clarificationAnswer) {
         this.clarificationAnswer = clarificationAnswer;
+        this.hasAnswer = true;
     }
 
     public Boolean getHasAnswer() {
@@ -128,9 +129,9 @@ public class Clarification {
         image.setClarification(this);
     }
 
-    public User getStudent() { return student; }
+    public User getUser() { return user; }
 
-    public void setStudent(User student1) { this.student = student1;}
+    public void setUser(User student1) { this.user = student1;}
 
     public QuestionAnswer getQuestionAnswer() { return questionAnswer; }
 

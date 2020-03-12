@@ -31,7 +31,7 @@ public class QuestionAnswer {
     @JoinColumn(name = "option_id")
     private Option option;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question_answer", fetch = FetchType.EAGER, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionAnswer", fetch = FetchType.EAGER, orphanRemoval=true)
     private List<Clarification> clarificationList = new ArrayList<>();
 
     private Integer sequence;

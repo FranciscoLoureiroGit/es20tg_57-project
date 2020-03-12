@@ -18,9 +18,6 @@ public class ClarificationAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique=true, nullable = false)
-    private Integer key;
-
     @OneToOne
     @JoinColumn(name="clarification_id")
     private Clarification clarification;
@@ -43,7 +40,6 @@ public class ClarificationAnswer {
     public ClarificationAnswer(ClarificationAnswerDto clarificationAnswerDto){
         this.answer = clarificationAnswerDto.getAnswer();
         this.id = clarificationAnswerDto.getId();
-        this.key = clarificationAnswerDto.getKey();
     }
 
     public Integer getId() {
@@ -52,14 +48,6 @@ public class ClarificationAnswer {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
     }
 
     public Clarification getClarification() {
