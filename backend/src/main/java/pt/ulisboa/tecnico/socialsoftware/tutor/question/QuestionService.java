@@ -127,6 +127,7 @@ public class QuestionService {
         entityManager.remove(question);
     }
 
+    //faltam casos de excepcoes
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
@@ -134,7 +135,25 @@ public class QuestionService {
     public void questionSetStatus(Integer questionId, Question.Status status) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         question.setStatus(status);
+
+        //entityManager.refresh(question);
     }
+
+/*    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void questionSetStatus(Integer questionId, Question.Status status, String justification) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        if ( status == Question.Status.DISABLED && ( justification==null || justification.isEmpty() ) )
+            throw new TutorException(QUESTION_DISABLED_WITHOUT_JUSTIFICATION, questionId);
+
+        question.setStatus(status);
+        question.setJustification(justification);
+
+        //entityManager.refresh(question);
+    }*/
+
 
     //NEW
     @Retryable(
