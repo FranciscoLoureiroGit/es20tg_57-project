@@ -41,7 +41,7 @@ public class Question {
     private String content;
 
     @ManyToOne
-    @Column(columnDefinition = "Author")
+    @JoinColumn(name = "user_id")
     private User user;
 
     private String title;
