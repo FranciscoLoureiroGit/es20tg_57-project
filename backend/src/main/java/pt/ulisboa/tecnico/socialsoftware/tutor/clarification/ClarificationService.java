@@ -77,6 +77,8 @@ public class ClarificationService {
             throw new TutorException(QUESTION_ANSWER_NOT_FOUND);
         } else if (userDto == null) {
             throw new TutorException(USER_NOT_FOUND);
+        } else if(questionAnswerDto.getId() == null) {
+            throw new TutorException(CLARIFICATION_MISSING_DATA);
         }
 
         // Gets user and question answer from database
@@ -85,18 +87,25 @@ public class ClarificationService {
         User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
 
         // User validation
-        if (userDto.getId() != questionAnswer.getId() || user.getRole() == User.Role.STUDENT)
-            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED);
+        if (userDto.getId() != questionAnswer.getQuizAnswer().getUser().getId() || user.getRole() != User.Role.STUDENT)
+            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED, userDto.getId());
 
         // Creates the clarification object and returns its Dto
         Clarification clarification = new Clarification();
+
+        int maxQuestionNumber = clarificationRepository.getMaxClarificationNumber() != null ?
+                clarificationRepository.getMaxClarificationNumber() : 0;
+        clarification.setKey(maxQuestionNumber + 1);
+
         clarification.setDescription(description);
         clarification.setTitle(title);
         clarification.setQuestionAnswer(questionAnswer);
         clarification.setHasAnswer(false);
         clarification.setStatus(Clarification.Status.OPEN);
         clarification.setCreationDate(LocalDateTime.now());
-        clarification.setStudent(user);
+        clarification.setUser(user);
+        questionAnswer.addClarification(clarification);
+        user.addClarification(clarification);
         this.entityManager.persist(clarification);
         return new ClarificationDto(clarification);
     }

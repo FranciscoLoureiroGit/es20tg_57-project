@@ -18,6 +18,9 @@ public interface ClarificationRepository extends JpaRepository<Clarification, In
     @Query(value = "SELECT * FROM clarifications c WHERE c.question_answer_id = :questionAnswerId", nativeQuery = true)
     List<Clarification> findClarifications(int questionAnswerId);
 
+    @Query(value = "SELECT MAX(key) FROM clarifications", nativeQuery = true)
+    Integer getMaxClarificationNumber();
+
     @Query(value = "SELECT * FROM clarifications c WHERE c.key = :key", nativeQuery = true)
     Optional<Clarification> findByKey(Integer key);
 
