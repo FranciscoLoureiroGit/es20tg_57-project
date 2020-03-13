@@ -53,6 +53,9 @@ public enum ErrorMessage {
     AUTHENTICATION_ERROR("Authentication Error"),
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
+    //NEW
+    QUESTION_DISABLED_WITHOUT_JUSTIFICATION("Question Disabled without a justification"),
+
 
     ACCESS_DENIED("You do not have permission to view this resource"),
     NOT_ALLOWED_CREATE_QUESTION("You do not have Role enough to create questions"),

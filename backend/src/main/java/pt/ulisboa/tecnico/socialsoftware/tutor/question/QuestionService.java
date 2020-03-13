@@ -112,7 +112,6 @@ public class QuestionService {
         return new QuestionDto(question);
     }
 
-
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
@@ -122,7 +121,6 @@ public class QuestionService {
         question.update(questionDto);
         return new QuestionDto(question);
     }
-
 
     @Retryable(
       value = { SQLException.class },
@@ -141,16 +139,23 @@ public class QuestionService {
     public void questionSetStatus(Integer questionId, Question.Status status) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         question.setStatus(status);
+
+        entityManager.refresh(question);
     }
 
-    //NEW
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void questionSetJustification(Integer questionId, String justification) {
+    public void questionChangeStatus(Integer questionId, Question.Status status, String justification) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        if ( status == Question.Status.DISABLED && ( justification==null || justification.isEmpty() ) )
+            throw new TutorException(QUESTION_DISABLED_WITHOUT_JUSTIFICATION, questionId);
+
+        question.setStatus(status);
         question.setJustification(justification);
+
+        entityManager.persist(question);
     }
 
     @Retryable(
