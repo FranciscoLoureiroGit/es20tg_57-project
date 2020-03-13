@@ -21,9 +21,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
+import spock.lang.Unroll
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @DataJpaTest
 class CreateClarificationServiceSpockTest extends Specification {
@@ -125,7 +127,8 @@ class CreateClarificationServiceSpockTest extends Specification {
         studentTest.getClarifications().contains(result)
     }
 
-    def "create a clarification with an empty title" () {
+    @Unroll
+    def "invalid arguments where title=#title, description=#description "() {
         given: "a StudentDto"
         studentDto = new UserDto(student)
         quizAnswer.setUser(student)
@@ -133,24 +136,18 @@ class CreateClarificationServiceSpockTest extends Specification {
         questAnswerDto = new QuestionAnswerDto(questAnswer)
 
         when:
-        clarificationService.createClarification(questAnswerDto, "", DESCRIPTION, studentDto)
+        clarificationService.createClarification(questAnswerDto, title, description, studentDto)
 
         then:
-        thrown(TutorException)
-    }
+        def error = thrown(TutorException)
+        error.errorMessage == errorMessage
 
-    def "create a clarification with an empty description" () {
-        given: "a StudentDto"
-        studentDto = new UserDto(student)
-        quizAnswer.setUser(student)
-        and: "a questionAnswerDto"
-        questAnswerDto = new QuestionAnswerDto(questAnswer)
+        where:
+        title   | description   | errorMessage
+        ""      | ""            | CLARIFICATION_MISSING_DATA
+        ""      | DESCRIPTION   | CLARIFICATION_TITLE_IS_EMPTY
+        TITLE   | ""            | CLARIFICATION_DESCRP_IS_EMPTY
 
-        when:
-        clarificationService.createClarification(questAnswerDto, TITLE, "", studentDto)
-
-        then:
-        thrown(TutorException)
     }
 
     def "create a clarification with questionAnswer that is not on the database" () {

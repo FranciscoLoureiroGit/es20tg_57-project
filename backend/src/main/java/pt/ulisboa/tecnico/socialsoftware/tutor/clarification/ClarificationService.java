@@ -67,30 +67,58 @@ public class ClarificationService {
         return clarificationRepository.findClarifications(questionId).stream().map(ClarificationDto::new).collect(Collectors.toList());
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ClarificationDto createClarification(QuestionAnswerDto questionAnswerDto, String title, String description, UserDto userDto){
-        //Input Validation
-        if (title.equals("")) {
-            throw new TutorException(CLARIFICATION_TITLE_IS_EMPTY);
-        } else if (description.equals("")) {
-            throw new TutorException(CLARIFICATION_DESCRP_IS_EMPTY);
-        } else if (questionAnswerDto == null) {
-            throw new TutorException(QUESTION_ANSWER_NOT_FOUND);
-        } else if (userDto == null) {
-            throw new TutorException(USER_NOT_FOUND);
-        } else if(questionAnswerDto.getId() == null) {
-            throw new TutorException(CLARIFICATION_MISSING_DATA);
-        }
+        checkInput(questionAnswerDto, title, description, userDto);
 
         // Gets user and question answer from database
-        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerDto.getId()).orElseThrow(() ->
-                new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerDto.getId()));
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
+        QuestionAnswer questionAnswer = getQuestionAnswer(questionAnswerDto);
+        User user = getUser(userDto);
 
         // User validation
+        userValidation(userDto, questionAnswer, user);
+
+        Clarification clarification = setClarificationValues(title, description, questionAnswer, user, clarificationRepository);
+
+        this.entityManager.persist(clarification);
+        return new ClarificationDto(clarification);
+    }
+
+    private void userValidation(UserDto userDto, QuestionAnswer questionAnswer, User user) {
         if (userDto.getId() != questionAnswer.getQuizAnswer().getUser().getId() || user.getRole() != User.Role.STUDENT)
             throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED, userDto.getId());
+    }
 
-        // Creates the clarification object and returns its Dto
+    private User getUser(UserDto userDto) {
+        return userRepository.findById(userDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userDto.getId()));
+    }
+
+    private QuestionAnswer getQuestionAnswer(QuestionAnswerDto questionAnswerDto) {
+        return questionAnswerRepository.findById(questionAnswerDto.getId()).orElseThrow(() ->
+                    new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerDto.getId()));
+    }
+
+    private void checkInput(QuestionAnswerDto questionAnswerDto, String title, String description, UserDto userDto) {
+        //Input Validation
+        if (title.equals("") && !description.equals("")) {
+            throw new TutorException(CLARIFICATION_TITLE_IS_EMPTY);
+        } else if (description.equals("") && !title.equals("")) {
+            throw new TutorException(CLARIFICATION_DESCRP_IS_EMPTY);
+        } else if (questionAnswerDto == null && userDto != null) {
+            throw new TutorException(QUESTION_ANSWER_NOT_FOUND);
+        } else if (userDto == null && questionAnswerDto != null) {
+            throw new TutorException(USER_NOT_FOUND);
+        } else if (questionAnswerDto == null || questionAnswerDto.getId() == null || title.equals("")){
+            throw new TutorException(CLARIFICATION_MISSING_DATA);
+        }
+    }
+
+    private static Clarification setClarificationValues(String title, String description, QuestionAnswer questionAnswer,
+                                                        User user, ClarificationRepository clarificationRepository) {
+        // Creates the clarification object and sets its values
         Clarification clarification = new Clarification();
 
         int maxQuestionNumber = clarificationRepository.getMaxClarificationNumber() != null ?
@@ -106,7 +134,6 @@ public class ClarificationService {
         clarification.setUser(user);
         questionAnswer.addClarification(clarification);
         user.addClarification(clarification);
-        this.entityManager.persist(clarification);
-        return new ClarificationDto(clarification);
+        return clarification;
     }
 }
