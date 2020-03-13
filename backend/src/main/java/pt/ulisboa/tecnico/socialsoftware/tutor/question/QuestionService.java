@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -93,6 +94,12 @@ public class QuestionService {
     public QuestionDto createQuestion(int courseId, QuestionDto questionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
 
+        if(questionDto.getUser() != null){
+            if((questionDto.getUser().getRole().name().equals(User.Role.ADMIN.name())) || (questionDto.getUser().getRole().name().equals(User.Role.DEMO_ADMIN.name()))){
+                throw new TutorException(NOT_ALLOWED_CREATE_QUESTION);
+            }
+        }
+
         if (questionDto.getKey() == null) {
             int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
                     questionRepository.getMaxQuestionNumber() : 0;
@@ -105,7 +112,6 @@ public class QuestionService {
         return new QuestionDto(question);
     }
 
-
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
@@ -115,7 +121,6 @@ public class QuestionService {
         question.update(questionDto);
         return new QuestionDto(question);
     }
-
 
     @Retryable(
       value = { SQLException.class },
@@ -134,8 +139,24 @@ public class QuestionService {
     public void questionSetStatus(Integer questionId, Question.Status status) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         question.setStatus(status);
+
+        entityManager.refresh(question);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void questionChangeStatus(Integer questionId, Question.Status status, String justification) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        if ( status == Question.Status.DISABLED && ( justification==null || justification.isEmpty() ) )
+            throw new TutorException(QUESTION_DISABLED_WITHOUT_JUSTIFICATION, questionId);
+
+        question.setStatus(status);
+        question.setJustification(justification);
+
+        entityManager.persist(question);
+    }
 
     @Retryable(
       value = { SQLException.class },

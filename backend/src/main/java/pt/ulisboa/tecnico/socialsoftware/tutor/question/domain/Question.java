@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 public class Question {
     @SuppressWarnings("unused")
     public enum Status {
-        DISABLED, REMOVED, AVAILABLE
+        DISABLED, REMOVED, AVAILABLE, PENDING
     }
 
     @Id
@@ -38,6 +39,10 @@ public class Question {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String title;
 
@@ -69,6 +74,10 @@ public class Question {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @Column(name = "justification")
+    private String justification;
+
+
     public Question() {
     }
 
@@ -78,7 +87,6 @@ public class Question {
         this.key = questionDto.getKey();
         this.content = questionDto.getContent();
         this.status = Status.valueOf(questionDto.getStatus());
-
         this.course = course;
         course.addQuestion(this);
 
@@ -127,6 +135,14 @@ public class Question {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getJustification(){
+        return justification;
+    }
+
+    public void setJustification(String justification) {
+        this.justification = justification;
     }
 
     public List<Option> getOptions() {
@@ -202,6 +218,10 @@ public class Question {
         topics.add(topic);
     }
 
+    public void setUser(User user) { this.user = user; }
+
+    public User getUser() { return this.user; }
+
     public void remove() {
         canRemove();
         getCourse().getQuestions().remove(this);
@@ -209,6 +229,7 @@ public class Question {
         getTopics().forEach(topic -> topic.getQuestions().remove(this));
         getTopics().clear();
     }
+
 
     @Override
     public String toString() {
