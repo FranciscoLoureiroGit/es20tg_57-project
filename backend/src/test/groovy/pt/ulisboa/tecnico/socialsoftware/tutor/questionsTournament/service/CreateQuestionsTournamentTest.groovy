@@ -84,19 +84,10 @@ class CreateQuestionsTournamentTest extends Specification{
         def questionsTournament = new QuestionsTournamentDto()
         questionsTournament.setStartingDate(startingDate)
         questionsTournament.setEndingDate(endingDate)
-
         startingDate = LocalDateTime.parse(startingDate , formatter)
         endingDate = LocalDateTime.parse(endingDate,formatter)
 
-        topic1.setId(1)
-        topic2.setId(2)
-        topic1.setNumberOfQuestions(2)
-        topic2.setNumberOfQuestions(2)
-        topic1.setName("A")
-        topic2.setName("B")
-        topicRepository.save(new Topic(course,topic1))
-        topicRepository.save(new Topic(course, topic2))
-
+        setTopics()
         questionsTournament.getTopics().add(topic1)
         questionsTournament.getTopics().add(topic2)
         questionsTournament.setNumberOfQuestions(2)
@@ -112,6 +103,42 @@ class CreateQuestionsTournamentTest extends Specification{
         result.getTopics().size() == 2
         result.getNumberOfQuestions() == 2
         result.getStudentTournamentCreator().getId() == user.getId()
+    }
+
+    def "non student user creates tournament"(){
+        given: "a questions tournament with starting and ending date, topics and number of questions"
+        def questionsTournament = new QuestionsTournamentDto()
+        questionsTournament.setStartingDate(startingDate)
+        questionsTournament.setEndingDate(endingDate)
+        startingDate = LocalDateTime.parse(startingDate , formatter)
+        endingDate = LocalDateTime.parse(endingDate,formatter)
+
+        setTopics()
+        questionsTournament.getTopics().add(topic1)
+        questionsTournament.getTopics().add(topic2)
+        questionsTournament.setNumberOfQuestions(2)
+
+        and: "a non student user"
+        def user2 = new User('name2', "username2", 2, User.Role.TEACHER)
+        userRepository.save(user2)
+
+        when:
+        questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user2.getId(),questionsTournament)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.errorMessage == USER_NOT_STUDENT
+    }
+
+    private void setTopics() {
+        topic1.setId(1)
+        topic2.setId(2)
+        topic1.setNumberOfQuestions(2)
+        topic2.setNumberOfQuestions(2)
+        topic1.setName("A")
+        topic2.setName("B")
+        topicRepository.save(new Topic(course, topic1))
+        topicRepository.save(new Topic(course, topic2))
     }
 
     def "empty starting date"(){
