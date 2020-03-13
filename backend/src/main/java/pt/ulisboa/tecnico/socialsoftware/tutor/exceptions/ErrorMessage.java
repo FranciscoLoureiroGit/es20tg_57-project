@@ -48,6 +48,9 @@ public enum ErrorMessage {
     QUIZ_NO_LONGER_AVAILABLE("This quiz is no longer available"),
     QUIZ_NOT_YET_AVAILABLE("This quiz is not yet available"),
 
+    QUESTIONSTOURNAMENT_NOT_CONSISTENT("Field %s of questions tournament is not consistent"),
+    TOPIC_IN_COURSE_NOT_FOUND("Topic in specific course not found with id %d"),
+
     NO_CORRECT_OPTION("Question does not have a correct option"),
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"),
@@ -64,11 +67,18 @@ public enum ErrorMessage {
     ACCESS_DENIED("You do not have permission to view this resource"),
     CANNOT_OPEN_FILE("Cannot open file"),
 
+    USER_NOT_STUDENT("User is not a student"),
+    STUDENT_NOT_ON_COURSE_EXECUTION("Student is not on the course execution"),
+    TOURNAMENT_ENDED("Tournament already ended"),
+    TOURNAMENT_ALREADY_STARTED("Tournament already started"),
+    TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
+    DUPLICATED_REGISTRATION("User already registered in tournament"),
+    NULLID("null userId or questionsTournamentId");
+
     NO_CLARIFICATION_REQUEST("No such Clarification Request"),
     NO_CLARIFICATION_ANSWER("Clarification answer is empty"),
     CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request"),
     ALREADY_HAS_ANSWER("Clarification already has an answer");
-
 
     public final String label;
 

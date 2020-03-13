@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 
 import javax.persistence.*;
@@ -64,6 +65,9 @@ public class User implements UserDetails {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ClarificationAnswer> clarificationAnswers = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
 
     public User() {
     }
@@ -368,8 +372,15 @@ public class User implements UserDetails {
         this.courseExecutions.add(course);
     }
 
-    public void addClarification(Clarification clarification) { this.clarifications.add(clarification); }
+    public Set<StudentTournamentRegistration> getStudentTournamentRegistrations() {
+        return studentTournamentRegistrations;
+    }
 
+    public void addStudentTournamentRegistration(StudentTournamentRegistration studentTournamentRegistration) {
+        this.studentTournamentRegistrations.add(studentTournamentRegistration);
+    }
+
+    public void addClarification(Clarification clarification) { this.clarifications.add(clarification); }
 
     @Override
     public String toString() {
