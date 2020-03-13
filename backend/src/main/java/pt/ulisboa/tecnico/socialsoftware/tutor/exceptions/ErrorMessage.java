@@ -21,6 +21,12 @@ public enum ErrorMessage {
     CANNOT_DELETE_COURSE_EXECUTION("The course execution cannot be deleted %s"),
     USERNAME_NOT_FOUND("Username %s not found"),
 
+    CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty %d"),
+    CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty %d"),
+    CLARIFICATION_MISSING_DATA("Clarification data not consistent %d"),
+    CLARIFICATION_NOT_FOUND("Clarification id was not found %d"),
+    CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed %d"),
+
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),
     QUESTION_OPTION_MISMATCH("Question %d does not have option %d"),
@@ -56,7 +62,13 @@ public enum ErrorMessage {
 
 
     ACCESS_DENIED("You do not have permission to view this resource"),
-    CANNOT_OPEN_FILE("Cannot open file");
+    CANNOT_OPEN_FILE("Cannot open file"),
+
+    NO_CLARIFICATION_REQUEST("No such Clarification Request"),
+    NO_CLARIFICATION_ANSWER("Clarification answer is empty"),
+    CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request"),
+    ALREADY_HAS_ANSWER("Clarification already has an answer");
+
 
     public final String label;
 
