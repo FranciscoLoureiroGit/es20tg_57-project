@@ -258,39 +258,6 @@ class CreateTopicQuestionTest extends Specification{
 
     }
 
-    /*def "update a question with a invalid question id"(){
-        given: "add and setup a question"
-        question = new Question()
-        question.setId(QUESTION_ID)
-        question.setKey(KEY_QUESTION)
-        question.setContent(QUESTION_CONTENT)
-        question.setUser(student)
-        question.setTitle(QUESTION_TITLE)
-        question.setCreationDate(LocalDateTime.now())
-        question.setCourse(course)
-        question.addTopic(topic)
-        question.addOption(option1)
-        question.addOption(option2)
-        question.addOption(option3)
-        question.addOption(option4)
-        question.setUser(student)
-        and:"instantiate a question dto"
-        questionDto = new QuestionDto(question)
-        and: "add course into DB"
-        courseService.createTecnicoCourseExecution(new CourseDto(course))
-        and: "final setup to options"
-        option1.setQuestion(question)
-        option2.setQuestion(question)
-        option3.setQuestion(question)
-        option4.setQuestion(question)
-
-        when: "update a question"
-        questionService.updateQuestion(-1, questionDto)
-
-        then: "The exception is thrown"
-        thrown(TutorException)
-    }*/
-
     @TestConfiguration
     static class QuestionServiceImplTestContextConfiguration {
 
