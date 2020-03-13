@@ -120,10 +120,10 @@ class ChangeQuestionStateTest extends Specification{
 
         //questionDto = new QuestionDto(question)
         //questionDto.setStatus(DEFAULT_STATUS)
+
+        questionRepository.save(question)
         userRepository.save(teacher)
         courseRepository.save(course)
-        questionRepository.save(question)
-
     }
 
     def "the teacher changes the state of a question to AVAILABLE and leaves a justification"(){
@@ -141,18 +141,19 @@ class ChangeQuestionStateTest extends Specification{
     def "the teacher changes the state of a question to AVAILABLE and leaves null justification"(){
         /*
         when:
-        questionDto.setStatus("AVAILABLE")
-        questionDto.setJustification("")
+        questionService.questionSetStatus(question.getId(), Question.Status.AVAILABLE)  //NEW
+        questionService.questionSetJustification(question.getId(), "" )  //NEW
 
         then:"the returned data is correct"
-        questionDto.getStatus().equals(AVAILABLE_STATUS)
-        questionDto.getJustification() == ""
+        def result = questionRepository.findAll().get(0)  //NEW
+        result.getStatus()== Question.Status.AVAILABLE   //NEW
+        result.getJustification() == ""
         */
     }
 
 
     def "the teacher changes the state of a question to DISABLED and leaves a justification"(){
-        /*
+        /* //MUITO ANTIGO
         when:
         questionDto.setStatus("DISABLED")
         questionDto.setJustification("The question has no problems")
@@ -166,11 +167,11 @@ class ChangeQuestionStateTest extends Specification{
 
     def "the teacher changes the state of a question to Disabled and leaves null justification"(){
         /*
-        when: "change state of a question"
-        questionDto.setStatus(DISABLED_STATUS)
-        questionDto.setJustification("")
+        when:
+        questionService.questionSetStatus(question.getId(), Question.Status.DISABLED)
+        questionService.questionSetJustification(question.getId(), "" )
 
-        then: "The exception is thrown"
+        then: "The exception is thrown"   //IMPORTANTE
         def exception = thrown(TutorException)
         exception.errorMessage == ErrorMessage.QUESTION_DISABLED_WITHOUT_JUSTIFICATION
         */
