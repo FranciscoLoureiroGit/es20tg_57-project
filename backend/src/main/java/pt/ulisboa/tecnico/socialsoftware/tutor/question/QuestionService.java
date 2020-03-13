@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -92,6 +93,12 @@ public class QuestionService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuestionDto createQuestion(int courseId, QuestionDto questionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
+
+        if(questionDto.getUser() != null){
+            if((questionDto.getUser().getRole().name().equals(User.Role.ADMIN.name())) || (questionDto.getUser().getRole().name().equals(User.Role.DEMO_ADMIN.name()))){
+                throw new TutorException(NOT_ALLOWED_CREATE_QUESTION);
+            }
+        }
 
         if (questionDto.getKey() == null) {
             int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?

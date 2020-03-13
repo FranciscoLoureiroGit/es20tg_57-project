@@ -55,6 +55,7 @@ public enum ErrorMessage {
 
 
     ACCESS_DENIED("You do not have permission to view this resource"),
+    NOT_ALLOWED_CREATE_QUESTION("You do not have Role enough to create questions"),
     CANNOT_OPEN_FILE("Cannot open file");
 
     public final String label;

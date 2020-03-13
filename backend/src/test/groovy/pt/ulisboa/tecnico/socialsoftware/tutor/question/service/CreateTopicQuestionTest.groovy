@@ -1,4 +1,4 @@
-package groovy.pt.ulisboa.tecnico.socialsoftware.tutor.question.service
+package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
@@ -36,11 +37,11 @@ class CreateTopicQuestionTest extends Specification{
     /* CTEs IDs */
     static final int COURSE_ID = 1
     static final int COURSE_EXECUTION_ID = 11               /* if course id is 1, course execution id is 11; course id is 2, course execution id is 22 */
-    static final int QUESTION_ID = 2
-    static final int OPTION1_ID = 21
-    static final int OPTION2_ID = 22
-    static final int OPTION3_ID = 23
-    static final int OPTION4_ID = 24
+    static final int QUESTION_ID = 1
+    static final int OPTION1_ID = 11
+    static final int OPTION2_ID = 12
+    static final int OPTION3_ID = 13
+    static final int OPTION4_ID = 14
     static final int STUDENT_ID = 2222
     static final int TEACHER_ID = 1234
 
@@ -59,6 +60,8 @@ class CreateTopicQuestionTest extends Specification{
 
     static final String QUESTION_CONTENT = "What is JMeter?"
     static final String QUESTION_TITLE = "Question about JMeter"
+    static final String QUESTION2_TITLE = "About web cookies"
+    static final String QUESTION2_CONTENT = "Why should we need cookies?"
 
     /* CTEs Keys */
     static final int KEY_TEACHER = 1
@@ -69,16 +72,15 @@ class CreateTopicQuestionTest extends Specification{
     def course
     def courseExecution
     def student
-    def topic
-    def question
     def questionDto
+    def questionDto2
+    def studentDto
     def teacher
     def option1
     def option2
     def option3
     def option4
-    def image
-    def courseExecutionDto
+    def options
 
     /* Repositories */
 
@@ -102,111 +104,58 @@ class CreateTopicQuestionTest extends Specification{
 
     def setup(){
         /* Setup options*/
+        options = new ArrayList<OptionDto>()
         /* Setup option 1 --> correct one */
 
-        option1 = new Option()
+        option1 = new OptionDto()
         option1.setCorrect(true)
         option1.setContent(OPTION_1)
-        option1.setId(OPTION1_ID)
         option1.setSequence(1)
-        optionRepository.save(option1)
+        options.add(option1)
 
         /* Setup option 2 */
-        option2 = new Option()
+        option2 = new OptionDto()
         option2.setContent(OPTION_2)
-        option2.setId(OPTION2_ID)
         option2.setSequence(2)
-        optionRepository.save(option2)
+        options.add(option2)
 
         /* Setup option 3 */
-        option3 = new Option()
+        option3 = new OptionDto()
         option3.setContent(OPTION_3)
-        option3.setId(OPTION3_ID)
         option3.setSequence(3)
-        optionRepository.save(option3)
+        options.add(option3)
 
         /* Setup option 4 */
-        option4 = new Option()
+        option4 = new OptionDto()
         option4.setContent(OPTION_4)
-        option4.setId(OPTION4_ID)
         option4.setSequence(4)
-        optionRepository.save(option4)
+        options.add(option4)
 
         /*Setup for student and teacher. Both users have to belong to a course */
         teacher = new User(TEACHER_NAME, TEACHER_USERNAME, KEY_TEACHER, User.Role.TEACHER)
-        teacher.setId(TEACHER_ID)
+        userRepository.save(teacher)
         student = new User(STUDENT_NAME, STUDENT_USERNAME, KEY_STUDENT, User.Role.STUDENT)
-        student.setId(STUDENT_ID)
-
-        /* Setup for topic */
-        topic = new Topic()
-        topic.setId(1)
-        topic.setName(TOPIC_NAME)
-
+        userRepository.save(student)
 
         /* Setup a course to aggregate all objects instantiated above */
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
-        course.setId(COURSE_ID)
-        course.addTopic(topic)
+        courseRepository.save(course)
 
         /* Setup course execution */
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
-        courseExecution.addUser(teacher)
-        courseExecution.addUser(student)
-
-        userRepository.save(teacher)
-
-        courseExecution.setId(COURSE_EXECUTION_ID)
-        courseExecution.setStatus(CourseExecution.Status.ACTIVE)
-        student.setEnrolledCoursesAcronyms(ACRONYM)
-
-
-        /* Last setup: put courseExecution in course */
-        course.addCourseExecution(courseExecution)
-        courseRepository.save(course)
         courseExecutionRepository.save(courseExecution)
-        //courseExecutionDto = new CourseDto(courseExecution)
 
-        image = new Image()
-        image.setId(2)
-        image.setUrl(URL_IMAGE)
-        image.setWidth(10)
     }
 
     def "the student exists and creates a question to a course"(){
         given: "add and setup a question"
-        question = new Question()
-        question.setId(QUESTION_ID)
-        question.setKey(KEY_QUESTION)
-        question.setContent(QUESTION_CONTENT)
-        question.setUser(student)
-        userRepository.save(student)
-        question.setTitle(QUESTION_TITLE)
-        question.setCreationDate(LocalDateTime.now())
-        question.setCourse(course)
-        question.addTopic(topic)
-        question.addOption(option1)
-        question.addOption(option2)
-        question.addOption(option3)
-        question.addOption(option4)
-        question.setNumberOfAnswers(1)
-        question.setNumberOfCorrect(1)
-        question.setImage(image)
-
-        questionRepository.save(question)
-
-        and:"instantiate a question dto"
-        questionDto = new QuestionDto(question)
-        questionDto.setSequence(1)
-        and: "final setup to options"
-        option1.setQuestion(question)
-        option2.setQuestion(question)
-        option3.setQuestion(question)
-        option4.setQuestion(question)
-        optionRepository.save(option1)
-        optionRepository.save(option2)
-        optionRepository.save(option3)
-        optionRepository.save(option4)
+        questionDto = new QuestionDto()
+        questionDto.setKey(KEY_QUESTION)
+        questionDto.setTitle(QUESTION_TITLE)
+        questionDto.setContent(QUESTION_CONTENT)
+        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setUser(student)
+        questionDto.setOptions(options)
 
         when:
         def result = questionService.createQuestion(course.getId(), questionDto)
@@ -215,10 +164,7 @@ class CreateTopicQuestionTest extends Specification{
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getId() == QUESTION_ID
-        result.getUser().getRole() == User.Role.STUDT
-        result.getUser().getName() == STUDENT_USERNAME
-        result.getUser().getId() == STUDENT_ID
-        result.getOptions().size() == 5
+        result.getOptions().size() == 4
         and: "question was created on service"
         questionService.findQuestionById(QUESTION_ID).getContent() == QUESTION_CONTENT
         questionService.findQuestionByKey(KEY_QUESTION).getContent() == QUESTION_CONTENT
@@ -226,73 +172,48 @@ class CreateTopicQuestionTest extends Specification{
 
     }
 
-    //def "the course does not exist"(){
-      //  given: "add and setup a question"
-       // question = new Question()
-        //question.setId(QUESTION_ID)
-    //question.setKey(KEY_QUESTION)
-    //question.setContent(QUESTION_CONTENT)
-    //question.setUser(student)
-    //question.setTitle(QUESTION_TITLE)
-    //question.setCreationDate(LocalDateTime.now())
-    //question.setCourse(course)
-    //question.addTopic(topic)
-    //question.addOption(option1)
-    //question.addOption(option2)
-    //question.addOption(option3)
-    //question.addOption(option4)
-    //question.setUser(student)
-    //and:"instantiate a question dto"
-    //questionDto = new QuestionDto(question)
-        /*and: "add course into DB" courseService.createTecnicoCourseExecution(new CourseDto(course))*/
-    // and: "final setup to options"
-    //option1.setQuestion(question)
-    //option2.setQuestion(question)
-    //option3.setQuestion(question)
-    //option4.setQuestion(question)
-
-    //when:
-    //questionService.createQuestion(2, questionDto)
-
-    //then: "the exception is thrown"
-    //thrown(TutorException)
-
-    //}
-
-    /*def "the question already exists"(){
+    def "the student exists and creates two questions to a course"(){
         given: "add and setup a question"
-        question = new Question()
-        question.setId(QUESTION_ID)
-        question.setKey(KEY_QUESTION)
-        question.setContent(QUESTION_CONTENT)
-        question.setUser(student)
-        question.setTitle(QUESTION_TITLE)
-        question.setCreationDate(LocalDateTime.now())
-        question.setCourse(course)
-        question.addTopic(topic)
-        question.addOption(option1)
-        question.addOption(option2)
-        question.addOption(option3)
-        question.addOption(option4)
-        question.setUser(student)
-        and:"instantiate a question dto"
-        questionDto = new QuestionDto(question)
-        and: "add course into DB"
-        courseService.createTecnicoCourseExecution(new CourseDto(course))
-        and: "final setup to options"
-        option1.setQuestion(question)
-        option2.setQuestion(question)
-        option3.setQuestion(question)
-        option4.setQuestion(question)
+        questionDto = new QuestionDto()
+        questionDto.setKey(KEY_QUESTION)
+        questionDto.setTitle(QUESTION_TITLE)
+        questionDto.setContent(QUESTION_CONTENT)
+        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setUser(student)
+        questionDto.setOptions(options)
 
-        when: "add a question"
+        when:"create first question"
         questionService.createQuestion(course.getId(), questionDto)
-        and: "add the same question"
+        questionDto.setKey(null)
         questionService.createQuestion(course.getId(), questionDto)
 
-        then: "The exception is thrown"
+        then:"the returned data are correct"
+        questionRepository.count() == 2L
+        def resultOne = questionRepository.findAll().get(0)
+        def resultTwo = questionRepository.findAll().get(1)
+        resultOne.getKey() + resultTwo.getKey() == 5
+        resultOne.getId() + resultTwo.getId() == 5
+
+    }
+
+    def "the course does not exist"(){
+        given: "add and setup a question"
+        questionDto = new QuestionDto()
+        questionDto.setKey(KEY_QUESTION)
+        questionDto.setTitle(QUESTION_TITLE)
+        questionDto.setContent(QUESTION_CONTENT)
+        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setUser(student)
+        questionDto.setOptions(options)
+
+        when:
+        questionService.createQuestion(-1, questionDto)
+
+        then: "the exception is thrown"
         thrown(TutorException)
-    }*/
+
+    }
+
 
     def "remove an inexistent question"(){
         when: "question id does not exists"
@@ -304,7 +225,7 @@ class CreateTopicQuestionTest extends Specification{
 
     def "find a question whose id does not exist"(){
         when: "find a question on service"
-        questionService.findQuestionById(100)
+        questionService.findQuestionById(-100)
 
         then: "The exception is thrown"
         thrown(TutorException)
@@ -316,6 +237,25 @@ class CreateTopicQuestionTest extends Specification{
 
         then: "The exception is thrown"
         thrown(TutorException)
+    }
+
+    def "admin or demo admin cannot create a question"(){
+        given: "add and setup a question"
+        def demo_admin_user = new User('Marcelo', 'marceloIst', KEY_STUDENT, User.Role.DEMO_ADMIN)
+        questionDto = new QuestionDto()
+        questionDto.setKey(KEY_QUESTION)
+        questionDto.setTitle(QUESTION_TITLE)
+        questionDto.setContent(QUESTION_CONTENT)
+        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setUser(demo_admin_user)
+        questionDto.setOptions(options)
+
+        when:
+        questionService.createQuestion(course.getId(), questionDto)
+
+        then:"thrown the exception"
+        thrown(TutorException)
+
     }
 
     /*def "update a question with a invalid question id"(){
@@ -348,14 +288,6 @@ class CreateTopicQuestionTest extends Specification{
         questionService.updateQuestion(-1, questionDto)
 
         then: "The exception is thrown"
-        thrown(TutorException)
-    }*/
-
-    /*def "set a status of an invalid question"(){
-        when: "update a status"
-        questionService.questionSetStatus(-1, Question.Status.AVAILABLE)
-
-        then: "the exception is thrown"
         thrown(TutorException)
     }*/
 

@@ -87,7 +87,6 @@ public class Question {
         this.key = questionDto.getKey();
         this.content = questionDto.getContent();
         this.status = Status.valueOf(questionDto.getStatus());
-
         this.course = course;
         course.addQuestion(this);
 
