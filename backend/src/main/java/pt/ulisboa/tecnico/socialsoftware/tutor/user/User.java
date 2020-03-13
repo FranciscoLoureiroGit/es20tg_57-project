@@ -4,7 +4,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.ClarificationAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
@@ -57,6 +59,12 @@ public class User implements UserDetails {
 
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Clarification> clarifications = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<ClarificationAnswer> clarificationAnswers = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
@@ -95,6 +103,18 @@ public class User implements UserDetails {
 
     public void setKey(Integer key) {
         this.key = key;
+    }
+
+    public void setQuizAnswers(Set<QuizAnswer> quizAnswers) {
+        this.quizAnswers = quizAnswers;
+    }
+
+    public Set<Clarification> getClarifications() {
+        return clarifications;
+    }
+
+    public void setClarifications(Set<Clarification> clarifications) {
+        this.clarifications = clarifications;
     }
 
     @Override
@@ -352,7 +372,6 @@ public class User implements UserDetails {
         this.courseExecutions.add(course);
     }
 
-
     public Set<StudentTournamentRegistration> getStudentTournamentRegistrations() {
         return studentTournamentRegistrations;
     }
@@ -360,6 +379,8 @@ public class User implements UserDetails {
     public void addStudentTournamentRegistration(StudentTournamentRegistration studentTournamentRegistration) {
         this.studentTournamentRegistrations.add(studentTournamentRegistration);
     }
+
+    public void addClarification(Clarification clarification) { this.clarifications.add(clarification); }
 
     @Override
     public String toString() {
@@ -457,5 +478,21 @@ public class User implements UserDetails {
         }
 
         return result;
+    }
+
+    public Set<ClarificationAnswer> getClarificationAnswers() {
+        return clarificationAnswers;
+    }
+
+    public void setClarificationAnswers(Set<ClarificationAnswer> clarificationAnswers) {
+        this.clarificationAnswers = clarificationAnswers;
+    }
+
+    public void addClarificationAnswer(ClarificationAnswer clarificationAnswer){
+        this.clarificationAnswers.add(clarificationAnswer);
+    }
+
+    public void removeClarificationAnswer(ClarificationAnswer clarificationAnswer){
+        this.clarificationAnswers.remove(clarificationAnswer);
     }
 }

@@ -27,4 +27,5 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
     @Query(value = "SELECT * FROM questions q WHERE q.key = :key", nativeQuery = true)
     Optional<Question> findByKey(Integer key);
+
 }
