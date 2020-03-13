@@ -156,8 +156,6 @@ class RegisterStudentTest extends Specification {
         then:
         def error = thrown(TutorException)
         error.errorMessage == NULLID
-
-
     }
 
     def "tournament already started"() {
