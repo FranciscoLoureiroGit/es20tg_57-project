@@ -6,16 +6,23 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.ClarificationAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.ClarificationAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -25,6 +32,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
@@ -32,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
@@ -57,6 +68,12 @@ public class AnswerService {
     private OptionRepository optionRepository;
 
     @Autowired
+    private ClarificationRepository clarificationRepository;
+
+    @Autowired
+    private ClarificationAnswerRepository clarificationAnswerRepository;
+
+    @Autowired
     private AnswersXmlImport xmlImporter;
 
     @PersistenceContext
@@ -64,8 +81,8 @@ public class AnswerService {
 
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuizAnswerDto createQuizAnswer(Integer userId, Integer quizId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
@@ -79,14 +96,14 @@ public class AnswerService {
     }
 
     @Retryable(
-            value = { SQLException.class },
+            value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<CorrectAnswerDto> concludeQuiz(User user, Integer quizId) {
         QuizAnswer quizAnswer = user.getQuizAnswers().stream().filter(qa -> qa.getQuiz().getId().equals(quizId)).findFirst().orElseThrow(() ->
                 new TutorException(QUIZ_NOT_FOUND, quizId));
 
-        if(quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
             throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
         }
 
@@ -97,8 +114,8 @@ public class AnswerService {
 
         // When student submits before conclusionDate
         if (quizAnswer.getQuiz().getConclusionDate() != null &&
-            quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
-            LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
+                quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
+                LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
 
             return new ArrayList<>();
         }
@@ -110,7 +127,7 @@ public class AnswerService {
     }
 
     @Retryable(
-            value = { SQLException.class },
+            value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void submitAnswer(User user, Integer quizId, StatementAnswerDto answer) {
@@ -169,8 +186,8 @@ public class AnswerService {
     }
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public String exportAnswers() {
         AnswersXmlExport xmlExport = new AnswersXmlExport();
@@ -180,10 +197,77 @@ public class AnswerService {
 
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void importAnswers(String answersXml) {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
+    }
+
+
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer) {
+        //Input Validation: request and answer
+        Clarification clarification = validateClarification(request);
+
+        if (answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
+
+        User usr = validateUser(request, user);
+        ClarificationAnswer clarificationAnswer = getCreateClarificationAnswer(answer, clarification, usr);
+
+        return new ClarificationAnswerDto(clarificationAnswer);
+    }
+    
+
+    private ClarificationAnswer getCreateClarificationAnswer(String answer, Clarification clarification, User usr) {
+        //Create the Answer
+
+        ClarificationAnswer clarificationAnswer = new ClarificationAnswer(answer);
+        clarificationAnswer.setUser(usr);
+        clarificationAnswer.setClarification(clarification);
+
+        //Link answer to request
+
+        clarification.setClarificationAnswer(clarificationAnswer);
+
+        //Register is database
+        entityManager.persist(clarificationAnswer);
+        return clarificationAnswer;
+    }
+
+    private Clarification validateClarification(ClarificationDto request) {
+        if (request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
+
+        //Fetch Clarification from database
+        Clarification clarification = clarificationRepository.findById(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
+
+        if (clarification.getHasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
+        return clarification;
+    }
+
+    private User validateUser(ClarificationDto request, UserDto user) {
+        //User Validation is done here
+
+        if (user == null || user.getRole() != User.Role.TEACHER) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+
+        //Get user and quizQuestion from database
+        User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(request.getQuestionAnswerId()).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, request.getQuestionAnswerId()));
+
+        QuizQuestion quizQuest = questionAnswer.getQuizQuestion();
+
+        if (!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
+                courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
+                        quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions matches
+                                quizQuestion -> quizQuestion.getId() == quizQuest.getId())                   //The quizQuestion obtained from the request
+
+                ))) {
+            // Teacher cannot answer this question, not from the same course
+            throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+        }
+        return usr;
     }
 }

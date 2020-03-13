@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ImageDto;
 
 import javax.persistence.*;
@@ -16,6 +17,10 @@ public class Image {
     @OneToOne
     @JoinColumn(name="question_id")
     private Question question;
+
+    @OneToOne
+    @JoinColumn(name="clarification_id")
+    private Clarification clarification;
 
     public Image() {}
 
@@ -39,6 +44,14 @@ public class Image {
 
     public void setQuestion(Question question) {
         this.question = question;
+    }
+
+    public Clarification getClarification() {
+        return clarification;
+    }
+
+    public void setClarification(Clarification clarification1) {
+        this.clarification = clarification1;
     }
 
     public String getUrl() {
