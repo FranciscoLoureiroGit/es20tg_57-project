@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 
@@ -28,6 +30,8 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
+    private User user;
+    private String justification;
 
     public QuestionDto() {
     }
@@ -50,6 +54,8 @@ public class QuestionDto implements Serializable {
         this.status = question.getStatus().name();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
         this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
+        this.user = question.getUser();
+        this.justification = question.getJustification();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -69,6 +75,10 @@ public class QuestionDto implements Serializable {
     public Integer getKey() {
         return key;
     }
+
+    public void setUser(User user){ this.user = user; }
+
+    public User getUser() { return this.user; }
 
     public void setKey(Integer key) {
         this.key = key;
@@ -176,6 +186,14 @@ public class QuestionDto implements Serializable {
 
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
+    }
+
+    public void setJustification(String justification){
+        this.justification = justification;
+    }
+
+    public String getJustification() {
+        return this.justification;
     }
 
     @Override
