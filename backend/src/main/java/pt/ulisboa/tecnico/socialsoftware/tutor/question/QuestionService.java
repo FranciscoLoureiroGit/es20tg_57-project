@@ -105,7 +105,6 @@ public class QuestionService {
         return new QuestionDto(question);
     }
 
-
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
@@ -115,7 +114,6 @@ public class QuestionService {
         question.update(questionDto);
         return new QuestionDto(question);
     }
-
 
     @Retryable(
       value = { SQLException.class },
@@ -127,7 +125,6 @@ public class QuestionService {
         entityManager.remove(question);
     }
 
-    //A ALTERAR?
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
@@ -139,7 +136,6 @@ public class QuestionService {
         entityManager.refresh(question);
     }
 
-    //NEW
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
@@ -152,20 +148,7 @@ public class QuestionService {
         question.setStatus(status);
         question.setJustification(justification);
 
-        entityManager.refresh(question);
-    }
-
-
-    //NEW
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void questionSetJustification(Integer questionId, String justification) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        question.setJustification(justification);
-
-        entityManager.refresh(question);
+        entityManager.persist(question);
     }
 
     @Retryable(
