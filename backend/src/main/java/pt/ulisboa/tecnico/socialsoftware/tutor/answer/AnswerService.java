@@ -76,10 +76,6 @@ public class AnswerService {
     @Autowired
     private AnswersXmlImport xmlImporter;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
-
     @Retryable(
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
@@ -90,7 +86,7 @@ public class AnswerService {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, quizId));
 
         QuizAnswer quizAnswer = new QuizAnswer(user, quiz);
-        entityManager.persist(quizAnswer);
+        quizAnswerRepository.save(quizAnswer);
 
         return new QuizAnswerDto(quizAnswer);
     }
@@ -112,7 +108,7 @@ public class AnswerService {
             quizAnswer.setCompleted(true);
         }
 
-        // When student submits before conclusionDate
+        // In class quiz When student submits before conclusionDate
         if (quizAnswer.getQuiz().getConclusionDate() != null &&
                 quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
                 LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
@@ -220,7 +216,7 @@ public class AnswerService {
 
         return new ClarificationAnswerDto(clarificationAnswer);
     }
-    
+
 
     private ClarificationAnswer getCreateClarificationAnswer(String answer, Clarification clarification, User usr) {
         //Create the Answer
