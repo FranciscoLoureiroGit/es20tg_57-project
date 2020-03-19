@@ -17,8 +17,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,9 +35,6 @@ public class ClarificationService {
 
     @Autowired
     private ClarificationRepository clarificationRepository;
-
-    @PersistenceContext
-    EntityManager entityManager;
 
     @Retryable(
             value = { SQLException.class },
@@ -82,8 +77,8 @@ public class ClarificationService {
         userValidation(userDto, questionAnswer, user);
 
         Clarification clarification = setClarificationValues(title, description, questionAnswer, user, clarificationRepository);
+        clarificationRepository.save(clarification);
 
-        this.entityManager.persist(clarification);
         return new ClarificationDto(clarification);
     }
 

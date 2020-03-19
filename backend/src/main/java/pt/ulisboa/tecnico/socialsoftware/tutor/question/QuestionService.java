@@ -138,8 +138,6 @@ public class QuestionService {
     public void questionSetStatus(Integer questionId, Question.Status status) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         question.setStatus(status);
-
-        entityManager.refresh(question);
     }
 
     @Retryable(
@@ -153,8 +151,6 @@ public class QuestionService {
 
         question.setStatus(status);
         question.setJustification(justification);
-
-        entityManager.persist(question);
     }
 
     @Retryable(
