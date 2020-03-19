@@ -35,14 +35,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
@@ -214,6 +211,9 @@ public class AnswerService {
         User usr = validateUser(request, user);
         ClarificationAnswer clarificationAnswer = getCreateClarificationAnswer(answer, clarification, usr);
 
+        // Register in database
+        clarificationAnswerRepository.save(clarificationAnswer);
+
         return new ClarificationAnswerDto(clarificationAnswer);
     }
 
@@ -229,8 +229,6 @@ public class AnswerService {
 
         clarification.setClarificationAnswer(clarificationAnswer);
 
-        //Register is database
-        entityManager.persist(clarificationAnswer);
         return clarificationAnswer;
     }
 

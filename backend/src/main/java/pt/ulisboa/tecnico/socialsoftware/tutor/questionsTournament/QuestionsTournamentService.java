@@ -21,9 +21,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 
-
-import javax.persistence.EntityManager;
-
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
@@ -47,9 +44,6 @@ public class QuestionsTournamentService {
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
 
-    @Autowired
-    EntityManager entityManager;
-
     public Integer getMaxQuestionsTournamentKey() {
         Integer maxQuestionsTournamentKey = tournamentRepository.getMaxQuestionsTournamentKey();
         return maxQuestionsTournamentKey != null ? maxQuestionsTournamentKey : 0;
@@ -71,7 +65,8 @@ public class QuestionsTournamentService {
         questionsTournament.setCourseExecution(courseExecution);
         addTopics(questionsTournamentDto, questionsTournament);
 
-        entityManager.persist((questionsTournament));
+        tournamentRepository.save(questionsTournament);
+
         return new QuestionsTournamentDto(questionsTournament);
     }
 
@@ -127,7 +122,7 @@ public class QuestionsTournamentService {
         StudentTournamentRegistration registration = new StudentTournamentRegistration(user, questionsTournament);
         addRegistrationToUser(user, registration);
         addRegistrationToTournament(questionsTournament, registration);
-        entityManager.persist(registration);
+        registrationRepository.save(registration);
         return registration;
     }
 
