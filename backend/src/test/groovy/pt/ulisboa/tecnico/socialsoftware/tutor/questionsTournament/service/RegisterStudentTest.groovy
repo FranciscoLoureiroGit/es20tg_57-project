@@ -77,7 +77,7 @@ class RegisterStudentTest extends Specification {
         tournament.setEndingDate(now.plusDays(2))
     }
 
-    def "student creates a registration of a tournament whose course the student is enrolled"() {
+    def "student creates a registration of a tournament whose course execution the student is enrolled"() {
         given: "a userDto"
         def userDto = new UserDto(student)
 
@@ -180,7 +180,7 @@ class RegisterStudentTest extends Specification {
         LocalDateTime.now().minusDays(3)    | LocalDateTime.now().minusDays(1)  || TOURNAMENT_ENDED
     }
 
-    def "student creates a registration of a tournament whose course the student isn't enrolled"() {
+    def "student creates a registration of a tournament whose course execution the student isn't enrolled"() {
         given: "a student"
         def user = new User(NAME, "student", 3, User.Role.STUDENT)
         userRepository.save(user)

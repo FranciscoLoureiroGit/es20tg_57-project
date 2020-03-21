@@ -39,10 +39,11 @@ public class QuestionsTournamentController {
         return this.questionsTournamentService.createQuestionsTournament(executionId,user.getId(), questionsTournament);
     }
 
-    @GetMapping("/executions/{executionId}/questionsTournament/studentRegister")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#userId, 'USER.ACCESS')")
-    public StudentTournamentRegistrationDto studentRegister(@PathVariable Integer userId, @PathVariable Integer questionsTournamentId) {
-        return questionsTournamentService.studentRegister(userId, questionsTournamentId);
+    @PostMapping("/questionsTournaments/{questionsTournamentId}/studentRegistrations")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS')")
+    public StudentTournamentRegistrationDto studentRegister(Principal principal, @PathVariable Integer questionsTournamentId) {
+        User user = getAuthenticationUser(principal);
+        return questionsTournamentService.studentRegister(user.getId(), questionsTournamentId);
     }
 
     private void formatDates(QuestionsTournamentDto tournament) {
@@ -53,5 +54,16 @@ public class QuestionsTournamentController {
         }
         if (tournament.getEndingDate() !=null && !tournament.getEndingDate().matches("(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2})"))
             tournament.setEndingDate(LocalDateTime.parse(tournament.getEndingDate().replaceAll(".$", ""), DateTimeFormatter.ISO_DATE_TIME).format(formatter));
+    }
+
+    private User getAuthenticationUser(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        checkNullUser(user);
+        return user;
+    }
+
+    private void checkNullUser(User user) {
+        if(user == null)
+            throw new TutorException(AUTHENTICATION_ERROR);
     }
 }
