@@ -94,6 +94,9 @@ public class QuestionService {
     public QuestionDto createQuestion(int courseId, QuestionDto questionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
 
+        // If the user is a Student, is he enrolled in the course?
+        // If the user is a Student the question should be PENDING, you accept whatever enters this method
+        // meaning you allow a student to submit a question with status AVAILABLE
         if(questionDto.getUser() != null){
             if((questionDto.getUser().getRole().name().equals(User.Role.ADMIN.name())) || (questionDto.getUser().getRole().name().equals(User.Role.DEMO_ADMIN.name()))){
                 throw new TutorException(NOT_ALLOWED_CREATE_QUESTION);
@@ -148,6 +151,7 @@ public class QuestionService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void questionChangeStatus(Integer questionId, Question.Status status, String justification) {
+        // Who did this? It should be a teacher from the same course as the question
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         if ( status == Question.Status.DISABLED && ( justification==null || justification.isEmpty() ) )
             throw new TutorException(QUESTION_DISABLED_WITHOUT_JUSTIFICATION, questionId);

@@ -120,6 +120,9 @@ class ChangeQuestionStateTest extends Specification{
         result.getJustification() == QUESTION_JUSTIFICATION
     }
 
+    // could combine most of these tests into a where with @Unroll
+    // they all test the same method with different arguments
+
     def "the teacher changes the state of a question to AVAILABLE and leaves no justification"(){
 
         when:
