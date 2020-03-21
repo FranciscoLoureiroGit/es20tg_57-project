@@ -3,6 +3,8 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
+import java.security.Principal;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -46,10 +52,16 @@ public class QuestionController {
         return this.questionService.findAvailableQuestions(courseId);
     }
 
-    @PostMapping("/courses/{courseId}/questions")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
-    public QuestionDto createQuestion(@PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
-        question.setStatus(Question.Status.AVAILABLE.name());
+    @PostMapping("/courses/{courseId}/questions/createQuestion")
+    @PreAuthorize("(hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')) and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public QuestionDto createQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
+
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null)
+            throw new TutorException(AUTHENTICATION_ERROR);
+
+        question.setStatus(Question.Status.DISABLED.name());
         return this.questionService.createQuestion(courseId, question);
     }
 
