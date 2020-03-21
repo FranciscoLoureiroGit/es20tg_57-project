@@ -81,11 +81,22 @@ public class QuestionController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/questions/{questionId}/set-status")
+    /*@PostMapping("/questions/{questionId}/set-status")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public ResponseEntity questionSetStatus(@PathVariable Integer questionId, @Valid @RequestBody String status) {
         logger.debug("questionSetStatus questionId: {}: ", questionId);
         questionService.questionSetStatus(questionId, Question.Status.valueOf(status));
+        return ResponseEntity.ok().build();
+    }*/
+
+    @PostMapping("/questions/{questionId}/set-status")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public ResponseEntity questionChangeStatus(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
+        logger.debug("questionChangeStatus questionId: {}: ", questionId);
+        Status status = questionDto.getStatus();
+        String justification = questionDto.getJustification();
+
+        questionService.questionChangeStatus(questionId, status, justification);
         return ResponseEntity.ok().build();
     }
 
