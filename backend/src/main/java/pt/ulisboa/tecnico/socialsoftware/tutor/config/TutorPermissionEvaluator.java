@@ -5,6 +5,9 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pt.ulisboa.tecnico.socialsoftware.tutor.administration.AdministrationService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.AssessmentService;
@@ -26,6 +29,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private AnswerService answerService;
 
     @Autowired
     private TopicService topicService;
@@ -72,6 +78,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                     return userHasThisExecution(username, assessmentService.findAssessmentCourseExecution(id).getCourseExecutionId());
                 case "QUIZ.ACCESS":
                     return userHasThisExecution(username, quizService.findQuizCourseExecution(id).getCourseExecutionId());
+                case "QUESTION_ANSWER.ACCESS":
+                    return userHasThisQuestionAnswer(username, id);
                 default: return false;
             }
         }
@@ -87,6 +95,16 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     private boolean userHasThisExecution(String username, int id) {
         return userService.getCourseExecutions(username).stream()
                 .anyMatch(course -> course.getCourseExecutionId() == id);
+    }
+
+    private boolean userHasThisQuestionAnswer(String username, int id) {
+        User user = userService.findByUsername(username);
+        for (QuizAnswer qzA : user.getQuizAnswers()) {
+            for (QuestionAnswer qA : qzA.getQuestionAnswers())
+                if (qA.getId() == id)
+                    return true;
+        }
+        return false;
     }
 
      @Override

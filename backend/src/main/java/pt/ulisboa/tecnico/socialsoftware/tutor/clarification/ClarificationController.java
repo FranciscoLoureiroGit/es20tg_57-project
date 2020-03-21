@@ -22,7 +22,7 @@ public class ClarificationController {
     ClarificationController(ClarificationService clarificationService1) { this.clarificationService = clarificationService1; }
 
     @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
-    @PreAuthorize("hasRole('ROLE_STUDENT')") // Only student can create a clarification request
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')") // Only student can create a clarification request
     public ClarificationDto createClarification(@PathVariable int questionAnswerId,
                                                 @Valid @RequestBody ClarificationDto clarificationDto,
                                                 @RequestBody UserDto userDto){
