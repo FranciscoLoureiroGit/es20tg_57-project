@@ -7,10 +7,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import org.springframework.security.core.Authentication;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
+import java.security.Principal;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -18,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,10 +53,14 @@ public class QuestionController {
         return this.questionService.findAvailableQuestions(courseId);
     }
 
-    @PostMapping("/courses/{courseId}/questions")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
-    public QuestionDto createQuestion(@PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
-        question.setStatus(Question.Status.AVAILABLE.name());
+    @PostMapping("/courses/{courseId}/questions/createQuestion")
+    @PreAuthorize("(hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')) and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public QuestionDto createQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null)
+            throw new TutorException(AUTHENTICATION_ERROR);
+        question.setStatus(Question.Status.DISABLED.name());
         return this.questionService.createQuestion(courseId, question);
     }
 
@@ -93,8 +104,8 @@ public class QuestionController {
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public ResponseEntity questionChangeStatus(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
         logger.debug("questionChangeStatus questionId: {}: ", questionId);
-        Status status = questionDto.getStatus();
-        String justification = questionDto.getJustification();
+        Question.Status status = Question.Status.valueOf(question.getStatus());
+        String justification = question.getJustification();
 
         questionService.questionChangeStatus(questionId, status, justification);
         return ResponseEntity.ok().build();
