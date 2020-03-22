@@ -60,7 +60,12 @@ public class QuestionController {
 
         if(user == null)
             throw new TutorException(AUTHENTICATION_ERROR);
-        question.setStatus(Question.Status.DISABLED.name());
+
+        if(user.getRole().name().equals(User.Role.STUDENT.name()))
+            question.setStatus(Question.Status.PENDING.name());
+        else if(user.getRole().name().equals(User.Role.TEACHER.name()))
+            question.setStatus(Question.Status.AVAILABLE.name());
+        
         return this.questionService.createQuestion(courseId, question);
     }
 
