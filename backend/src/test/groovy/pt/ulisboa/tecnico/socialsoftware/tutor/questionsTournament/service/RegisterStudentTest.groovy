@@ -91,7 +91,7 @@ class RegisterStudentTest extends Specification {
         result.userName == USERNAME
         result.tournamentId == tournamentDto.id
         result.userId == student.getId()
-        and: "userDto has correct data"
+        and: "userDto has correct data" //why would it have changed? isn't this an input?
         userDto.getUsername() == USERNAME
         userDto.getName() == NAME
         userDto.getRole() == User.Role.STUDENT

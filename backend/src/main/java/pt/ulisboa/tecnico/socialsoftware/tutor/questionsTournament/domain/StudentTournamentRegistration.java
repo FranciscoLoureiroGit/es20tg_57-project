@@ -10,6 +10,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Entity
 @Table(name = "student_tournament_registrations", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "questions_tournament_id"}))
 public class StudentTournamentRegistration {
+    // this wasn't needed, you could have simplified having simply a list of users associated with a tournament
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

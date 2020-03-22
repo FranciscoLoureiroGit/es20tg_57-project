@@ -141,6 +141,7 @@ class CreateQuestionsTournamentTest extends Specification{
         topicRepository.save(new Topic(course, topic2))
     }
 
+    // the following tests are for the same call with invalid inputs, could be a where table with @Unroll
     def "empty starting date"(){
         given: "a questions tournament without starting date"
         def questionsTournament = new QuestionsTournamentDto()

@@ -1,4 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain;
+// package names are all lower case by convention
+// suggestion: package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain;
+
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
@@ -57,6 +60,7 @@ public class QuestionsTournament {
     }
 
     public QuestionsTournament(QuestionsTournamentDto questionsTournamentDto, User studentTournamentCreator, CourseExecution courseExecution){
+        // why receive student and course as args if it isn't used?
         this.key = questionsTournamentDto.getKey();
         setStartingDate(questionsTournamentDto.getStartingDateDate());
         setEndingDate(questionsTournamentDto.getEndingDateDate());

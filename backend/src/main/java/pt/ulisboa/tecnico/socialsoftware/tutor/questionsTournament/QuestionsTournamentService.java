@@ -68,6 +68,7 @@ public class QuestionsTournamentService {
         }
         QuestionsTournament questionsTournament = new QuestionsTournament(questionsTournamentDto,user,courseExecution);
         questionsTournament.setStudentTournamentCreator(user);
+        // is the student enrolled in that course?
         questionsTournament.setCourseExecution(courseExecution);
         addTopics(questionsTournamentDto, questionsTournament);
 
@@ -90,7 +91,7 @@ public class QuestionsTournamentService {
 
     private void addTopics(QuestionsTournamentDto questionsTournamentDto, QuestionsTournament questionsTournament) {
         if(questionsTournamentDto.getTopics() != null
-                && questionsTournamentDto.getTopics().size() != 0){
+                && questionsTournamentDto.getTopics().size() != 0){ //isEmpty()
             for (TopicDto topicDto : questionsTournamentDto.getTopics()){
                 Topic topic = topicRepository.findById(topicDto.getId())
                         .orElseThrow(() -> new TutorException(TOPIC_NOT_FOUND,topicDto.getId()));
