@@ -13,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "clarification_answer")
 public class ClarificationAnswer {
+    // why is this in the answer package?
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

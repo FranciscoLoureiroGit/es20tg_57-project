@@ -209,6 +209,9 @@ public class AnswerService {
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    // this should be in the clarification service. why is it here? answer is related with users answering questions
+    // once again, why a userDto as argument, an id is enough
+    // answer could be already inside the dto
     public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer) {
         //Input Validation: request and answer
         Clarification clarification = validateClarification(request);

@@ -71,6 +71,8 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    // why isn't the title and description part of the dto? should receive a userId not the whole user
+    // the argument of this method should be a clarificationDto, check the other modules
     public ClarificationDto createClarification(QuestionAnswerDto questionAnswerDto, String title, String description, UserDto userDto){
         checkInput(questionAnswerDto, title, description, userDto);
 

@@ -181,6 +181,7 @@ class AnswerClarificationRequestTest extends Specification{
 
     def "clarification request exists and user is teacher"() {
         // Clarification Answer is created
+        // the clarification was already created, this is a dto
         given: 'a clarification'
         def clarificationDto = new ClarificationDto(clarificationRequest)
         and: 'a teacher'
@@ -218,12 +219,16 @@ class AnswerClarificationRequestTest extends Specification{
         when:
         def result = answerService.createClarificationAnswer(clarificationDto, userTeacherDto, "RESPONSE")
 
+        //this check could have been in the test above?
+
         then: 'answer is linked with request'
         clarificationRequest.getHasAnswer() == true
         clarificationAnswerRepository.findAll().get(0).getId() == result.getId()
 
     }
 
+    // the following tests could have been a single test with a where table and @Unroll
+    // they all test different combinations of invalid inputs
     def "clarification request doesn't exist"(){
         //Exception is thrown
         given: 'null clarification'
