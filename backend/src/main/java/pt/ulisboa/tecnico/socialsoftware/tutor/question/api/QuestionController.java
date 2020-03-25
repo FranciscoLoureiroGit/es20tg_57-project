@@ -65,7 +65,7 @@ public class QuestionController {
             question.setStatus(Question.Status.PENDING.name());
         else if(user.getRole().name().equals(User.Role.TEACHER.name()))
             question.setStatus(Question.Status.AVAILABLE.name());
-        
+
         return this.questionService.createQuestion(courseId, question);
     }
 
