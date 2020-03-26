@@ -5,6 +5,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
@@ -24,6 +25,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Service
 public class QuestionsTournamentService {
@@ -44,9 +46,12 @@ public class QuestionsTournamentService {
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
 
-    public Integer getMaxQuestionsTournamentKey() {
-        Integer maxQuestionsTournamentKey = tournamentRepository.getMaxQuestionsTournamentKey();
-        return maxQuestionsTournamentKey != null ? maxQuestionsTournamentKey : 0;
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public CourseDto findTournamentCourseExecution(int tournamentId) {
+        return this.tournamentRepository.findById(tournamentId)
+                .map(QuestionsTournament::getCourseExecution)
+                .map(CourseDto::new)
+                .orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
     }
 
     @Retryable(
@@ -57,13 +62,11 @@ public class QuestionsTournamentService {
         CourseExecution courseExecution = getCourseExecution(executionId);
         User user = getUserFromRepository(userId);
 
-        if(questionsTournamentDto.getKey() == null) {
-            questionsTournamentDto.setKey(getMaxQuestionsTournamentKey() + 1);
-        }
-        QuestionsTournament questionsTournament = new QuestionsTournament(questionsTournamentDto,user,courseExecution);
+        QuestionsTournament questionsTournament = new QuestionsTournament(questionsTournamentDto);
         questionsTournament.setStudentTournamentCreator(user);
         questionsTournament.setCourseExecution(courseExecution);
         addTopics(questionsTournamentDto, questionsTournament);
+        courseExecution.addQuestionsTournament(questionsTournament);
 
         tournamentRepository.save(questionsTournament);
 
@@ -81,6 +84,16 @@ public class QuestionsTournamentService {
         QuestionsTournament questionsTournament = getTournamentFromRepository(questionsTournamentId);
         StudentTournamentRegistration registration = createStudentTournamentRegistration(user, questionsTournament);
         return new StudentTournamentRegistrationDto(registration);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<QuestionsTournamentDto> getOpenTournamentsByCourse(int executionId){
+        CourseExecution courseExecution = getCourseExecution(executionId);
+
+        return courseExecution.getOpenQuestionsTournamentsDto();
     }
 
     private void addTopics(QuestionsTournamentDto questionsTournamentDto, QuestionsTournament questionsTournament) {

@@ -77,6 +77,7 @@ public enum ErrorMessage {
     TOURNAMENT_ENDED("Tournament already ended"),
     TOURNAMENT_ALREADY_STARTED("Tournament already started"),
     TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
+    TOURNAMENT_NOT_FOUND("Tournament not found with id %d"),
     DUPLICATED_REGISTRATION("User already registered in tournament"),
     NULLID("null userId or questionsTournamentId"),
 

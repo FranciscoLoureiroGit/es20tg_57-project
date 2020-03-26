@@ -78,7 +78,7 @@ public class StudentTournamentRegistration {
 
     public void setUser(User student) {
         checkUserIsStudent(student);
-        checkStudentInCourse(student);
+        checkStudentInCourseExecution(student);
         this.user = student;
     }
 
@@ -87,7 +87,7 @@ public class StudentTournamentRegistration {
             throw new TutorException(USER_NOT_STUDENT);
     }
 
-    private void checkStudentInCourse(User student) {
+    private void checkStudentInCourseExecution(User student) {
         if(!student.getCourseExecutions().contains(questionsTournament.getCourseExecution()))
             throw new TutorException(STUDENT_NOT_ON_COURSE_EXECUTION);
     }
