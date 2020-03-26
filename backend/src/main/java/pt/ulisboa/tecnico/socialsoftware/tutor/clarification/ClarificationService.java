@@ -76,29 +76,25 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getClarifications() {
+    public List<ClarificationDto> getAllClarifications() {
         return clarificationRepository.findAll().stream().map(ClarificationDto::new)
                 .collect(Collectors.toList());
     }
-
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationAnswerDto getClarificationAnswer(Integer studentId, Integer clarificationId) {
-        User user = userRepository.getOne(studentId);
-        Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
-                new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
-        Set<ClarificationAnswer> clarificationAnswers = user.getClarificationAnswers();
-        for (ClarificationAnswer ca : clarificationAnswers ) {
-            if (ca.getClarification().getId().equals(clarification.getId())) {
-                return new ClarificationAnswerDto(ca);
+    public ClarificationDto getClarification(int studentId, int questionAnswerId) {
+        List<ClarificationDto> clarificationDtoList = getClarificationsByQuestion(questionAnswerId);
+
+        for (ClarificationDto cc : clarificationDtoList ) {
+            if (cc.getStudentId().equals(studentId)) {
+                return cc;
             }
         }
-        throw new TutorException(NO_CLARIFICATION_ANSWER);
+        throw new TutorException(NO_CLARIFICATION_REQUEST);
     }
-
 
     @Retryable(
             value = { SQLException.class },
@@ -109,12 +105,15 @@ public class ClarificationService {
         QuestionAnswer questionAnswer = getQuestionAnswer(questionAnswerId);
 
         // Does all inputs validation
-        User user = checkInput(questionAnswer, clarificationDto, userId);
+        if (userId != null){
+            User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+            checkInput(questionAnswer, clarificationDto, user);
+            Clarification clarification = setClarificationValues(clarificationDto, questionAnswer, user, clarificationRepository);
+            clarificationRepository.save(clarification);
 
-        Clarification clarification = setClarificationValues(clarificationDto, questionAnswer, user, clarificationRepository);
-        clarificationRepository.save(clarification);
-
-        return new ClarificationDto(clarification);
+            return new ClarificationDto(clarification);
+        }
+        throw new TutorException(CLARIFICATION_MISSING_DATA);
     }
 
     private QuestionAnswer getQuestionAnswer(int questionAnswerId) {
@@ -122,26 +121,34 @@ public class ClarificationService {
                     new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
     }
 
-    private User checkInput(QuestionAnswer questionAnswer, ClarificationDto clarificationDto, Integer userId) {
+    private User checkInput(QuestionAnswer questionAnswer, ClarificationDto clarificationDto, User user) {
         //Input Validation
         if (clarificationDto.getTitle().equals("") && !clarificationDto.getDescription().equals("")) {
             throw new TutorException(CLARIFICATION_TITLE_IS_EMPTY);
         } else if (clarificationDto.getDescription().equals("") && !clarificationDto.getTitle().equals("")) {
             throw new TutorException(CLARIFICATION_DESCRP_IS_EMPTY);
-        } else if (questionAnswer == null && userId != null) {
-            throw new TutorException(QUESTION_ANSWER_NOT_FOUND);
-        } else if (userId == null && questionAnswer != null) {
-            throw new TutorException(USER_NOT_FOUND);
         } else if (questionAnswer == null || questionAnswer.getId() == null || clarificationDto.getTitle().equals("")){
             throw new TutorException(CLARIFICATION_MISSING_DATA);
-        } else if (!userId.equals(questionAnswer.getQuizAnswer().getUser().getId()))
-            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED, userId);
+        } else if (!user.getId().equals(questionAnswer.getQuizAnswer().getUser().getId()))
+            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED, user.getId());
         else {
-            User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
             if (user.getRole() != User.Role.STUDENT)
-                throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED, userId);
+                throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED, user.getId());
+            else if (hasClarificationRequest(user, questionAnswer)) {
+                throw new TutorException(CLARIFICATION_EXISTS);
+            }
             return user;
         }
+    }
+
+    private static boolean hasClarificationRequest(User user, QuestionAnswer questionAnswer) {
+        Set<Clarification> clarificationSet = user.getClarifications();
+        for (Clarification c: clarificationSet) {
+            if (c.getQuestionAnswer().getId().equals(questionAnswer.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Clarification setClarificationValues(ClarificationDto clarificationDto, QuestionAnswer questionAnswer,
@@ -163,4 +170,5 @@ public class ClarificationService {
         user.addClarification(clarification);
         return clarification;
     }
+
 }

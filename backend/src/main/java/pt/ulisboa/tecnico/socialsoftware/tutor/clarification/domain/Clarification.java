@@ -46,14 +46,14 @@ public class Clarification {
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "questionAnswer_id")
     private QuestionAnswer questionAnswer;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
     private ClarificationAnswer clarificationAnswer;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -69,6 +69,9 @@ public class Clarification {
 
         if (clarificationDto.getStatus() != null) {
             this.status = Clarification.Status.valueOf(clarificationDto.getStatus());
+        } else {
+            this.status = Status.OPEN;
+            // Clarification was just created, therefore is open
         }
 
         if (clarificationDto.getImage() != null) {

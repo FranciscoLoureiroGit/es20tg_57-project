@@ -101,7 +101,7 @@ Requirements needed for clarification addition
 
 
 INSERT INTO quiz_answers (id, completed, quiz_id, user_id) values 
-(${quizAnswerId}, false, ${quizId}, ${demoStudentId});
+(${quizAnswerId}, true, ${quizId}, ${demoStudentId});
 INSERT INTO question_answers (id, quiz_answer_id) values (${questionAnswerId}, ${quizAnswerId});
 
 

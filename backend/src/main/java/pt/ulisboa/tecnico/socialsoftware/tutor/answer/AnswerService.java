@@ -22,7 +22,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -40,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
@@ -199,6 +199,29 @@ public class AnswerService {
 
 
     @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationAnswerDto getClarificationAnswer(Integer clarificationId) {
+        Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
+                new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
+        if (clarification.getClarificationAnswer() != null) {
+            return new ClarificationAnswerDto(clarification.getClarificationAnswer());
+        } else {
+            throw new TutorException(NO_CLARIFICATION_ANSWER);
+        }
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationAnswerDto> getAllClarificationAnswers() {
+        return clarificationAnswerRepository.findAll().stream().map(ClarificationAnswerDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Retryable(
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -228,6 +251,7 @@ public class AnswerService {
         //Link answer to request
 
         clarification.setClarificationAnswer(clarificationAnswer);
+        clarification.setStatus(Clarification.Status.CLOSED);
 
         return clarificationAnswer;
     }

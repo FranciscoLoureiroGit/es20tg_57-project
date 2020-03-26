@@ -25,12 +25,20 @@ public class ClarificationController {
 
     @Autowired
     private ClarificationService clarificationService;
+/*
+    @GetMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
+    public ClarificationDto getClarification(@PathVariable int questionAnswerId,
+                                             @PathVariable int studentId) {
+        return clarificationService.getClarification(studentId, questionAnswerId);
+    }
+
 
     @GetMapping("/{quizId}/quizAnswer/questionAnswer/clarifications/{clarificationId}/")
     @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission('QUIZ.ACCESS')")
     public ClarificationAnswerDto getClarificationAnswer(@PathVariable int studentId, @PathVariable int questionAnswerId) {
         return clarificationService.getClarificationAnswer(studentId, questionAnswerId);
-    }
+    }*/
 
     @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")

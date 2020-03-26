@@ -14,11 +14,11 @@ public class ClarificationAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @OneToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="clarification_id")
     private Clarification clarification;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

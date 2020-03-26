@@ -26,6 +26,7 @@ public enum ErrorMessage {
     CLARIFICATION_MISSING_DATA("Clarification data not consistent %d"),
     CLARIFICATION_NOT_FOUND("Clarification id was not found %d"),
     CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed %d"),
+    CLARIFICATION_EXISTS("User has already created a clarification for this question answer"),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),

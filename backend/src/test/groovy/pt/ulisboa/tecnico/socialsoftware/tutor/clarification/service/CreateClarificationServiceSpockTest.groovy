@@ -236,6 +236,26 @@ class CreateClarificationServiceSpockTest extends Specification {
         thrown(TutorException)
     }
 
+    def "student creates two clarification requests on the same question answer"() {
+        given: "a UserDto"
+        studentDto = new UserDto(student)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
+        and: "a second clarificationDto"
+        ClarificationDto clarificationDto2 = new ClarificationDto()
+        clarificationDto2.setTitle(TITLE+'2')
+        clarificationDto2.setDescription(DESCRIPTION+'2')
+
+        when:
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto.getId())
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto2, studentDto.getId())
+
+
+        then:
+        thrown(TutorException)
+    }
 
     @TestConfiguration
     static class ServiceImplTestContextConfiguration {
