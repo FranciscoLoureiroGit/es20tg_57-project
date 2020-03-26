@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 
@@ -40,6 +41,12 @@ public class QuestionsTournamentController {
     public StudentTournamentRegistrationDto studentRegister(Principal principal, @PathVariable Integer questionsTournamentId) {
         User user = getAuthenticationUser(principal);
         return this.questionsTournamentService.studentRegister(user.getId(), questionsTournamentId);
+    }
+
+    @GetMapping("/executions/{executionId}/questionsTournament")
+    @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public List<QuestionsTournamentDto> getOpenTournamentsByCourse(@PathVariable int executionId) {
+        return this.questionsTournamentService.getOpenTournamentsByCourse(executionId);
     }
 
     private void formatDates(QuestionsTournamentDto tournament) {
