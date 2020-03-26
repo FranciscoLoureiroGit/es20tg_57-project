@@ -99,10 +99,10 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-    &quot;title&quot;: &quot;Question_Title_FOR_TEST&quot;,&#xd;
+    &quot;title&quot;: &quot;Question_Title_FOR_TEST1&quot;,&#xd;
     &quot;content&quot;: &quot;Question_Content&quot;,&#xd;
     &quot;options&quot; : [{&#xd;
-        &quot;content&quot;: &quot;Option_Content_FOR_TEST&quot;,&#xd;
+        &quot;content&quot;: &quot;Option_Content_FOR_TEST1&quot;,&#xd;
         &quot;correct&quot;: &quot;true&quot;}]&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
@@ -126,7 +126,7 @@
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert question title" enabled="true">
               <stringProp name="JSON_PATH">$.title</stringProp>
-              <stringProp name="EXPECTED_VALUE">Question_Title_FOR_TEST</stringProp>
+              <stringProp name="EXPECTED_VALUE">Question_Title_FOR_TEST1</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -144,7 +144,7 @@
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert options content" enabled="true">
               <stringProp name="JSON_PATH">$.options[0].content</stringProp>
-              <stringProp name="EXPECTED_VALUE">Option_Content_FOR_TEST</stringProp>
+              <stringProp name="EXPECTED_VALUE">Option_Content_FOR_TEST1</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -281,7 +281,8 @@
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM questions WHERE title=&apos;Question_Title_FOR_TEST&apos;;</stringProp>
+          <stringProp name="query">DELETE FROM options WHERE content=&apos;Option_Content_FOR_TEST1&apos;;
+DELETE FROM questions WHERE title=&apos;Question_Title_FOR_TEST1&apos;;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
