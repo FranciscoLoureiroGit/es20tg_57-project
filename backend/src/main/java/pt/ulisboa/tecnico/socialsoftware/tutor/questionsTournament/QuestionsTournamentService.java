@@ -25,6 +25,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Service
 public class QuestionsTournamentService {
@@ -65,6 +66,7 @@ public class QuestionsTournamentService {
         questionsTournament.setStudentTournamentCreator(user);
         questionsTournament.setCourseExecution(courseExecution);
         addTopics(questionsTournamentDto, questionsTournament);
+        courseExecution.addQuestionsTournament(questionsTournament);
 
         tournamentRepository.save(questionsTournament);
 
@@ -82,6 +84,16 @@ public class QuestionsTournamentService {
         QuestionsTournament questionsTournament = getTournamentFromRepository(questionsTournamentId);
         StudentTournamentRegistration registration = createStudentTournamentRegistration(user, questionsTournament);
         return new StudentTournamentRegistrationDto(registration);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<QuestionsTournamentDto> getOpenTournamentsByCourse(int executionId){
+        CourseExecution courseExecution = getCourseExecution(executionId);
+
+        return courseExecution.getOpenQuestionsTournamentsDto();
     }
 
     private void addTopics(QuestionsTournamentDto questionsTournamentDto, QuestionsTournament questionsTournament) {

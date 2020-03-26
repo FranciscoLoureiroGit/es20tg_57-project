@@ -141,6 +141,11 @@ public class QuestionsTournament {
         this.studentTournamentRegistrations.add(studentTournamentRegistration);
     }
 
+    public boolean isOpen(){
+        LocalDateTime currentTime = LocalDateTime.now();
+        return currentTime.isBefore(this.startingDate);
+    }
+
     private void checkStartingDate(LocalDateTime startingDate) {
         if (startingDate == null) {
             throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT, "Starting date");
@@ -166,8 +171,10 @@ public class QuestionsTournament {
     }
 
     private void checkCourseExecution(CourseExecution courseExecution){
-        if (courseExecution == null ||
-                !this.studentTournamentCreator.getCourseExecutions().contains(courseExecution)){
+        if (courseExecution == null){
+            throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT,"courseExecution");
+        }
+        if (this.courseExecution!=null && this.studentTournamentCreator != null && !this.studentTournamentCreator.getCourseExecutions().contains(courseExecution)){
             throw new TutorException(USER_NOT_ENROLLED);
         }
     }
