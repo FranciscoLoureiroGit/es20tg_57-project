@@ -26,7 +26,7 @@ public class QuestionsTournamentController {
     @Autowired
     QuestionsTournamentService questionsTournamentService;
 
-    @PostMapping("/executions/{executionId}/questionsTournaments/createTournament")
+    @PostMapping("/executions/{executionId}/questionsTournaments")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
     public QuestionsTournamentDto createQuestionsTournament(Principal principal, @PathVariable int executionId, @Valid @RequestBody QuestionsTournamentDto questionsTournament) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -43,7 +43,7 @@ public class QuestionsTournamentController {
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS')")
     public StudentTournamentRegistrationDto studentRegister(Principal principal, @PathVariable Integer questionsTournamentId) {
         User user = getAuthenticationUser(principal);
-        return questionsTournamentService.studentRegister(user.getId(), questionsTournamentId);
+        return this.questionsTournamentService.studentRegister(user.getId(), questionsTournamentId);
     }
 
     private void formatDates(QuestionsTournamentDto tournament) {
