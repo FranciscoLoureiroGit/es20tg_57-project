@@ -236,8 +236,8 @@
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">INSERT INTO questionstournaments (id, starting_date, ending_date, course_execution_id, user_id, key, number_of_questions)
-VALUES (1, NOW() + interval &apos;12 hour&apos;, NOW() + interval &apos;24 hour&apos;, 11, 676, 1, 0);</stringProp>
+          <stringProp name="query">INSERT INTO questionstournaments (id, starting_date, ending_date, course_execution_id, user_id, number_of_questions)
+VALUES (1, NOW() + interval &apos;12 hour&apos;, NOW() + interval &apos;24 hour&apos;, 11, 676, 10);</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>

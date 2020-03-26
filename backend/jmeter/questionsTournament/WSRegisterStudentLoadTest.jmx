@@ -68,11 +68,11 @@
           <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
             <stringProp name="dataSource">sampleReq</stringProp>
             <stringProp name="queryType">Update Statement</stringProp>
-            <stringProp name="query">INSERT INTO questionstournaments(id, starting_date, ending_date, course_execution_id, user_id, key, number_of_questions)
-VALUES (${id_key}, NOW()+interval &apos;12hour&apos;, NOW()+interval &apos;24hour&apos;, 11, 676, ${id_key}, 0);</stringProp>
+            <stringProp name="query">INSERT INTO questionstournaments(id, starting_date, ending_date, course_execution_id, user_id, number_of_questions)
+VALUES (${t_id}, NOW()+interval &apos;12hour&apos;, NOW()+interval &apos;24hour&apos;, 11, 676, 10);</stringProp>
             <stringProp name="queryArguments"></stringProp>
             <stringProp name="queryArgumentsTypes"></stringProp>
-            <stringProp name="variableNames">id_key</stringProp>
+            <stringProp name="variableNames">t_id</stringProp>
             <stringProp name="resultVariable"></stringProp>
             <stringProp name="queryTimeout"></stringProp>
             <stringProp name="resultSetMaxRows"></stringProp>
@@ -83,7 +83,7 @@ VALUES (${id_key}, NOW()+interval &apos;12hour&apos;, NOW()+interval &apos;24hou
             <stringProp name="CounterConfig.start">1</stringProp>
             <stringProp name="CounterConfig.end">1000</stringProp>
             <stringProp name="CounterConfig.incr">1</stringProp>
-            <stringProp name="CounterConfig.name">id_key</stringProp>
+            <stringProp name="CounterConfig.name">t_id</stringProp>
             <stringProp name="CounterConfig.format"></stringProp>
             <boolProp name="CounterConfig.per_user">false</boolProp>
           </CounterConfig>

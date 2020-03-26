@@ -65,7 +65,6 @@ class RegisterStudentTest extends Specification {
         student = new User(NAME, USERNAME, KEY, User.Role.STUDENT)
         userRepository.save(student)
         tournament = new QuestionsTournament()
-        tournament.setKey(1)
         questionsTournamentRepository.save(tournament)
 
         courseExecution.addUser(student)
@@ -91,10 +90,6 @@ class RegisterStudentTest extends Specification {
         result.userName == USERNAME
         result.tournamentId == tournamentDto.id
         result.userId == student.getId()
-        and: "userDto has correct data"
-        userDto.getUsername() == USERNAME
-        userDto.getName() == NAME
-        userDto.getRole() == User.Role.STUDENT
         and: "is in the database"
         registrationRepository.findAll().size() == 1
         def registration = registrationRepository.findAll().get(0)
