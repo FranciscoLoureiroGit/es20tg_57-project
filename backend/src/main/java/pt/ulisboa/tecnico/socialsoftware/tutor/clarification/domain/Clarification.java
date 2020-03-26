@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -65,6 +66,10 @@ public class Clarification {
         this.description = clarificationDto.getDescription();
         this.key = clarificationDto.getKey();
         this.id = clarificationDto.getId();
+
+        if (clarificationDto.getStatus() != null) {
+            this.status = Clarification.Status.valueOf(clarificationDto.getStatus());
+        }
 
         if (clarificationDto.getImage() != null) {
             Image img = new Image(clarificationDto.getImage());

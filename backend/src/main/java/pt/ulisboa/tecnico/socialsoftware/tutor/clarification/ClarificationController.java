@@ -4,16 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 
 @RestController
@@ -23,16 +23,22 @@ public class ClarificationController {
     @Autowired
     private AnswerService answerService;
 
+    @Autowired
     private ClarificationService clarificationService;
 
-    ClarificationController(ClarificationService clarificationService1) { this.clarificationService = clarificationService1; }
+    // TODO finish this part of the controller related to visualization feature
+    @GetMapping("/User/")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ClarificationAnswerDto getClarificationAnswer(@PathVariable int studentId, @PathVariable int questionAnswerId) {
+        return clarificationService.getClarificationAnswer(studentId, questionAnswerId);
+    }
 
     @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')") // Only student can create a clarification request
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
     public ClarificationDto createClarification(@PathVariable int questionAnswerId,
                                                 @Valid @RequestBody ClarificationDto clarificationDto,
-                                                @RequestBody UserDto userDto){
-        return clarificationService.createClarification(questionAnswerId, clarificationDto, userDto);
+                                                Principal principal){
+        return clarificationService.createClarification(questionAnswerId, clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
     }
 
     @PostMapping("/{quizId}/quizAnswer/questionAnswer/clarifications/{clarificationId}/")

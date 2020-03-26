@@ -107,7 +107,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto.getId())
 
         then: "the correct clarification is inside the clarificationRepository and quizAnswerRepository"
         clarificationRepository.count() == 1L
@@ -140,7 +140,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         clarificationDto.setDescription(description)
 
         when:
-        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto.getId())
 
         then:
         def error = thrown(TutorException)
@@ -167,7 +167,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswerTest.getId(), clarificationDto, studentDto)
+        clarificationService.createClarification(questAnswerTest.getId(), clarificationDto, studentDto.getId())
 
         then:
         thrown(TutorException)
@@ -184,7 +184,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswer.getId(), clarificationDto, userDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, userDto.getId())
 
         then:
         thrown(TutorException)
@@ -213,7 +213,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(-1, clarificationDto, studentDto)
+        clarificationService.createClarification(-1, clarificationDto, studentDto.getId())
 
         then:
         thrown(TutorException)
@@ -232,7 +232,7 @@ class CreateClarificationServiceSpockTest extends Specification {
         clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswer.getId(), clarificationDto, teacherDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, teacherDto.getId())
 
         then:
         thrown(TutorException)
