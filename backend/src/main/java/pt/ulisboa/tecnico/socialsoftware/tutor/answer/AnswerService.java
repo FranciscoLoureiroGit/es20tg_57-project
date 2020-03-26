@@ -202,13 +202,13 @@ public class AnswerService {
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer) {
+    public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, Integer userId, String answer) {
         //Input Validation: request and answer
         Clarification clarification = validateClarification(request);
 
         if (answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
 
-        User usr = validateUser(request, user);
+        User usr = validateUser(request, userId);
         ClarificationAnswer clarificationAnswer = getCreateClarificationAnswer(answer, clarification, usr);
 
         // Register in database
@@ -242,18 +242,23 @@ public class AnswerService {
         return clarification;
     }
 
-    private User validateUser(ClarificationDto request, UserDto user) {
+    private User validateUser(ClarificationDto request, Integer userId) {
         //User Validation is done here
 
-        if (user == null || user.getRole() != User.Role.TEACHER) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+        if (userId == null) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        if( user.getRole() != User.Role.TEACHER) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
 
         //Get user and quizQuestion from database
-        User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
+
         QuestionAnswer questionAnswer = questionAnswerRepository.findById(request.getQuestionAnswerId()).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, request.getQuestionAnswerId()));
 
         QuizQuestion quizQuest = questionAnswer.getQuizQuestion();
 
-        if (!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
+        if (!user.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
                 courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
                         quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions matches
                                 quizQuestion -> quizQuestion.getId() == quizQuest.getId())                   //The quizQuestion obtained from the request
@@ -262,6 +267,6 @@ public class AnswerService {
             // Teacher cannot answer this question, not from the same course
             throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
         }
-        return usr;
+        return user;
     }
 }

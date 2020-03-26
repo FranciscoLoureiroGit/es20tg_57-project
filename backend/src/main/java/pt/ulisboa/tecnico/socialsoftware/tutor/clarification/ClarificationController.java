@@ -44,11 +44,11 @@ public class ClarificationController {
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
     public ClarificationAnswerDto createClarificationAnswer(@PathVariable int clarificationId, @PathVariable int quizId,
                                                             @Valid @RequestBody ClarificationAnswerDto clarificationAnswerDto,
-                                                            @RequestBody UserDto userDto){
+                                                            Principal principal){
         ClarificationDto clr = new ClarificationDto();
         clr.setId(clarificationId);
 
-        return answerService.createClarificationAnswer(clr, userDto, clarificationAnswerDto.getAnswer());
+        return answerService.createClarificationAnswer(clr, ((User)((Authentication)principal).getPrincipal()).getId(), clarificationAnswerDto.getAnswer());
     }
 
 }
