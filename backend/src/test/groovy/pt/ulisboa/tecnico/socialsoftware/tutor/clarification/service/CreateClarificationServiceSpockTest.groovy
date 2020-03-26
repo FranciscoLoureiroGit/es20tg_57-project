@@ -65,10 +65,8 @@ class CreateClarificationServiceSpockTest extends Specification {
     def quizQuestion
     def quizAnswer
     def questAnswer
-    def questAnswerDto
     def studentDto
     def student
-    def result
     def question
 
     def setup() {

@@ -26,9 +26,8 @@ public class ClarificationController {
     @Autowired
     private ClarificationService clarificationService;
 
-    // TODO finish this part of the controller related to visualization feature
-    @GetMapping("/User/")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @GetMapping("/{quizId}/quizAnswer/questionAnswer/clarifications/{clarificationId}/")
+    @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission('QUIZ.ACCESS')")
     public ClarificationAnswerDto getClarificationAnswer(@PathVariable int studentId, @PathVariable int questionAnswerId) {
         return clarificationService.getClarificationAnswer(studentId, questionAnswerId);
     }

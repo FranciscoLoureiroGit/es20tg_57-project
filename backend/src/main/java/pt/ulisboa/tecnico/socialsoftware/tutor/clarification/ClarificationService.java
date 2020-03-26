@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -85,11 +86,13 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationAnswerDto getClarificationAnswer(int studentId, int questionAnswerId) {
+    public ClarificationAnswerDto getClarificationAnswer(Integer studentId, Integer clarificationId) {
         User user = userRepository.getOne(studentId);
+        Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
+                new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
         Set<ClarificationAnswer> clarificationAnswers = user.getClarificationAnswers();
         for (ClarificationAnswer ca : clarificationAnswers ) {
-            if (ca.getClarification().getQuestionAnswer().getId().equals(questionAnswerId)) {
+            if (ca.getClarification().getId().equals(clarification.getId())) {
                 return new ClarificationAnswerDto(ca);
             }
         }
