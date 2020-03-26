@@ -26,14 +26,10 @@ public class QuestionsTournamentController {
     @Autowired
     QuestionsTournamentService questionsTournamentService;
 
-    @PostMapping("/executions/{executionId}/questionsTournaments")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    @PostMapping("/executions/{executionId}/questionsTournament")
+    @PreAuthorize("hasRole('ROLE_DEMO_ADMIN') or (hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS'))")
     public QuestionsTournamentDto createQuestionsTournament(Principal principal, @PathVariable int executionId, @Valid @RequestBody QuestionsTournamentDto questionsTournament) {
-        User user = (User) ((Authentication) principal).getPrincipal();
-
-        if(user == null){
-            throw new TutorException(AUTHENTICATION_ERROR);
-        }
+        User user = getAuthenticationUser(principal);
 
         formatDates(questionsTournament);
         return this.questionsTournamentService.createQuestionsTournament(executionId,user.getId(), questionsTournament);

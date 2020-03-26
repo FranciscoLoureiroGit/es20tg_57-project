@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 public class QuestionsTournamentDto {
     private Integer id;
-    private Integer key;
     private String startingDate = null;
     private String endingDate = null;
     private int numberOfQuestions;
@@ -36,7 +35,6 @@ public class QuestionsTournamentDto {
 
     public QuestionsTournamentDto(QuestionsTournament questionsTournament){
         this.id = questionsTournament.getId();
-        this.key = questionsTournament.getKey();
         this.startingDate = questionsTournament.getStartingDate().format(formatter);
         this.endingDate = questionsTournament.getEndingDate().format(formatter);
         this.numberOfQuestions = questionsTournament.getNumberOfQuestions();
@@ -49,15 +47,7 @@ public class QuestionsTournamentDto {
         this.id = id;
     }
 
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
-    }
-
-    public String getStartingDate() {
+        public String getStartingDate() {
         return startingDate;
     }
 
@@ -89,11 +79,11 @@ public class QuestionsTournamentDto {
         this.topics = topics;
     }
 
-    public UserDto getStudentUser() {
+    public UserDto getStudentTournamentCreator() {
         return studentTournamentCreator;
     }
 
-    public void setStudentUser(UserDto studentUser) {
+    public void setStudentTournamentCreator(UserDto studentUser) {
         this.studentTournamentCreator = studentUser;
     }
 

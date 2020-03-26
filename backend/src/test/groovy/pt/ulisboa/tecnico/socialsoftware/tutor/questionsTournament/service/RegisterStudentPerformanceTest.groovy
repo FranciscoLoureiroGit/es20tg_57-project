@@ -47,7 +47,7 @@ class RegisterStudentPerformanceTest extends Specification {
         and: "a course execution"
         def courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO);
         courseExecutionRepository.save(courseExecution)
-        and: "10000 students in the courseExecution"
+        and: "5000 students in the courseExecution"
         1.upto(5000, {
             student = new User('Name', it.toString(), it.toInteger(), User.Role.STUDENT)
             student.setId(it.toInteger())

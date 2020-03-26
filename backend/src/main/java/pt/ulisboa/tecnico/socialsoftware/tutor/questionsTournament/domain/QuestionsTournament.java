@@ -22,11 +22,8 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Table(name = "QUESTIONSTOURNAMENTS")
 public class QuestionsTournament {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.SEQUENCE)
     private Integer id;
-
-    @Column(unique=true, nullable = false)
-    private Integer key;
 
     @Column(name = "starting_date")
     private LocalDateTime startingDate;
@@ -56,8 +53,7 @@ public class QuestionsTournament {
     public QuestionsTournament(){
     }
 
-    public QuestionsTournament(QuestionsTournamentDto questionsTournamentDto, User studentTournamentCreator, CourseExecution courseExecution){
-        this.key = questionsTournamentDto.getKey();
+    public QuestionsTournament(QuestionsTournamentDto questionsTournamentDto){
         setStartingDate(questionsTournamentDto.getStartingDateDate());
         setEndingDate(questionsTournamentDto.getEndingDateDate());
         setNumberOfQuestions(questionsTournamentDto.getNumberOfQuestions());
@@ -69,14 +65,6 @@ public class QuestionsTournament {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
     }
 
     public LocalDateTime getStartingDate() {
@@ -172,7 +160,7 @@ public class QuestionsTournament {
 
     private void checkStudentTournamentCreator(User studentTournamentCreator){
         if (studentTournamentCreator == null ||
-                studentTournamentCreator.getRole() != User.Role.STUDENT) {
+                (studentTournamentCreator.getRole() != User.Role.STUDENT && studentTournamentCreator.getRole() != User.Role.DEMO_ADMIN)) {
             throw new TutorException(USER_NOT_STUDENT);
         }
     }

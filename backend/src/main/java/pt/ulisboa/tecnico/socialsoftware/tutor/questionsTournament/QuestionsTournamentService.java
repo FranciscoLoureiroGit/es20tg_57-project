@@ -45,11 +45,6 @@ public class QuestionsTournamentService {
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
 
-    public Integer getMaxQuestionsTournamentKey() {
-        Integer maxQuestionsTournamentKey = tournamentRepository.getMaxQuestionsTournamentKey();
-        return maxQuestionsTournamentKey != null ? maxQuestionsTournamentKey : 0;
-    }
-
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public CourseDto findTournamentCourseExecution(int tournamentId) {
         return this.tournamentRepository.findById(tournamentId)
@@ -66,10 +61,7 @@ public class QuestionsTournamentService {
         CourseExecution courseExecution = getCourseExecution(executionId);
         User user = getUserFromRepository(userId);
 
-        if(questionsTournamentDto.getKey() == null) {
-            questionsTournamentDto.setKey(getMaxQuestionsTournamentKey() + 1);
-        }
-        QuestionsTournament questionsTournament = new QuestionsTournament(questionsTournamentDto,user,courseExecution);
+        QuestionsTournament questionsTournament = new QuestionsTournament(questionsTournamentDto);
         questionsTournament.setStudentTournamentCreator(user);
         questionsTournament.setCourseExecution(courseExecution);
         addTopics(questionsTournamentDto, questionsTournament);
