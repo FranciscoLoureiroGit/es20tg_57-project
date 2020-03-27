@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -24,9 +25,6 @@ public class Clarification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique=true, nullable = false)
-    private Integer key;
-
     @Enumerated(EnumType.STRING)
     private Status status = Status.OPEN;
 
@@ -45,14 +43,14 @@ public class Clarification {
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "questionAnswer_id")
     private QuestionAnswer questionAnswer;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
     private ClarificationAnswer clarificationAnswer;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -63,8 +61,14 @@ public class Clarification {
         checkConsistentClarification(clarificationDto);
         this.title = clarificationDto.getTitle();
         this.description = clarificationDto.getDescription();
-        this.key = clarificationDto.getKey();
         this.id = clarificationDto.getId();
+
+        if (clarificationDto.getStatus() != null) {
+            this.status = Clarification.Status.valueOf(clarificationDto.getStatus());
+        } else {
+            this.status = Status.OPEN;
+            // Clarification was just created, therefore is open
+        }
 
         if (clarificationDto.getImage() != null) {
             Image img = new Image(clarificationDto.getImage());
@@ -92,14 +96,6 @@ public class Clarification {
 
     public void setQuestionAnswer(QuestionAnswer questionAnswer) {
         this.questionAnswer = questionAnswer;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
     }
 
     public Integer getId() { return id; }
@@ -145,7 +141,6 @@ public class Clarification {
     public String toString() {
         return "Clarification{" +
                 "id=" + id +
-                ", key=" + key +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", image=" + image +

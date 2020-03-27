@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 
 public class ClarificationDto implements Serializable {
     private Integer id;
-    private  Integer key;
     private String title;
     private String description;
     private Integer studentId;
@@ -26,8 +25,9 @@ public class ClarificationDto implements Serializable {
         this.title = clarification.getTitle();
         this.studentId = clarification.getUser().getId();
         this.questionAnswerId = clarification.getQuestionAnswer().getId();
-        this.status = clarification.getStatus().name();
 
+        if (clarification.getStatus() != null)
+            this.status = clarification.getStatus().name();
         if (clarification.getImage() != null)
             this.image = new ImageDto(clarification.getImage());
         if (clarification.getCreationDate() != null)
@@ -42,14 +42,6 @@ public class ClarificationDto implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
     }
 
     public String getStatus() { return status; }

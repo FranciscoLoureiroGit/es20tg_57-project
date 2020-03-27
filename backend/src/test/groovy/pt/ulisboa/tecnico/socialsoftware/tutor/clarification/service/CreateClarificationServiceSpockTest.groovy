@@ -6,9 +6,9 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuestionAnswerDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
@@ -65,10 +65,8 @@ class CreateClarificationServiceSpockTest extends Specification {
     def quizQuestion
     def quizAnswer
     def questAnswer
-    def questAnswerDto
     def studentDto
     def student
-    def result
     def question
 
     def setup() {
@@ -101,17 +99,18 @@ class CreateClarificationServiceSpockTest extends Specification {
     def "create a clarification request with valid inputs" () {
         given: "a UserDto"
         studentDto = new UserDto(student)
-        and: "a questionAnswerDto"
-        questAnswerDto = new QuestionAnswerDto(questAnswer)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswerDto, TITLE, DESCRIPTION, studentDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto.getId())
 
         then: "the correct clarification is inside the clarificationRepository and quizAnswerRepository"
         clarificationRepository.count() == 1L
         def result = clarificationRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
         result.getStatus() == Clarification.Status.OPEN
         result.getTitle() == TITLE
         result.getDescription() == DESCRIPTION
@@ -132,11 +131,13 @@ class CreateClarificationServiceSpockTest extends Specification {
         given: "a StudentDto"
         studentDto = new UserDto(student)
         quizAnswer.setUser(student)
-        and: "a questionAnswerDto"
-        questAnswerDto = new QuestionAnswerDto(questAnswer)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(title)
+        clarificationDto.setDescription(description)
 
         when:
-        clarificationService.createClarification(questAnswerDto, title, description, studentDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto.getId())
 
         then:
         def error = thrown(TutorException)
@@ -154,11 +155,16 @@ class CreateClarificationServiceSpockTest extends Specification {
         given: "a StudentDto"
         studentDto = new UserDto(student)
         quizAnswer.setUser(student)
-        and: "a questionAnswerDto"
-        def questAnswerTestDto = new QuestionAnswerDto()
+        and: "a questionAnswer"
+        def questAnswerTest = new QuestionAnswer()
+        questAnswerTest.setId(97)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswerTestDto, TITLE, DESCRIPTION, studentDto)
+        clarificationService.createClarification(questAnswerTest.getId(), clarificationDto, studentDto.getId())
 
         then:
         thrown(TutorException)
@@ -169,34 +175,42 @@ class CreateClarificationServiceSpockTest extends Specification {
         def user = new User()
         user.setId(56)
         def userDto = new UserDto(user)
-        and: "a questionAnswerDto"
-        questAnswerDto = new QuestionAnswerDto(questAnswer)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswerDto, TITLE, DESCRIPTION, userDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, userDto.getId())
 
         then:
         thrown(TutorException)
     }
 
     def "create a clarification with an invalid user" () {
-        given: "a questionAnswerDto"
-        questAnswerDto = new QuestionAnswerDto(questAnswer)
+        given: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswerDto, TITLE, DESCRIPTION, null)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, null)
 
         then:
         thrown(TutorException)
     }
 
-    def "create a clarification with an invalid questionAnswer" () {
+    def "create a clarification with an invalid questionAnswerId" () {
         given: "a StudentDto"
         studentDto = new UserDto(student)
         quizAnswer.setUser(student)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(null, TITLE, DESCRIPTION, studentDto)
+        clarificationService.createClarification(-1, clarificationDto, studentDto.getId())
 
         then:
         thrown(TutorException)
@@ -209,16 +223,38 @@ class CreateClarificationServiceSpockTest extends Specification {
         and: "a userDto"
         UserDto teacherDto = new UserDto(teacher)
         quizAnswer.setUser(teacher)
-        and: "a questionAnswerDto"
-        questAnswerDto = new QuestionAnswerDto(questAnswer)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
 
         when:
-        clarificationService.createClarification(questAnswerDto, TITLE, DESCRIPTION, teacherDto)
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, teacherDto.getId())
 
         then:
         thrown(TutorException)
     }
 
+    def "student creates two clarification requests on the same question answer"() {
+        given: "a UserDto"
+        studentDto = new UserDto(student)
+        and: "a clarificationDto"
+        ClarificationDto clarificationDto = new ClarificationDto()
+        clarificationDto.setTitle(TITLE)
+        clarificationDto.setDescription(DESCRIPTION)
+        and: "a second clarificationDto"
+        ClarificationDto clarificationDto2 = new ClarificationDto()
+        clarificationDto2.setTitle(TITLE+'2')
+        clarificationDto2.setDescription(DESCRIPTION+'2')
+
+        when:
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto.getId())
+        clarificationService.createClarification(questAnswer.getId(), clarificationDto2, studentDto.getId())
+
+
+        then:
+        thrown(TutorException)
+    }
 
     @TestConfiguration
     static class ServiceImplTestContextConfiguration {
