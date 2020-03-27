@@ -194,7 +194,6 @@ class CreateTopicQuestionTest extends Specification{
         def resultOne = questionRepository.findAll().get(0)
         def resultTwo = questionRepository.findAll().get(1)
         resultOne.getKey() + resultTwo.getKey() == 5
-        resultOne.getId() + resultTwo.getId() == 3
 
     }
 
