@@ -16,6 +16,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 import java.time.LocalDateTime
@@ -37,6 +39,7 @@ class ImportExportQuizzesTest extends Specification {
     def availableDate
     def conclusionDate
     def formatter
+    def teacher
 
     @Autowired
     QuizService quizService
@@ -53,6 +56,9 @@ class ImportExportQuizzesTest extends Specification {
     @Autowired
     QuizRepository quizRepository
 
+    @Autowired
+    UserRepository userRepository
+
     def setup() {
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
@@ -61,6 +67,9 @@ class ImportExportQuizzesTest extends Specification {
 
         def courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
+
+        teacher = new User("Name", "nickname", 2, User.Role.TEACHER)
+        userRepository.save(teacher)
 
         def questionDto = new QuestionDto()
         questionDto.setKey(1)
@@ -75,6 +84,8 @@ class ImportExportQuizzesTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setUser_id(teacher.getId())
+        questionDto.setUser(teacher)
         questionDto = questionService.createQuestion(course.getId(), questionDto)
 
         def quizDto = new QuizDto()

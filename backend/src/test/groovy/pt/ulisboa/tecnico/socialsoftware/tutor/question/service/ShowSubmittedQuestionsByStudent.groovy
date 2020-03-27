@@ -27,7 +27,7 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 @DataJpaTest
-class CreateTopicQuestionTest extends Specification{
+class ShowSubmittedQuestionsByStudent extends Specification{
     static final String COURSE_NAME = "Software Architecture"
     static final String ACRONYM = "AS1"
     static final String ACADEMIC_TERM = "1 SEM"
@@ -72,7 +72,7 @@ class CreateTopicQuestionTest extends Specification{
     def course
     def courseExecution
     def student
-    def questionDto
+    def question
     def questionDto2
     def studentDto
     def teacher
@@ -107,33 +107,31 @@ class CreateTopicQuestionTest extends Specification{
         options = new ArrayList<OptionDto>()
         /* Setup option 1 --> correct one */
 
-        option1 = new OptionDto()
+        option1 = new Option()
         option1.setCorrect(true)
         option1.setContent(OPTION_1)
         option1.setSequence(1)
         options.add(option1)
 
         /* Setup option 2 */
-        option2 = new OptionDto()
+        option2 = new Option()
         option2.setContent(OPTION_2)
         option2.setSequence(2)
         options.add(option2)
 
         /* Setup option 3 */
-        option3 = new OptionDto()
+        option3 = new Option()
         option3.setContent(OPTION_3)
         option3.setSequence(3)
         options.add(option3)
 
         /* Setup option 4 */
-        option4 = new OptionDto()
+        option4 = new Option()
         option4.setContent(OPTION_4)
         option4.setSequence(4)
         options.add(option4)
 
         /*Setup for student and teacher. Both users have to belong to a course */
-        teacher = new User(TEACHER_NAME, TEACHER_USERNAME, KEY_TEACHER, User.Role.TEACHER)
-        userRepository.save(teacher)
         student = new User(STUDENT_NAME, STUDENT_USERNAME, KEY_STUDENT, User.Role.STUDENT)
         userRepository.save(student)
 
@@ -147,119 +145,40 @@ class CreateTopicQuestionTest extends Specification{
 
     }
 
-    def "the student exists and creates a question to a course"(){
+    def "the student confirms your created question with success"(){
         given: "add and setup a question"
-        questionDto = new QuestionDto()
-        questionDto.setKey(KEY_QUESTION)
-        questionDto.setTitle(QUESTION_TITLE)
-        questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
-        questionDto.setUser(student)
-        questionDto.setUser_id(student.getId())
-        questionDto.setOptions(options)
+        question = new Question()
+        question.setKey(KEY_QUESTION)
+        question.setTitle(QUESTION_TITLE)
+        question.setContent(QUESTION_CONTENT)
+        question.setStatus(Question.Status.PENDING)
+        question.setUser(student)
+        question.addOption(option1)
+        question.addOption(option2)
+        question.addOption(option3)
+        question.addOption(option4)
+        question.setStudent_id(student.getId())
+        questionRepository.save(question)
 
         when:
-        def result = questionService.createQuestion(course.getId(), questionDto)
+        def result = questionService.findQuestionsByUserId(student.getId())
 
-        then:"the returned data are correct"
-        result.getTitle() == QUESTION_TITLE
-        result.getContent() == QUESTION_CONTENT
-        result.getId() == QUESTION_ID
-        result.getOptions().size() == 4
-        and: "question was created on service"
-        questionService.findQuestionById(QUESTION_ID).getContent() == QUESTION_CONTENT
-        questionService.findQuestionByKey(KEY_QUESTION).getContent() == QUESTION_CONTENT
-        questionService.findQuestions(COURSE_ID).size() == 1
+        then:"the returned data is correct"
+        result.size() == 1
+        result.get(0).getContent() == QUESTION_CONTENT
+        result.get(0).getTitle() == QUESTION_TITLE
+        result.get(0).getStatus() == Question.Status.PENDING.name()
+        result.get(0).getUser().getId() == student.getId()
+        result.get(0).getUser().getName() == student.getName()
 
     }
 
-    def "the student exists and creates two questions to a course"(){
-        given: "add and setup a question"
-        questionDto = new QuestionDto()
-        questionDto.setKey(KEY_QUESTION)
-        questionDto.setTitle(QUESTION_TITLE)
-        questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
-        questionDto.setUser(student)
-        questionDto.setUser_id(student.getId())
-        questionDto.setOptions(options)
-
-        when:"create first question"
-        questionService.createQuestion(course.getId(), questionDto)
-        questionDto.setKey(null)
-        questionService.createQuestion(course.getId(), questionDto)
-
-        then:"the returned data are correct"
-        questionRepository.count() == 2L
-        def resultOne = questionRepository.findAll().get(0)
-        def resultTwo = questionRepository.findAll().get(1)
-        resultOne.getKey() + resultTwo.getKey() == 5
-
-    }
-
-    def "the course does not exist"(){
-        given: "add and setup a question"
-        questionDto = new QuestionDto()
-        questionDto.setKey(KEY_QUESTION)
-        questionDto.setTitle(QUESTION_TITLE)
-        questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
-        questionDto.setUser(student)
-        questionDto.setUser_id(student.getId())
-        questionDto.setOptions(options)
-
+    def "no questions created by user"() {
         when:
-        questionService.createQuestion(-1, questionDto)
+        def result = questionService.findQuestionsByUserId(student.getId())
 
-        then: "the exception is thrown"
-        thrown(TutorException)
-
-    }
-
-
-    def "remove an inexistent question"(){
-        when: "question id does not exists"
-        questionService.removeQuestion(5555)
-
-        then: "the exception is thrown"
-        thrown(TutorException)
-    }
-
-    def "find a question whose id does not exist"(){
-        when: "find a question on service"
-        questionService.findQuestionById(-100)
-
-        then: "The exception is thrown"
-        thrown(TutorException)
-    }
-
-    def "update a question with a null question dto"(){
-        when: "trying to update a question"
-        questionService.updateQuestion(1, null)
-
-        then: "The exception is thrown"
-        thrown(TutorException)
-    }
-
-    def "admin or demo admin cannot create a question"(){
-        given: "add and setup a question"
-        def demo_admin_user = new User('Marcelo', 'marceloIst', KEY_STUDENT, User.Role.DEMO_ADMIN)
-        demo_admin_user.setId(50000)
-        questionDto = new QuestionDto()
-        questionDto.setKey(KEY_QUESTION)
-        questionDto.setTitle(QUESTION_TITLE)
-        questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
-        questionDto.setUser(demo_admin_user)
-        questionDto.setUser_id(demo_admin_user.getId())
-        questionDto.setOptions(options)
-
-        when:
-        questionService.createQuestion(course.getId(), questionDto)
-
-        then:"thrown the exception"
-        thrown(TutorException)
-
+        then:
+        result.size() == 0
     }
 
     @TestConfiguration

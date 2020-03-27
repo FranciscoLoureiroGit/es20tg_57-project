@@ -79,6 +79,14 @@ public class QuestionService {
     }
 
     @Retryable(
+        value = { SQLException.class },
+        backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<QuestionDto> findQuestionsByUserId(Integer studentId){
+        return questionRepository.findQuestionsByStudentId(studentId).stream().map(QuestionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -132,25 +140,17 @@ public class QuestionService {
     }
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void questionSetStatus(Integer questionId, Question.Status status) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        question.setStatus(status);
-    }
-
-    @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void questionChangeStatus(Integer questionId, Question.Status status, String justification) {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public QuestionDto questionChangeStatus(Integer questionId, Question.Status status, String justification) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         if ( status == Question.Status.DISABLED && ( justification==null || justification.isEmpty() ) )
             throw new TutorException(QUESTION_DISABLED_WITHOUT_JUSTIFICATION, questionId);
 
         question.setStatus(status);
         question.setJustification(justification);
+        return new QuestionDto(question);
     }
 
     @Retryable(

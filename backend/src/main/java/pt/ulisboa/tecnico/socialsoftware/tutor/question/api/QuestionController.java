@@ -7,10 +7,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import org.springframework.security.core.Authentication;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
+import java.security.Principal;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -18,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,11 +53,36 @@ public class QuestionController {
         return this.questionService.findAvailableQuestions(courseId);
     }
 
-    @PostMapping("/courses/{courseId}/questions")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
-    public QuestionDto createQuestion(@PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
-        question.setStatus(Question.Status.AVAILABLE.name());
+    @PostMapping("/courses/{courseId}/questions/createQuestion")
+    @PreAuthorize("(hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')) and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public QuestionDto createQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null)
+            throw new TutorException(AUTHENTICATION_ERROR);
+
+        if(user.getRole().name().equals(User.Role.STUDENT.name()))
+            question.setStatus(Question.Status.PENDING.name());
+        else if(user.getRole().name().equals(User.Role.TEACHER.name()))
+            question.setStatus(Question.Status.AVAILABLE.name());
+
+        question.setUser(user);
+        question.setUser_id(user.getId());
         return this.questionService.createQuestion(courseId, question);
+    }
+
+    @GetMapping("/questions/showMyQuestions/{user_id}")
+    @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')")
+    public List<QuestionDto> showMyQuestions(Principal principal, @PathVariable int user_id) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null || user.getRole().name().equals(User.Role.DEMO_ADMIN.name()) || user.getRole().name().equals(User.Role.ADMIN.name()))
+            throw new TutorException(AUTHENTICATION_ERROR);
+
+
+        return questionService.findQuestionsByUserId(user_id);
+
+
     }
 
     @GetMapping("/questions/{questionId}")
@@ -83,10 +115,13 @@ public class QuestionController {
 
     @PostMapping("/questions/{questionId}/set-status")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public ResponseEntity questionSetStatus(@PathVariable Integer questionId, @Valid @RequestBody String status) {
-        logger.debug("questionSetStatus questionId: {}: ", questionId);
-        questionService.questionSetStatus(questionId, Question.Status.valueOf(status));
-        return ResponseEntity.ok().build();
+    public QuestionDto questionChangeStatus(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
+        logger.debug("questionChangeStatus questionId: {}: ", questionId);
+        Question.Status status = Question.Status.valueOf(question.getStatus());
+        String justification = question.getJustification();
+
+        return questionService.questionChangeStatus(questionId, status, justification);
+        //ResponseEntity.ok().build();
     }
 
     @PutMapping("/questions/{questionId}/image")

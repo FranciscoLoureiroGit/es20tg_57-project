@@ -77,6 +77,8 @@ public class Question {
     @Column(name = "justification")
     private String justification;
 
+    @Column(name = "student_id")
+    private Integer student_id=0;
 
     public Question() {
     }
@@ -88,6 +90,7 @@ public class Question {
         this.content = questionDto.getContent();
         this.status = Status.valueOf(questionDto.getStatus());
         this.course = course;
+        this.student_id = questionDto.getUser_id();
         course.addQuestion(this);
 
         if (questionDto.getImage() != null) {
@@ -144,6 +147,10 @@ public class Question {
     public void setJustification(String justification) {
         this.justification = justification;
     }
+
+    public Integer getStudent_id() { return this.student_id; }
+
+    public void setStudent_id(Integer student_id){ this.student_id = student_id; }
 
     public List<Option> getOptions() {
         return options;
