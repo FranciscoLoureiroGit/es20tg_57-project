@@ -109,5 +109,7 @@ public class QuestionsTournamentDto {
         this.course = course;
     }
 
-
+    public Integer getId() {
+        return id;
+    }
 }

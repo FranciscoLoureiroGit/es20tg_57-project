@@ -92,7 +92,6 @@ public class QuestionsTournamentService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<QuestionsTournamentDto> getOpenTournamentsByCourse(int executionId){
         CourseExecution courseExecution = getCourseExecution(executionId);
-
         return courseExecution.getOpenQuestionsTournamentsDto();
     }
 
