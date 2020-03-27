@@ -17,6 +17,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerR
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
@@ -24,6 +25,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
@@ -70,6 +72,14 @@ public class AnswerService {
 
     @Autowired
     private AnswersXmlImport xmlImporter;
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public CourseDto findQuestionAnswerCourseExecution(int questionAnswerId) {
+        return this.questionAnswerRepository.findById(questionAnswerId)
+                .map(QuestionAnswer::getCourseExecution)
+                .map(CourseDto::new)
+                .orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
+    }
 
     @Retryable(
             value = {SQLException.class},
@@ -300,4 +310,6 @@ public class AnswerService {
         }
         return user;
     }
+
+
 }

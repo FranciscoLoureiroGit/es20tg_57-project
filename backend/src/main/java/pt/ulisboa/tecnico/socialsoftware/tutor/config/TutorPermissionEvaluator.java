@@ -79,7 +79,7 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 case "QUIZ.ACCESS":
                     return userHasThisExecution(username, quizService.findQuizCourseExecution(id).getCourseExecutionId());
                 case "QUESTION_ANSWER.ACCESS":
-                    return userHasThisQuestionAnswer(username, id);
+                    return userHasThisExecution(username, answerService.findQuestionAnswerCourseExecution(id).getCourseExecutionId());
                 default: return false;
             }
         }
@@ -95,16 +95,6 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     private boolean userHasThisExecution(String username, int id) {
         return userService.getCourseExecutions(username).stream()
                 .anyMatch(course -> course.getCourseExecutionId() == id);
-    }
-
-    private boolean userHasThisQuestionAnswer(String username, int id) {
-        User user = userService.findByUsername(username);
-        for (QuizAnswer qzA : user.getQuizAnswers()) {
-            for (QuestionAnswer qA : qzA.getQuestionAnswers())
-                if (qA.getId() == id)
-                    return true;
-        }
-        return false;
     }
 
      @Override

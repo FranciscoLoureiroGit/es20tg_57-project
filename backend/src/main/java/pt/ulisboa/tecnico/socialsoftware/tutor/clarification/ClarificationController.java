@@ -42,7 +42,7 @@ public class ClarificationController {
     }
 
     @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
-    @PreAuthorize("hasRole('ROLE_STUDENT')") // and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')") //
     public ClarificationDto createClarification(@PathVariable int questionAnswerId,
                                                 @Valid @RequestBody ClarificationDto clarificationDto,
                                                 Principal principal){
