@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load Test Web Service createClarification" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load Test Web Service getClarification" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -53,6 +53,26 @@
             <stringProp name="Argument.desc">New quizAnswer created with this id</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="quizQuestionId" elementType="Argument">
+            <stringProp name="Argument.name">quizQuestionId</stringProp>
+            <stringProp name="Argument.value">40937</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clarificationId" elementType="Argument">
+            <stringProp name="Argument.name">clarificationId</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clarificationTitle" elementType="Argument">
+            <stringProp name="Argument.name">clarificationTitle</stringProp>
+            <stringProp name="Argument.value">TITLE</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clarificationDescription" elementType="Argument">
+            <stringProp name="Argument.name">clarificationDescription</stringProp>
+            <stringProp name="Argument.value">DESCRIPTION</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -100,9 +120,13 @@ Requirements needed for clarification addition
 */
 
 
-INSERT INTO quiz_answers (id, completed, quiz_id, user_id) values 
-(${quizAnswerId}, true, ${quizId}, ${demoStudentId});
-INSERT INTO question_answers (id, quiz_answer_id) values (${questionAnswerId}, ${quizAnswerId});
+INSERT INTO quiz_answers (id, completed, quiz_id, user_id, used_in_statistics) values 
+(${quizAnswerId}, true, ${quizId}, ${demoStudentId}, false);
+INSERT INTO question_answers (id, quiz_answer_id, quiz_question_id) values (${questionAnswerId}, ${quizAnswerId}, ${quizQuestionId});
+
+INSERT INTO clarifications (id, key, user_id, title, description, question_answer_id, has_answer) 
+values (${clarificationId}, ${clarificationKey} ,${demoStudentId}, ${clarificationTitle}, ${clarificationDesc}, ${questionAnswerId}, false);
+
 
 
 
@@ -209,16 +233,13 @@ INSERT INTO question_answers (id, quiz_answer_id) values (${questionAnswerId}, $
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to create clarification" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to get clarification" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;title&quot;: &quot;CLARIFY1&quot;,&#xd;
-	&quot;description&quot;: &quot;This is the first clarification request&quot;,&#xd;
-	&quot;status&quot;: &quot;${status}&quot;&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -229,7 +250,7 @@ INSERT INTO question_answers (id, quiz_answer_id) values (${questionAnswerId}, $
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/quiz/quizAnswer/${questionAnswerId}/clarifications</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -241,7 +262,7 @@ INSERT INTO question_answers (id, quiz_answer_id) values (${questionAnswerId}, $
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification title" enabled="true">
               <stringProp name="JSON_PATH">$.title</stringProp>
-              <stringProp name="EXPECTED_VALUE">CLARIFY1</stringProp>
+              <stringProp name="EXPECTED_VALUE">${clarificationTitle</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -250,11 +271,29 @@ INSERT INTO question_answers (id, quiz_answer_id) values (${questionAnswerId}, $
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification description" enabled="true">
               <stringProp name="JSON_PATH">$.description</stringProp>
-              <stringProp name="EXPECTED_VALUE">This is the first clarification request</stringProp>
+              <stringProp name="EXPECTED_VALUE">${clarificationDesc}</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
               <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification Id" enabled="true">
+              <stringProp name="JSON_PATH">$.id</stringProp>
+              <stringProp name="EXPECTED_VALUE">${clarificationId}</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">true</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert User Id" enabled="true">
+              <stringProp name="JSON_PATH">$.studentId</stringProp>
+              <stringProp name="EXPECTED_VALUE">${demoStudentId}</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">true</boolProp>
             </JSONPathAssertion>
             <hashTree/>
           </hashTree>
