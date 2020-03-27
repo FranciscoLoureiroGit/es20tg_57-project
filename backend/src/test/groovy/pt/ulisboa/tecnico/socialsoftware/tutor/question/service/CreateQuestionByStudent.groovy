@@ -155,6 +155,7 @@ class CreateTopicQuestionTest extends Specification{
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.PENDING.name())
         questionDto.setUser(student)
+        questionDto.setUser_id(student.getId())
         questionDto.setOptions(options)
 
         when:
@@ -180,6 +181,7 @@ class CreateTopicQuestionTest extends Specification{
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.PENDING.name())
         questionDto.setUser(student)
+        questionDto.setUser_id(student.getId())
         questionDto.setOptions(options)
 
         when:"create first question"
@@ -192,7 +194,7 @@ class CreateTopicQuestionTest extends Specification{
         def resultOne = questionRepository.findAll().get(0)
         def resultTwo = questionRepository.findAll().get(1)
         resultOne.getKey() + resultTwo.getKey() == 5
-        resultOne.getId() + resultTwo.getId() == 5
+        resultOne.getId() + resultTwo.getId() == 3
 
     }
 
@@ -204,6 +206,7 @@ class CreateTopicQuestionTest extends Specification{
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.PENDING.name())
         questionDto.setUser(student)
+        questionDto.setUser_id(student.getId())
         questionDto.setOptions(options)
 
         when:
@@ -242,12 +245,14 @@ class CreateTopicQuestionTest extends Specification{
     def "admin or demo admin cannot create a question"(){
         given: "add and setup a question"
         def demo_admin_user = new User('Marcelo', 'marceloIst', KEY_STUDENT, User.Role.DEMO_ADMIN)
+        demo_admin_user.setId(50000)
         questionDto = new QuestionDto()
         questionDto.setKey(KEY_QUESTION)
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.PENDING.name())
         questionDto.setUser(demo_admin_user)
+        questionDto.setUser_id(demo_admin_user.getId())
         questionDto.setOptions(options)
 
         when:

@@ -82,7 +82,7 @@ public class QuestionService {
         value = { SQLException.class },
         backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    List<QuestionDto> findQuestionsByUserId(int studentId){
+    public List<QuestionDto> findQuestionsByUserId(Integer studentId){
         return questionRepository.findQuestionsByStudentId(studentId).stream().map(QuestionDto::new).collect(Collectors.toList());
     }
 

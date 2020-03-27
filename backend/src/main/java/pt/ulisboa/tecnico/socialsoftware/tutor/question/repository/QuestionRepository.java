@@ -31,6 +31,6 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     Optional<Question> findByKey(Integer key);
 
     @Query(value = "SELECT * FROM questions q WHERE q.student_id = :student_id", nativeQuery = true)
-    List<Question> findQuestionsByStudentId(int student_id);
+    List<Question> findQuestionsByStudentId(Integer student_id);
 
 }

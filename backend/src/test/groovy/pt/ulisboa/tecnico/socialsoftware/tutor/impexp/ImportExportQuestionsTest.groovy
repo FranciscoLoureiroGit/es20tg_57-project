@@ -14,6 +14,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ImageDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
@@ -38,9 +40,13 @@ class ImportExportQuestionsTest extends Specification {
     @Autowired
     QuestionRepository questionRepository
 
+    @Autowired
+    UserRepository userRepository
+
     def course
     def questionId
     def courseExecution
+    def student
 
     def setup() {
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
@@ -48,6 +54,9 @@ class ImportExportQuestionsTest extends Specification {
 
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
+
+        student = new User("Name", "nickname", 2, User.Role.STUDENT)
+        userRepository.save(student)
 
         def questionDto = new QuestionDto()
         questionDto.setTitle(QUESTION_TITLE)
@@ -71,6 +80,8 @@ class ImportExportQuestionsTest extends Specification {
         optionDto.setCorrect(false)
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setUser(student)
+        questionDto.setUser_id(student.getId())
 
         questionId = questionService.createQuestion(course.getId(), questionDto).getId()
     }

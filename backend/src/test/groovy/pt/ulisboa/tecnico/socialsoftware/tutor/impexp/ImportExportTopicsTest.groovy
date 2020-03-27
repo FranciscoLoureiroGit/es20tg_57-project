@@ -15,6 +15,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
@@ -43,8 +45,12 @@ class ImportExportTopicsTest extends Specification {
     @Autowired
     TopicRepository topicRepository
 
+    @Autowired
+    UserRepository userRepository
+
     def topicDtoOne
     def topicDtoTwo
+    def teacher
 
     def setup() {
         def course = new Course(COURSE_NAME, Course.Type.TECNICO)
@@ -53,10 +59,14 @@ class ImportExportTopicsTest extends Specification {
         def courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
 
+        teacher = new User("Name", "nickname", 2, User.Role.TEACHER)
+        userRepository.save(teacher)
+
         def questionDto = new QuestionDto()
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.AVAILABLE.name())
+
 
         def optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
@@ -66,6 +76,8 @@ class ImportExportTopicsTest extends Specification {
         questionDto.setOptions(options)
 
         questionDto = questionService.createQuestion(course.id, questionDto)
+        questionDto.setUser(teacher)
+        questionDto.setUser_id(teacher.setId())
 
         topicDtoOne = new TopicDto()
         topicDtoOne.setName(TOPIC_ONE)

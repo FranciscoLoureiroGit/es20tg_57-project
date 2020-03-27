@@ -32,7 +32,7 @@ public class QuestionDto implements Serializable {
     private Integer sequence;
     private User user;
     private String justification;
-    private int user_id;
+    private Integer user_id;
 
     public QuestionDto() {
     }
@@ -78,7 +78,10 @@ public class QuestionDto implements Serializable {
         return key;
     }
 
-    public void setUser(User user){ this.user = user; }
+    public void setUser(User user){
+        this.user = user;
+        setUser_id(user.getId());
+    }
 
     public User getUser() { return this.user; }
 
@@ -198,9 +201,9 @@ public class QuestionDto implements Serializable {
         return this.justification;
     }
 
-    public void setUser_id(int student_id) { this.user_id = student_id; }
+    public void setUser_id(Integer student_id) { this.user_id = student_id; }
 
-    public int getUser_id(){ return this.user_id; }
+    public Integer getUser_id(){ return this.user_id; }
 
     @Override
     public String toString() {
