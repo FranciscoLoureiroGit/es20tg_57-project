@@ -14,7 +14,4 @@ import java.util.Optional;
 public interface QuestionsTournamentRepository extends JpaRepository<QuestionsTournament, Integer> {
     @Query(value = "select * from questionsTournaments t where t.tournamentId = :tournamentId", nativeQuery = true)
     Optional<QuestionsTournament> findByTournament(Integer tournamentId);
-
-    @Query(value = "SELECT MAX(key) FROM questionsTournaments", nativeQuery = true)
-    Integer getMaxQuestionsTournamentKey();
 }

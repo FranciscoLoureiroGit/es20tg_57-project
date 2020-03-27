@@ -22,11 +22,8 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Table(name = "QUESTIONSTOURNAMENTS")
 public class QuestionsTournament {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.SEQUENCE)
     private Integer id;
-
-    @Column(unique=true, nullable = false)
-    private Integer key;
 
     @Column(name = "starting_date")
     private LocalDateTime startingDate;
@@ -56,8 +53,7 @@ public class QuestionsTournament {
     public QuestionsTournament(){
     }
 
-    public QuestionsTournament(QuestionsTournamentDto questionsTournamentDto, User studentTournamentCreator, CourseExecution courseExecution){
-        this.key = questionsTournamentDto.getKey();
+    public QuestionsTournament(QuestionsTournamentDto questionsTournamentDto){
         setStartingDate(questionsTournamentDto.getStartingDateDate());
         setEndingDate(questionsTournamentDto.getEndingDateDate());
         setNumberOfQuestions(questionsTournamentDto.getNumberOfQuestions());
@@ -69,14 +65,6 @@ public class QuestionsTournament {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
     }
 
     public LocalDateTime getStartingDate() {
@@ -153,6 +141,11 @@ public class QuestionsTournament {
         this.studentTournamentRegistrations.add(studentTournamentRegistration);
     }
 
+    public boolean isOpen(){
+        LocalDateTime currentTime = LocalDateTime.now();
+        return currentTime.isBefore(this.startingDate);
+    }
+
     private void checkStartingDate(LocalDateTime startingDate) {
         if (startingDate == null) {
             throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT, "Starting date");
@@ -172,14 +165,16 @@ public class QuestionsTournament {
 
     private void checkStudentTournamentCreator(User studentTournamentCreator){
         if (studentTournamentCreator == null ||
-                studentTournamentCreator.getRole() != User.Role.STUDENT) {
+                (studentTournamentCreator.getRole() != User.Role.STUDENT && studentTournamentCreator.getRole() != User.Role.DEMO_ADMIN)) {
             throw new TutorException(USER_NOT_STUDENT);
         }
     }
 
     private void checkCourseExecution(CourseExecution courseExecution){
-        if (courseExecution == null ||
-                !this.studentTournamentCreator.getCourseExecutions().contains(courseExecution)){
+        if (courseExecution == null){
+            throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT,"courseExecution");
+        }
+        if (this.courseExecution!=null && this.studentTournamentCreator != null && !this.studentTournamentCreator.getCourseExecutions().contains(courseExecution)){
             throw new TutorException(USER_NOT_ENROLLED);
         }
     }
