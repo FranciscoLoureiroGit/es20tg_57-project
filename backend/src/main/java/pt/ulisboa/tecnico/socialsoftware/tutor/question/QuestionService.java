@@ -79,6 +79,14 @@ public class QuestionService {
     }
 
     @Retryable(
+        value = { SQLException.class },
+        backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    List<QuestionDto> findQuestionsByUserId(int studentId){
+        return questionRepository.findQuestionsByStudentId(studentId).stream().map(QuestionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -130,15 +138,6 @@ public class QuestionService {
         question.remove();
         questionRepository.delete(question);
     }
-
-/*    @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void questionSetStatus(Integer questionId, Question.Status status) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        question.setStatus(status);
-    }*/
 
     @Retryable(
             value = { SQLException.class },

@@ -77,6 +77,8 @@ public class Question {
     @Column(name = "justification")
     private String justification;
 
+    @Column(name = "student_id")
+    private int student_id;
 
     public Question() {
     }
@@ -144,6 +146,10 @@ public class Question {
     public void setJustification(String justification) {
         this.justification = justification;
     }
+
+    public int getStudent_id() { return this.student_id; }
+
+    public void setStudent_id(int student_id){ this.student_id = student_id; }
 
     public List<Option> getOptions() {
         return options;

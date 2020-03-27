@@ -32,6 +32,7 @@ public class QuestionDto implements Serializable {
     private Integer sequence;
     private User user;
     private String justification;
+    private int user_id;
 
     public QuestionDto() {
     }
@@ -56,6 +57,7 @@ public class QuestionDto implements Serializable {
         this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
         this.user = question.getUser();
         this.justification = question.getJustification();
+        this.user_id = question.getStudent_id();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -195,6 +197,10 @@ public class QuestionDto implements Serializable {
     public String getJustification() {
         return this.justification;
     }
+
+    public void setUser_id(int student_id) { this.user_id = student_id; }
+
+    public int getUser_id(){ return this.user_id; }
 
     @Override
     public String toString() {

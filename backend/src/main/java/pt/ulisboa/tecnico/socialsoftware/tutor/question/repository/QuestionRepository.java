@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,5 +29,8 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
     @Query(value = "SELECT * FROM questions q WHERE q.key = :key", nativeQuery = true)
     Optional<Question> findByKey(Integer key);
+
+    @Query(value = "SELECT * FROM questions q WHERE q.student_id = :student_id", nativeQuery = true)
+    List<Question> findQuestionsByStudentId(int student_id);
 
 }
