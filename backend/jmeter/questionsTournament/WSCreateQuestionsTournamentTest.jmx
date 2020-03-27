@@ -296,7 +296,7 @@
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="queryType">Select Statement</stringProp>
+          <stringProp name="queryType">Callable Statement</stringProp>
           <stringProp name="query">DELETE FROM questionstournaments_topics;
 DELETE FROM questionstournaments;
 </stringProp>

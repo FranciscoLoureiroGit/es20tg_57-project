@@ -57,8 +57,8 @@ class GetOpenTournamentsByCoursePerformanceTest extends Specification {
         userRepository.save(user)
     }
 
-    def "performance testing to get 1000 questions tournaments"(){
-        given: "1000 questions tournaments in the course execution"
+    def "performance testing to get 10000 questions tournaments"(){
+        given: "10000 questions tournaments in the course execution"
         1.upto(10000, {
             tournament = new QuestionsTournament()
             tournament.setCourseExecution(courseExecution)
