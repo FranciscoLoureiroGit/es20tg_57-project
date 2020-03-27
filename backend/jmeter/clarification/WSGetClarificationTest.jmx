@@ -65,11 +65,21 @@
           </elementProp>
           <elementProp name="clarificationTitle" elementType="Argument">
             <stringProp name="Argument.name">clarificationTitle</stringProp>
-            <stringProp name="Argument.value">TITLE</stringProp>
+            <stringProp name="Argument.value">&apos;TITLE&apos;</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="clarificationDesc" elementType="Argument">
             <stringProp name="Argument.name">clarificationDesc</stringProp>
+            <stringProp name="Argument.value">&apos;DESCRIPTION&apos;</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="titleAssert" elementType="Argument">
+            <stringProp name="Argument.name">titleAssert</stringProp>
+            <stringProp name="Argument.value">TITLE</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="descriptionAssert" elementType="Argument">
+            <stringProp name="Argument.name">descriptionAssert</stringProp>
             <stringProp name="Argument.value">DESCRIPTION</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -100,13 +110,13 @@
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">ola12345</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">danlopes</stringProp>
+          <stringProp name="username">ars</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
@@ -257,7 +267,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification title" enabled="true">
               <stringProp name="JSON_PATH">$.title</stringProp>
-              <stringProp name="EXPECTED_VALUE">${clarificationTitle</stringProp>
+              <stringProp name="EXPECTED_VALUE">${titleAssert}</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -266,7 +276,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification description" enabled="true">
               <stringProp name="JSON_PATH">$.description</stringProp>
-              <stringProp name="EXPECTED_VALUE">${clarificationDesc}</stringProp>
+              <stringProp name="EXPECTED_VALUE">${descriptionAssert}</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -392,20 +402,20 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">ola12345</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">danlopes</stringProp>
+          <stringProp name="username">ars</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM question_Answers WHERE id=${questionAnswerId};
-DELETE FROM quiz_answers WHERE user_id=${demoStudentId};
-DELETE FROM clarifications WHERE user_id=${demoStudentId};</stringProp>
+          <stringProp name="query">DELETE FROM clarifications WHERE user_id=${demoStudentId};
+DELETE FROM question_Answers WHERE id=${questionAnswerId};
+DELETE FROM quiz_answers WHERE user_id=${demoStudentId};</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
