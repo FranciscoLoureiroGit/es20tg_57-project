@@ -131,15 +131,6 @@ public class QuestionService {
         questionRepository.delete(question);
     }
 
-/*    @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void questionSetStatus(Integer questionId, Question.Status status) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        question.setStatus(status);
-    }*/
-
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
