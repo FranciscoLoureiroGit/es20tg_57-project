@@ -2,11 +2,15 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Assessment;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
@@ -41,6 +45,9 @@ public class CourseExecution {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseExecution", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<Assessment> assessments = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseExecution", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<QuestionsTournament> questionsTournaments = new HashSet<>();
 
     public CourseExecution() {
     }
@@ -125,8 +132,27 @@ public class CourseExecution {
         return assessments;
     }
 
+    public Set<QuestionsTournament> getQuestionsTournaments(){
+        return questionsTournaments;
+    }
+
+    public List<QuestionsTournamentDto> getOpenQuestionsTournamentsDto(){
+        List<QuestionsTournamentDto> QuestionsTournamentsDto = new ArrayList<>();
+        for (QuestionsTournament tournament: this.questionsTournaments) {
+            if(tournament.isOpen()){
+                QuestionsTournamentDto tournamentDto = new QuestionsTournamentDto(tournament);
+                QuestionsTournamentsDto.add(tournamentDto);
+            }
+        }
+        return QuestionsTournamentsDto;
+    }
+
     public void addQuiz(Quiz quiz) {
         quizzes.add(quiz);
+    }
+
+    public void addQuestionsTournament(QuestionsTournament tournament){
+        questionsTournaments.add(tournament);
     }
 
     public void addAssessment(Assessment assessment) {

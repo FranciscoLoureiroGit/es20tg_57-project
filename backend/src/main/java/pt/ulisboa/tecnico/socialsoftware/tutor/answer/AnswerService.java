@@ -17,14 +17,15 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerR
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
@@ -33,7 +34,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -72,6 +72,14 @@ public class AnswerService {
 
     @Autowired
     private AnswersXmlImport xmlImporter;
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public CourseDto findQuestionAnswerCourseExecution(int questionAnswerId) {
+        return this.questionAnswerRepository.findById(questionAnswerId)
+                .map(QuestionAnswer::getCourseExecution)
+                .map(CourseDto::new)
+                .orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
+    }
 
     @Retryable(
             value = {SQLException.class},
@@ -199,16 +207,49 @@ public class AnswerService {
 
 
     @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationAnswerDto getClarificationAnswer(Integer clarificationId) {
+        Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
+                new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
+        if (clarification.getClarificationAnswer() != null) {
+            return new ClarificationAnswerDto(clarification.getClarificationAnswer());
+        } else {
+            throw new TutorException(NO_CLARIFICATION_ANSWER);
+        }
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationAnswerDto> getAllClarificationAnswers() {
+        return clarificationAnswerRepository.findAll().stream().map(ClarificationAnswerDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Retryable(
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationAnswerDto createClarificationAnswer(ClarificationDto request, UserDto user, String answer) {
+    public ClarificationAnswerDto createClarificationAnswer(ClarificationAnswerDto clarificationAnswerDto, Integer userId) {
+
+        if(clarificationAnswerDto == null ) throw new TutorException(ErrorMessage.NULL_CLARIFICATION_ANSWER_INPUT);
+
+        int clarificationId;
+
+        if (clarificationAnswerDto.getClarificationId() == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
+        else clarificationId = clarificationAnswerDto.getClarificationId();
+
+        String answer = clarificationAnswerDto.getAnswer();
+
         //Input Validation: request and answer
-        Clarification clarification = validateClarification(request);
+        Clarification clarification = validateClarification(clarificationId);
 
         if (answer == null || answer.trim().isEmpty()) throw new TutorException(ErrorMessage.NO_CLARIFICATION_ANSWER);
 
-        User usr = validateUser(request, user);
+        User usr = validateUser(clarification, userId);
         ClarificationAnswer clarificationAnswer = getCreateClarificationAnswer(answer, clarification, usr);
 
         // Register in database
@@ -228,32 +269,37 @@ public class AnswerService {
         //Link answer to request
 
         clarification.setClarificationAnswer(clarificationAnswer);
+        clarification.setStatus(Clarification.Status.CLOSED);
 
         return clarificationAnswer;
     }
 
-    private Clarification validateClarification(ClarificationDto request) {
-        if (request == null) throw new TutorException(ErrorMessage.NO_CLARIFICATION_REQUEST);
+    private Clarification validateClarification(Integer clarificationId) {
 
         //Fetch Clarification from database
-        Clarification clarification = clarificationRepository.findById(request.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND));
+        Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
 
         if (clarification.getHasAnswer()) throw new TutorException(ALREADY_HAS_ANSWER);
         return clarification;
     }
 
-    private User validateUser(ClarificationDto request, UserDto user) {
+    private User validateUser(Clarification clarification, Integer userId) {
         //User Validation is done here
 
-        if (user == null || user.getRole() != User.Role.TEACHER) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+        if (userId == null) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
+
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        if( user.getRole() != User.Role.TEACHER) throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
 
         //Get user and quizQuestion from database
-        User usr = userRepository.findById(user.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, user.getId()));
-        QuestionAnswer questionAnswer = questionAnswerRepository.findById(request.getQuestionAnswerId()).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, request.getQuestionAnswerId()));
+
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(clarification.getQuestionAnswer().getId()).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, clarification.getQuestionAnswer().getId()));
 
         QuizQuestion quizQuest = questionAnswer.getQuizQuestion();
 
-        if (!usr.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
+        if (!user.getCourseExecutions().stream().anyMatch(                                                    //Find any courseExec that
                 courseExecution -> courseExecution.getQuizzes().stream().anyMatch(                          //Has a quiz whose
                         quiz -> quiz.getQuizQuestions().stream().anyMatch(                                   //Quiz questions matches
                                 quizQuestion -> quizQuestion.getId() == quizQuest.getId())                   //The quizQuestion obtained from the request
@@ -262,6 +308,8 @@ public class AnswerService {
             // Teacher cannot answer this question, not from the same course
             throw new TutorException(CANNOT_ANSWER_CLARIFICATION);
         }
-        return usr;
+        return user;
     }
+
+
 }

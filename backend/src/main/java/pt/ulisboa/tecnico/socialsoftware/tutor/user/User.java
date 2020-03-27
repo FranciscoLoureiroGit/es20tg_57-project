@@ -382,6 +382,10 @@ public class User implements UserDetails {
 
     public void addClarification(Clarification clarification) { this.clarifications.add(clarification); }
 
+    public boolean isInCourseExecution(CourseExecution courseExecution) {
+        return this.getCourseExecutions().contains(courseExecution);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<>();

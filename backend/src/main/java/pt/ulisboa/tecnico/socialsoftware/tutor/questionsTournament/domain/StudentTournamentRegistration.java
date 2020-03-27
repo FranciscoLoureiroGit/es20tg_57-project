@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain;
 
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.persistence.*;
@@ -78,7 +79,7 @@ public class StudentTournamentRegistration {
 
     public void setUser(User student) {
         checkUserIsStudent(student);
-        checkStudentInCourse(student);
+        checkStudentInCourseExecution(student);
         this.user = student;
     }
 
@@ -87,9 +88,16 @@ public class StudentTournamentRegistration {
             throw new TutorException(USER_NOT_STUDENT);
     }
 
-    private void checkStudentInCourse(User student) {
-        if(!student.getCourseExecutions().contains(questionsTournament.getCourseExecution()))
+    private void checkStudentInCourseExecution(User student) {
+        if(IsStudentNotInCourse(student))
             throw new TutorException(STUDENT_NOT_ON_COURSE_EXECUTION);
+    }
+
+    private boolean IsStudentNotInCourse(User student) {
+        if(questionsTournament != null)
+            return !student.isInCourseExecution(questionsTournament.getCourseExecution());
+        else
+            return true;
     }
 
     public QuestionsTournament getQuestionsTournament() {

@@ -26,6 +26,7 @@ public enum ErrorMessage {
     CLARIFICATION_MISSING_DATA("Clarification data not consistent %d"),
     CLARIFICATION_NOT_FOUND("Clarification id was not found %d"),
     CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed %d"),
+    CLARIFICATION_EXISTS("User has already created a clarification for this question answer"),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),
@@ -77,14 +78,16 @@ public enum ErrorMessage {
     TOURNAMENT_ENDED("Tournament already ended"),
     TOURNAMENT_ALREADY_STARTED("Tournament already started"),
     TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
+    TOURNAMENT_NOT_FOUND("Tournament not found with id %d"),
     DUPLICATED_REGISTRATION("User already registered in tournament"),
     NULLID("null userId or questionsTournamentId"),
-
     NO_CLARIFICATION_REQUEST("No such Clarification Request"),
     NO_CLARIFICATION_ANSWER("Clarification answer is empty"),
     CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request"),
     NO_SUCH_USER("No such user"),
     ALREADY_HAS_ANSWER("Clarification already has an answer");
+    ALREADY_HAS_ANSWER("Clarification already has an answer"),
+    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty");
 
     public final String label;
 

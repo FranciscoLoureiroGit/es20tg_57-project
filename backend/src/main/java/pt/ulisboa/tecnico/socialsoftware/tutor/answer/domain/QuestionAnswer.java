@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -158,5 +159,9 @@ public class QuestionAnswer {
 
     public boolean isCorrect() {
         return getOption() != null && getOption().getCorrect();
+    }
+
+    public CourseExecution getCourseExecution() {
+        return this.quizAnswer.getQuiz().getCourseExecution();
     }
 }
