@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 
 public class ClarificationDto implements Serializable {
     private Integer id;
-    private  Integer key;
     private String title;
     private String description;
     private Integer studentId;
@@ -43,14 +42,6 @@ public class ClarificationDto implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
     }
 
     public String getStatus() { return status; }

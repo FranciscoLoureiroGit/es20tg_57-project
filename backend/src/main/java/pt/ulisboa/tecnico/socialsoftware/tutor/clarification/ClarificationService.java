@@ -6,9 +6,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.ClarificationAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.ClarificationAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
@@ -22,7 +20,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,9 +37,6 @@ public class ClarificationService {
     @Autowired
     private ClarificationRepository clarificationRepository;
 
-    @Autowired
-    private ClarificationAnswerRepository clarificationAnswerRepository;
-
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
@@ -50,15 +44,6 @@ public class ClarificationService {
     public ClarificationDto getClarificationById(Integer clarificationId) {
         return clarificationRepository.findById(clarificationId).map(ClarificationDto::new)
                 .orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationDto getClarificationByKey(Integer key) {
-        return clarificationRepository.findByKey(key).map(ClarificationDto::new)
-                .orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, key));
     }
 
     @Retryable(
@@ -121,7 +106,7 @@ public class ClarificationService {
                     new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
     }
 
-    private User checkInput(QuestionAnswer questionAnswer, ClarificationDto clarificationDto, User user) {
+    private void checkInput(QuestionAnswer questionAnswer, ClarificationDto clarificationDto, User user) {
         //Input Validation
         if (clarificationDto.getTitle().equals("") && !clarificationDto.getDescription().equals("")) {
             throw new TutorException(CLARIFICATION_TITLE_IS_EMPTY);
@@ -137,7 +122,6 @@ public class ClarificationService {
             else if (hasClarificationRequest(user, questionAnswer)) {
                 throw new TutorException(CLARIFICATION_EXISTS);
             }
-            return user;
         }
     }
 
@@ -153,11 +137,6 @@ public class ClarificationService {
 
     private static Clarification setClarificationValues(ClarificationDto clarificationDto, QuestionAnswer questionAnswer,
                                                         User user, ClarificationRepository clarificationRepository) {
-        if (clarificationDto.getKey() == null) {
-            int maxQuestionNumber = clarificationRepository.getMaxClarificationNumber() != null ?
-                    clarificationRepository.getMaxClarificationNumber() : 0;
-            clarificationDto.setKey(maxQuestionNumber + 1);
-        }
         // Creates the clarification object and sets its values
         Clarification clarification = new Clarification(clarificationDto);
 

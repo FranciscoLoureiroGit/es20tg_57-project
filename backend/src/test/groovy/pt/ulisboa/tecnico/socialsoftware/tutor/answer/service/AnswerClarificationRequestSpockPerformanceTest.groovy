@@ -168,7 +168,6 @@ class AnswerClarificationRequestSpockPerformanceTest extends Specification {
          when:
             for(int i = 0; i < 1000; i++){
                 clarificationRequest = new Clarification()
-                clarificationRequest.setKey(i)
                 clarificationRequest.setUser(userStudent)
                 clarificationRequest.setTitle("TITLE")
                 clarificationRequest.setDescription("DESC")

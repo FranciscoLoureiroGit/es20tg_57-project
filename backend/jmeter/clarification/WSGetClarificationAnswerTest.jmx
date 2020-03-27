@@ -115,8 +115,8 @@
           <stringProp name="checkQuery"></stringProp>
           <stringProp name="dbUrl">jdbc:postgresql://localhost:5432/tutordb?autoReconnect=true</stringProp>
           <stringProp name="driver">org.postgresql.Driver</stringProp>
-          <stringProp name="username">dsm</stringProp>
-          <stringProp name="password">pass1234</stringProp>
+          <stringProp name="username"></stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="connectionProperties"></stringProp>
         </JDBCDataSource>
         <hashTree/>
@@ -137,8 +137,8 @@ INSERT INTO quiz_answers (id, completed, quiz_id, user_id, used_in_statistics) v
 (${quizAnswerId}, true, ${quizId}, ${demoStudentId}, false);
 INSERT INTO question_answers (id, quiz_answer_id, quiz_question_id) values (${questionAnswerId}, ${quizAnswerId}, ${quizQuestionId});
 
-INSERT INTO clarifications (id, key, user_id, title, description, question_answer_id, has_answer) 
-values (${clarificationId}, ${clarificationKey} ,${demoStudentId}, ${clarificationTitle}, ${clarificationDesc}, ${questionAnswerId}, true);
+INSERT INTO clarifications (id, user_id, title, description, question_answer_id, has_answer) 
+values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarificationDesc}, ${questionAnswerId}, true);
 
 INSERT INTO clarification_answer (id, answer, clarification_id, user_id) 
 values (1, &apos;CLARIFICATION ANSWER&apos;, ${clarificationId}, ${userId});
@@ -416,13 +416,13 @@ values (1, &apos;CLARIFICATION ANSWER&apos;, ${clarificationId}, ${userId});
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">pass1234</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">dsm</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">

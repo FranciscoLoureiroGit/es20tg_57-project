@@ -161,7 +161,6 @@ class getClarificationAnswerSpockPerformanceTest extends Specification {
         questionAnswerRepository.save(questionAnswer)
 
         clarificationRequest = new Clarification()
-        clarificationRequest.setKey(1)
         clarificationRequest.setUser(userStudent)
         clarificationRequest.setTitle("TITLE")
         clarificationRequest.setDescription("DESC")

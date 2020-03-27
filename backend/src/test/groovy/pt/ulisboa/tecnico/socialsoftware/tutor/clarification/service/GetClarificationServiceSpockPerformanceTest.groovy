@@ -98,7 +98,6 @@ public class GetClarificationServiceSpockPerformanceTest extends Specification {
 
 
         clarification = new Clarification()
-        clarification.setKey(KEY)
         clarification.setTitle(TITLE)
         clarification.setDescription(DESCRIPTION)
         clarification.setUser(student)

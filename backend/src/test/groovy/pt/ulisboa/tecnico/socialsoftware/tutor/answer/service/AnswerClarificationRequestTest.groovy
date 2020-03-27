@@ -150,7 +150,6 @@ class AnswerClarificationRequestTest extends Specification{
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
 
         clarificationRequest = new Clarification()
-        clarificationRequest.setKey(1)
         clarificationRequest.setUser(userStudent)
         clarificationRequest.setTitle("TITLE")
         clarificationRequest.setDescription("DESC")

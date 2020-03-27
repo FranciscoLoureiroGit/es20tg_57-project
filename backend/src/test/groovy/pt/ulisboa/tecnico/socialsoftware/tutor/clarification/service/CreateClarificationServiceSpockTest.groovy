@@ -111,7 +111,6 @@ class CreateClarificationServiceSpockTest extends Specification {
         clarificationRepository.count() == 1L
         def result = clarificationRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
         result.getStatus() == Clarification.Status.OPEN
         result.getTitle() == TITLE
         result.getDescription() == DESCRIPTION

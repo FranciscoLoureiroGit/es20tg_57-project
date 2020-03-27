@@ -25,9 +25,6 @@ public class Clarification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique=true, nullable = false)
-    private Integer key;
-
     @Enumerated(EnumType.STRING)
     private Status status = Status.OPEN;
 
@@ -64,7 +61,6 @@ public class Clarification {
         checkConsistentClarification(clarificationDto);
         this.title = clarificationDto.getTitle();
         this.description = clarificationDto.getDescription();
-        this.key = clarificationDto.getKey();
         this.id = clarificationDto.getId();
 
         if (clarificationDto.getStatus() != null) {
@@ -100,14 +96,6 @@ public class Clarification {
 
     public void setQuestionAnswer(QuestionAnswer questionAnswer) {
         this.questionAnswer = questionAnswer;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
     }
 
     public Integer getId() { return id; }
@@ -153,7 +141,6 @@ public class Clarification {
     public String toString() {
         return "Clarification{" +
                 "id=" + id +
-                ", key=" + key +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", image=" + image +

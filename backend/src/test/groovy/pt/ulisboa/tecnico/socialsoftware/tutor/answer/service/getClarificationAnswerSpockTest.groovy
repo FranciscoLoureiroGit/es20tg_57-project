@@ -169,13 +169,11 @@ class getClarificationAnswerSpockTest extends Specification {
         questionAnswerRepository.save(questionAnswer2)
 
         clarificationRequest = new Clarification()
-        clarificationRequest.setKey(1)
         clarificationRequest.setUser(userStudent)
         clarificationRequest.setTitle("TITLE")
         clarificationRequest.setDescription("DESC")
         clarificationRequest.setQuestionAnswer(questionAnswer)
         clarificationRequest2 = new Clarification()
-        clarificationRequest2.setKey(2)
         clarificationRequest2.setUser(userStudent2)
         clarificationRequest2.setTitle("TITLE")
         clarificationRequest2.setDescription("DESC")
