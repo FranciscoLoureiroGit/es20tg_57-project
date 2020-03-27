@@ -48,15 +48,14 @@ public class ClarificationController {
         return clarificationService.createClarification(questionAnswerId, clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @PostMapping("/{quizId}/quizAnswer/questionAnswer/clarifications/{clarificationId}/")
+    @PostMapping("/{quizId}/quizAnswer/questionAnswer/clarifications/answer")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public ClarificationAnswerDto createClarificationAnswer(@PathVariable int clarificationId, @PathVariable int quizId,
-                                                            @Valid @RequestBody ClarificationAnswerDto clarificationAnswerDto,
+    public ClarificationAnswerDto createClarificationAnswer(@PathVariable int quizId,
+                                                            @RequestBody ClarificationAnswerDto clarificationAnswerDto,
                                                             Principal principal){
-        ClarificationDto clr = new ClarificationDto();
-        clr.setId(clarificationId);
 
-        return answerService.createClarificationAnswer(clr, ((User)((Authentication)principal).getPrincipal()).getId(), clarificationAnswerDto.getAnswer());
+
+        return answerService.createClarificationAnswer(clarificationAnswerDto, ((User)((Authentication)principal).getPrincipal()).getId());
     }
 
 }

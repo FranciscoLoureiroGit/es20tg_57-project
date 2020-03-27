@@ -84,8 +84,8 @@ public enum ErrorMessage {
     NO_CLARIFICATION_REQUEST("No such Clarification Request"),
     NO_CLARIFICATION_ANSWER("Clarification answer is empty"),
     CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request"),
-    ALREADY_HAS_ANSWER("Clarification already has an answer");
-
+    ALREADY_HAS_ANSWER("Clarification already has an answer"),
+    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty");
     public final String label;
 
     ErrorMessage(String label) {

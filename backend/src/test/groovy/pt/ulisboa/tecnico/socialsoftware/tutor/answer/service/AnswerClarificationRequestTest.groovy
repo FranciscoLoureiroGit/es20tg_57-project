@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.ClarificationAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
@@ -40,7 +41,6 @@ import java.time.LocalDateTime
 class AnswerClarificationRequestTest extends Specification{
 
     static final String QUESTION_TITLE = "QUESTION TITLE"
-    static final String QUESTION_CONT = "QUESTION CONTENT"
 
     @Autowired
     AnswerService answerService
@@ -183,15 +183,18 @@ class AnswerClarificationRequestTest extends Specification{
         // Clarification Answer is created
         given: 'a clarification'
         def clarificationDto = new ClarificationDto(clarificationRequest)
-        and: 'a teacher'
-        def userTeacherDto = new UserDto(userTeacher)
+
+        and: 'a clarificationAnswerDto'
+        def clrAnsDto = new ClarificationAnswerDto();
+        clrAnsDto.setClarificationId(clarificationDto.getId())
+        clrAnsDto.setAnswer("RESPONSE")
 
         when:
-        def result = answerService.createClarificationAnswer(clarificationDto,  userTeacherDto, "RESPONSE")
+        def result = answerService.createClarificationAnswer(clrAnsDto,  userTeacher.getId())
 
         then: 'Returned data is correct'
 
-        result.getUserId() == userTeacherDto.getId()
+        result.getUserId() == userTeacher.getId()
         result.getAnswer() == "RESPONSE"
         result.getClarificationId() == clarificationDto.getId()
 
@@ -212,11 +215,14 @@ class AnswerClarificationRequestTest extends Specification{
         // Clarification Answer is linked with Clarification Request
         given: 'a clarification'
         def clarificationDto = new ClarificationDto(clarificationRequest)
-        and: 'a teacher'
-        def userTeacherDto = new UserDto(userTeacher)
+
+        and: 'a clarificationAnswerDto'
+        def clrAnsDto = new ClarificationAnswerDto();
+        clrAnsDto.setClarificationId(clarificationDto.getId())
+        clrAnsDto.setAnswer("RESPONSE")
 
         when:
-        def result = answerService.createClarificationAnswer(clarificationDto, userTeacherDto, "RESPONSE")
+        def result = answerService.createClarificationAnswer(clrAnsDto, userTeacher.getId())
 
         then: 'answer is linked with request'
         clarificationRequest.getHasAnswer() == true
@@ -227,12 +233,13 @@ class AnswerClarificationRequestTest extends Specification{
     def "clarification request doesn't exist"(){
         //Exception is thrown
         given: 'null clarification'
-        def clarificationDto = null
-        and: 'a teacher'
-        def userTeacherDto = new UserDto(userTeacher)
+        def clrAnsDto = new ClarificationAnswerDto()
+        clrAnsDto.setClarificationId(null)
+        clrAnsDto.setAnswer("RESPONSE")
+
 
         when:
-        answerService.createClarificationAnswer(clarificationDto,  userTeacherDto, "RESPONSE")
+        def result = answerService.createClarificationAnswer(clrAnsDto, userTeacher.getId())
 
         then: 'throw exception'
         def error = thrown(TutorException)
@@ -243,11 +250,14 @@ class AnswerClarificationRequestTest extends Specification{
         //Exception is thrown
         given: 'a clarification'
         def clarificationDto = new ClarificationDto(clarificationRequest)
-        and: 'a null teacher'
-        def userTeacherDto = null
+
+        and: 'a clarificationAnswerDto'
+        def clrAnsDto = new ClarificationAnswerDto();
+        clrAnsDto.setClarificationId(clarificationDto.getId())
+        clrAnsDto.setAnswer("RESPONSE")
 
         when:
-        answerService.createClarificationAnswer(clarificationDto, userTeacherDto, "RESPONSE")
+        answerService.createClarificationAnswer(clrAnsDto, null)
 
         then:
         def error = thrown(TutorException)
@@ -258,12 +268,14 @@ class AnswerClarificationRequestTest extends Specification{
         //Exception is thrown
         given: 'a clarification'
         def clarificationDto = new ClarificationDto(clarificationRequest)
-        and: 'a student'
 
-        def userStudent2Dto = new UserDto(userStudent2)
+        and: 'a clarificationAnswerDto'
+        def clrAnsDto = new ClarificationAnswerDto();
+        clrAnsDto.setClarificationId(clarificationDto.getId())
+        clrAnsDto.setAnswer("RESPONSE")
 
         when:
-        answerService.createClarificationAnswer(clarificationDto, userStudent2Dto, "RESPONSE")
+        answerService.createClarificationAnswer(clrAnsDto, userStudent2.getId())
 
 
         then:
@@ -275,11 +287,15 @@ class AnswerClarificationRequestTest extends Specification{
         //Exception is thrown
         given: 'a clarification'
         def clarificationDto = new ClarificationDto(clarificationRequest)
-        and: 'a teacher'
-        def userTeacherDto = new UserDto(userTeacher)
+
+        and: 'a clarificationAnswerDto'
+        def clrAnsDto = new ClarificationAnswerDto();
+        clrAnsDto.setClarificationId(clarificationDto.getId())
+        clrAnsDto.setAnswer("")
+
 
         when:
-        answerService.createClarificationAnswer(clarificationDto, userTeacherDto, "")
+        answerService.createClarificationAnswer(clrAnsDto, userTeacher.getId())
 
         then:
         def error = thrown(TutorException)
@@ -290,11 +306,15 @@ class AnswerClarificationRequestTest extends Specification{
         //Exception is thrown
         given: 'a clarification'
         def clarificationDto = new ClarificationDto(clarificationRequest)
-        and: 'a teacher'
-        def userTeacherDto = new UserDto(userTeacher)
+
+        and: 'a clarificationAnswerDto'
+        def clrAnsDto = new ClarificationAnswerDto();
+        clrAnsDto.setClarificationId(clarificationDto.getId())
+        clrAnsDto.setAnswer(null)
+
 
         when:
-        answerService.createClarificationAnswer(clarificationDto, userTeacherDto, null)
+        answerService.createClarificationAnswer(clrAnsDto, userTeacher.getId())
 
         then:
         def error = thrown(TutorException)
@@ -309,7 +329,7 @@ class AnswerClarificationRequestTest extends Specification{
             return new AnswerService()
         }
         @Bean
-        AnswersXmlImport aswersXmlImport() {
+        AnswersXmlImport answersXmlImport() {
             return new AnswersXmlImport()
         }
     }

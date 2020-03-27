@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load Test Web Service getExternalCourseExecutions" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load Test Web Service createClarificationAnswer" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -46,7 +46,7 @@
           </elementProp>
           <elementProp name="quizId" elementType="Argument">
             <stringProp name="Argument.name">quizId</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">5369</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="demoStudentId" elementType="Argument">
@@ -66,12 +66,22 @@
           </elementProp>
           <elementProp name="clarificationTitle" elementType="Argument">
             <stringProp name="Argument.name">clarificationTitle</stringProp>
-            <stringProp name="Argument.value">CLARIFICATION TITLE</stringProp>
+            <stringProp name="Argument.value">&apos;CLARIFICATION TITLE&apos;</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="clarificationDesc" elementType="Argument">
             <stringProp name="Argument.name">clarificationDesc</stringProp>
-            <stringProp name="Argument.value">CLARIFICATION DESCRIPTION</stringProp>
+            <stringProp name="Argument.value">&apos;CLARIFIACTION DESCRIPTION&apos;</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clarificationKey" elementType="Argument">
+            <stringProp name="Argument.name">clarificationKey</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="quizQuestionId" elementType="Argument">
+            <stringProp name="Argument.name">quizQuestionId</stringProp>
+            <stringProp name="Argument.value">40937</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -106,7 +116,7 @@
           <stringProp name="dbUrl">jdbc:postgresql://localhost:5432/tutordb?autoReconnect=true</stringProp>
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="username">dsm</stringProp>
-          <stringProp name="password"></stringProp>
+          <stringProp name="password">pass1234</stringProp>
           <stringProp name="connectionProperties"></stringProp>
         </JDBCDataSource>
         <hashTree/>
@@ -123,12 +133,12 @@ Requirements needed for clarification answer addition
 */
 
 
-INSERT INTO quiz_answers (id, completed, quiz_id, user_id) values 
-(${quizAnswerId}, true, ${quizId}, ${demoStudentId});
-INSERT INTO question_answers (id, quiz_answer_id) values (${questionAnswerId}, ${quizAnswerId});
+INSERT INTO quiz_answers (id, completed, quiz_id, user_id, used_in_statistics) values 
+(${quizAnswerId}, true, ${quizId}, ${demoStudentId}, false);
+INSERT INTO question_answers (id, quiz_answer_id, quiz_question_id) values (${questionAnswerId}, ${quizAnswerId}, ${quizQuestionId});
 
-INSERT INTO clarification (id, user_id, title, description, question_answer_id) 
-values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarificationDesc}, ${questionAnswerId});
+INSERT INTO clarifications (id, key, user_id, title, description, question_answer_id, has_answer) 
+values (${clarificationId}, ${clarificationKey} ,${demoStudentId}, ${clarificationTitle}, ${clarificationDesc}, ${questionAnswerId}, false);
 
   
 
@@ -194,6 +204,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login as Demo Teacher" enabled="true">
@@ -244,7 +255,8 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;answer&quot;:&quot;${answer}&quot;&#xd;
+	&quot;answer&quot;: &quot;${answer}&quot;,&#xd;
+	&quot;clarificationId&quot;: &quot;${clarificationId}&quot;&#xd;
 }&#xd;
 </stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
@@ -255,7 +267,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/admin/courses/executions</stringProp>
+            <stringProp name="HTTPSampler.path">/${quizId}/quizAnswer/questionAnswer/clarifications/answer</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -394,7 +406,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password"></stringProp>
+          <stringProp name="password">pass1234</stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
