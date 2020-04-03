@@ -38,6 +38,7 @@
         ><i class="fas fa-chevron-right"
       /></span>
     </div>
+
     <result-component
       v-model="questionOrder"
       :answer="statementManager.statementQuiz.answers[questionOrder]"
@@ -47,6 +48,10 @@
       @increase-order="increaseOrder"
       @decrease-order="decreaseOrder"
     />
+    <div>
+      <v-spacer />
+      <v-btn color="primary" dark @click="newClarification">I have a doubt</v-btn>
+    </div>
   </div>
 </template>
 
@@ -54,6 +59,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import StatementManager from '@/models/statement/StatementManager';
 import ResultComponent from '@/views/student/quiz/ResultComponent.vue';
+import Question from '@/models/management/Question';
 
 @Component({
   components: {
@@ -96,6 +102,11 @@ export default class ResultsView extends Vue {
     if (n >= 0 && n < +this.statementManager.statementQuiz!.questions.length) {
       this.questionOrder = n;
     }
+  }
+
+  newClarification() {
+    this.currentQuestion = new Question();
+    this.editQuestionDialog = true;
   }
 }
 </script>

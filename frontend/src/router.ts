@@ -18,6 +18,7 @@ import QuizView from './views/student/quiz/QuizView.vue';
 import ResultsView from './views/student/quiz/ResultsView.vue';
 import StatsView from './views/student/StatsView.vue';
 import ScanView from './views/student/ScanView.vue';
+import ClarificationsView from './views/student/ClarificationsView.vue';
 
 import AdminManagementView from './views/admin/AdminManagementView.vue';
 import NotFoundView from './views/NotFoundView.vue';
@@ -164,6 +165,15 @@ let router = new Router({
           component: ResultsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Results',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'clarifications',
+          name: 'clarifications',
+          component: ClarificationsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Clarifications',
             requiredAuth: 'Student'
           }
         },

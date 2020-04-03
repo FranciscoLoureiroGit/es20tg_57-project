@@ -56,6 +56,8 @@ public class ClarificationDto implements Serializable {
 
     public void setDescription(String description1) { this.description = description1; }
 
+    public void setImage(ImageDto image) { this.image = image; }
+
     public ImageDto getImage() { return image; }
 
     public String getCreationDate() { return creationDate; }

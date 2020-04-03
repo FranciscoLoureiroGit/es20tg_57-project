@@ -14,6 +14,7 @@ import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
+import Clarification from '@/models/management/Clarification';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -133,6 +134,25 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  //TODO THIS IS FOR IMPLEMENTING THE PAGE
+  /*
+  static createClarification(clarification: Clarification): Promise<Clarification> {
+    return httpClient
+      .post(
+        `/quiz/quizAnswer/${Store.getters.}/clarifications/`
+          // TODO HOW TO GETCURRENTQUESTIONANSWER
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/`,
+        clarification
+      )
+      .then(response => {
+        return new Clarification(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+*/
 
   static updateQuestion(question: Question): Promise<Question> {
     return httpClient
