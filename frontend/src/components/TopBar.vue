@@ -119,6 +119,14 @@
                 <v-list-item-title>Open</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/createTournaments">
+              <v-list-item-action>
+                <v-icon>create</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Create</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
@@ -300,6 +308,16 @@
               <v-icon>assignment</v-icon>
             </v-list-item-action>
             <v-list-item-content>Open</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item
+            to="/student/createTournaments"
+            v-if="isStudent && currentCourse"
+          >
+            <v-list-item-action>
+              <v-icon>create</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Create</v-list-item-content>
           </v-list-item>
 
           <v-list-item
