@@ -26,6 +26,8 @@ import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
 import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
+import ClarificationsManagementView from '@/views/teacher/clarifications/ClarificationsManagementView.vue';
+import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 
 Vue.use(Router);
 
@@ -114,9 +116,29 @@ let router = new Router({
           meta: {
             title: process.env.VUE_APP_NAME + ' - ImpExp',
             requiredAuth: 'Teacher'
-          }
+            }
+          },
+        {
+            path: 'clarifications',
+            name: 'clarifications-management',
+            component: ClarificationsManagementView,
+            children: [
+              {
+                path: 'answer',
+                name: 'clarification-answer',
+                component: ClarificationAnswerView,
+                meta: {
+                  title: process.env.VUE_APP_NAME + ' - Clarification Answer',
+                  requiredAuth: 'Teacher'
+                }
+              },
+            ],
+            meta: {
+              title: process.env.VUE_APP_NAME + ' - Clarifications',
+              requiredAuth: 'Teacher'
+            }
         }
-      ]
+        ]
     },
     {
       path: '/student',
