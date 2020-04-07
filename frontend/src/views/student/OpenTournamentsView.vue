@@ -28,10 +28,11 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Topic from '@/models/management/Topic';
 import RemoteServices from '@/services/RemoteServices';
+import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 
 @Component
 export default class OpenTournamentsView extends Vue {
-  tournaments: QuestionsTournament[] = [];
+  questionsTournaments: QuestionsTournament[] = [];
   search: string = '';
 
   headers: object = [
@@ -55,7 +56,7 @@ export default class OpenTournamentsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.tournaments = await RemoteServices.getOpenTournaments();
+      this.questionsTournaments = await RemoteServices.getOpenTournaments();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

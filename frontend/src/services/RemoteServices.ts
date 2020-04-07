@@ -14,6 +14,7 @@ import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
+import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
