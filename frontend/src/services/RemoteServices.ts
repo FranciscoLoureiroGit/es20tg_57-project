@@ -521,6 +521,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getOpenTournaments(): Promise<QuestionsTournament[]> {
+    return httpClient
+      .get(`/executions/${Store.getters.getCurrentCourse.courseExecutionId}/questionsTournament`)
+      .then(response => {
+        return response.data.map((tournament: any) => {
+          return new QuestionsTournament(tournament);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
