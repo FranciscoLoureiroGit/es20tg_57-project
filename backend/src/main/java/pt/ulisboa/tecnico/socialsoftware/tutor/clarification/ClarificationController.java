@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.stylesheets.LinkStyle;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
@@ -14,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 
 @RestController
@@ -33,7 +35,11 @@ public class ClarificationController {
         return clarificationService.getClarification(((User)((Authentication) principal).getPrincipal()).getId(), questionAnswerId);
     }
 
-
+    @GetMapping("/quiz/quizAnswer/questionAnswers/clarifications")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<ClarificationDto> getStudentClarifications(Principal principal) {
+        return clarificationService.getClarifications(((User)((Authentication) principal).getPrincipal()).getId());
+    }
 
     @GetMapping("/{quizId}/quizAnswer/questionAnswer/{clarificationId}/answers")
     @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission(#quizId,'QUIZ.ACCESS')")

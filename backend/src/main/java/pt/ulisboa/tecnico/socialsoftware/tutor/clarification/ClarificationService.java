@@ -70,6 +70,16 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationDto> getClarifications(int studentId) {
+        User student = userRepository.findById(studentId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, studentId));
+
+        return student.getClarifications().stream().map(ClarificationDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ClarificationDto getClarification(int studentId, int questionAnswerId) {
         List<ClarificationDto> clarificationDtoList = getClarificationsByQuestion(questionAnswerId);
 

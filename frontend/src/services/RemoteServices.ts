@@ -121,6 +121,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getClarifications(): Promise<Clarification[]> {
+    return httpClient
+      .get('/quiz/quizAnswer/questionAnswers/clarifications')
+      .then(response => {
+        return response.data.map((clarification: any) => {
+          return new Clarification(clarification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static createQuestion(question: Question): Promise<Question> {
     return httpClient
       .post(
@@ -135,7 +148,10 @@ export default class RemoteServices {
       });
   }
 
-  static createClarification(questionAnswerId: number, clarification: Clarification): Promise<Clarification> {
+  static createClarification(
+    questionAnswerId: number,
+    clarification: Clarification
+  ): Promise<Clarification> {
     return httpClient
       .post(
         `/quiz/quizAnswer/${questionAnswerId}/clarifications/`,

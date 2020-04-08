@@ -1,4 +1,5 @@
 import Image from '@/models/management/Image';
+import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 
 export default class Clarification {
   id: number | null = null;
@@ -8,6 +9,7 @@ export default class Clarification {
   creationDate!: string | null;
   image: Image | null = null;
   questionAnswerId: number | null = null;
+  clarificationAnswer: ClarificationAnswer | null = null;
 
   constructor(jsonObj?: Clarification) {
     if (jsonObj) {
@@ -18,6 +20,10 @@ export default class Clarification {
       this.status = jsonObj.status;
       this.image = jsonObj.image;
       this.questionAnswerId = jsonObj.questionAnswerId;
+
+      if (jsonObj.clarificationAnswer) {
+        this.clarificationAnswer = jsonObj.clarificationAnswer;
+      }
     }
   }
 }
