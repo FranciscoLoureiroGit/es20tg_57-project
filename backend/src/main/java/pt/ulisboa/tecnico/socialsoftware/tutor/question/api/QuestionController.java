@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 import java.security.Principal;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,6 +46,16 @@ public class QuestionController {
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<QuestionDto> getCourseQuestions(@PathVariable int courseId){
         return this.questionService.findQuestions(courseId);
+    }
+
+    @GetMapping(value = "/courses/{courseId}/questions/export")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public void exportQuestions(HttpServletResponse response,@PathVariable int courseId) throws IOException {
+        response.setHeader("Content-Disposition", "attachment; filename=file.zip");
+        response.setContentType("application/zip");
+        response.getOutputStream().write(this.questionService.exportCourseQuestions(courseId).toByteArray());
+
+        response.flushBuffer();
     }
 
     @GetMapping("/courses/{courseId}/questions/available")
@@ -115,13 +126,10 @@ public class QuestionController {
 
     @PostMapping("/questions/{questionId}/set-status")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public QuestionDto questionChangeStatus(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
-        logger.debug("questionChangeStatus questionId: {}: ", questionId);
-        Question.Status status = Question.Status.valueOf(question.getStatus());
-        String justification = question.getJustification();
-
-        return questionService.questionChangeStatus(questionId, status, justification);
-        //ResponseEntity.ok().build();
+    public ResponseEntity questionSetStatus(@PathVariable Integer questionId, @Valid @RequestBody String status) {
+        logger.debug("questionSetStatus questionId: {}: ", questionId);
+        questionService.questionSetStatus(questionId, Question.Status.valueOf(status));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/questions/{questionId}/image")
@@ -153,7 +161,6 @@ public class QuestionController {
 
         return ResponseEntity.ok().build();
     }
-
 
     private Path getTargetLocation(String url) {
         String fileLocation = figuresDir + url;
