@@ -126,13 +126,10 @@ public class QuestionController {
 
     @PostMapping("/questions/{questionId}/set-status")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public QuestionDto questionChangeStatus(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
-        logger.debug("questionChangeStatus questionId: {}: ", questionId);
-        Question.Status status = Question.Status.valueOf(question.getStatus());
-        String justification = question.getJustification();
-
-        return questionService.questionChangeStatus(questionId, status, justification);
-        //ResponseEntity.ok().build();
+    public ResponseEntity questionSetStatus(@PathVariable Integer questionId, @Valid @RequestBody String status) {
+        logger.debug("questionSetStatus questionId: {}: ", questionId);
+        questionService.questionSetStatus(questionId, Question.Status.valueOf(status));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/questions/{questionId}/image")

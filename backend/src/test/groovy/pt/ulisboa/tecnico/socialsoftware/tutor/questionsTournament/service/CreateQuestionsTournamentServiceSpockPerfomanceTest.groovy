@@ -76,7 +76,7 @@ class CreateQuestionsTournamentServiceSpockPerfomanceTest extends Specification 
         setTopics()
     }
 
-    def "performance testing to create 1000000 question tournaments"(){
+    def "performance testing to create 10000 question tournaments"(){
         given: "a questions tournament with starting and ending date, topics and number of questions"
         def questionsTournament = new QuestionsTournamentDto()
         questionsTournament.setStartingDate(startingDate)
@@ -89,7 +89,7 @@ class CreateQuestionsTournamentServiceSpockPerfomanceTest extends Specification 
         endingDate = LocalDateTime.parse(endingDate,formatter)
 
         when:
-        1.upto(1000000,{
+        1.upto(10000,{
             questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament )
         })
 
