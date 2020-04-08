@@ -4,18 +4,20 @@ export default class Clarification {
   id: number | null = null;
   title: string = '';
   description: string = '';
-  status: string = '';
+  status: string = 'OPEN';
   creationDate!: string | null;
   image: Image | null = null;
+  questionAnswerId: number | null = null;
 
   constructor(jsonObj?: Clarification) {
     if (jsonObj) {
       this.id = jsonObj.id;
       this.title = jsonObj.title;
-      this.status = jsonObj.status;
       this.description = jsonObj.description;
-      this.image = jsonObj.image;
       this.creationDate = jsonObj.creationDate;
+      this.status = jsonObj.status;
+      this.image = jsonObj.image;
+      this.questionAnswerId = jsonObj.questionAnswerId;
     }
   }
 }

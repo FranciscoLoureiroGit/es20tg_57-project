@@ -135,14 +135,10 @@ export default class RemoteServices {
       });
   }
 
-  //TODO THIS IS FOR IMPLEMENTING THE PAGE
-  /*
-  static createClarification(clarification: Clarification): Promise<Clarification> {
+  static createClarification(questionAnswerId: number, clarification: Clarification): Promise<Clarification> {
     return httpClient
       .post(
-        `/quiz/quizAnswer/${Store.getters.}/clarifications/`
-          // TODO HOW TO GETCURRENTQUESTIONANSWER
-        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/`,
+        `/quiz/quizAnswer/${questionAnswerId}/clarifications/`,
         clarification
       )
       .then(response => {
@@ -152,7 +148,6 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
-*/
 
   static updateQuestion(question: Question): Promise<Question> {
     return httpClient

@@ -39,6 +39,12 @@
       /></span>
     </div>
 
+    <div style="position: relative; padding-top: 15px;">
+      <v-spacer />
+      <v-btn color="green" dark @click="newClarification">I have a doubt <v-icon>mdi-comment-question</v-icon>
+      </v-btn>
+    </div>
+
     <result-component
       v-model="questionOrder"
       :answer="statementManager.statementQuiz.answers[questionOrder]"
@@ -48,10 +54,34 @@
       @increase-order="increaseOrder"
       @decrease-order="decreaseOrder"
     />
-    <div>
-      <v-spacer />
-      <v-btn color="primary" dark @click="newClarification">I have a doubt</v-btn>
-    </div>
+
+    <v-dialog v-model="clarificationDialog" max-width="75%">
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ formTitle() }}</span>
+        </v-card-title>
+        <v-card-subtitle style="position: absolute; padding-top: 10px; padding-bottom: 10px;">
+          <span class="subtitle-1">{{ formSubTitle() }}</span>
+        </v-card-subtitle>
+
+        <v-card-text v-if="editClarification">
+          <v-container grid-list-md fluid>
+            <v-layout column wrap>
+              <v-flex xs24 sm12 md8>
+                <v-text-field v-model="clarification.title" label="Title" />
+                <v-text-field v-model="clarification.description" label="Description" />
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="blue darken-1" @click="closeDialogue">Cancel</v-btn>
+          <v-btn color="blue darken-1" @click="saveClarification">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -60,6 +90,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import StatementManager from '@/models/statement/StatementManager';
 import ResultComponent from '@/views/student/quiz/ResultComponent.vue';
 import Question from '@/models/management/Question';
+import Clarification from '@/models/management/Clarification';
+import RemoteServices from '@/services/RemoteServices';
+import Topic from '@/models/management/Topic';
 
 @Component({
   components: {
@@ -69,6 +102,8 @@ import Question from '@/models/management/Question';
 export default class ResultsView extends Vue {
   statementManager: StatementManager = StatementManager.getInstance;
   questionOrder: number = 0;
+  clarificationDialog: boolean = false;
+  clarification = new Clarification();
 
   async created() {
     if (this.statementManager.isEmpty()) {
@@ -104,9 +139,41 @@ export default class ResultsView extends Vue {
     }
   }
 
+  getQuestionAnswerId() {
+    return this.statementManager.statementQuiz!.answers[this.questionOrder].id;
+  }
+
+  formTitle() {
+    return 'Clarification request';
+  }
+
+  formSubTitle() {
+    return '* Please insert here your doubt about the selected question starting with a title and then a straightforward description';
+  }
+
   newClarification() {
-    this.currentQuestion = new Question();
-    this.editQuestionDialog = true;
+    this.clarification = new Clarification();
+    this.clarificationDialog = true;
+  }
+
+  editClarification(clarification: Clarification) {
+    this.clarification = { ...clarification };
+    this.clarificationDialog = true;
+  }
+
+  closeDialogue() {
+    this.clarificationDialog = false;
+  }
+
+  async saveClarification() {
+    try {
+      if (this.clarification) {
+        this.clarification = await RemoteServices.createClarification(this.getQuestionAnswerId(),this.clarification);
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    this.closeDialogue();
   }
 }
 </script>
