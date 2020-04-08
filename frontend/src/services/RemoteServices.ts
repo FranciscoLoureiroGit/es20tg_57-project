@@ -15,6 +15,7 @@ import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
+import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -557,11 +558,24 @@ export default class RemoteServices {
 
   static async getOpenTournaments(): Promise<QuestionsTournament[]> {
     return httpClient
-      .get(`/executions/${Store.getters.getCurrentCourse.courseExecutionId}/questionsTournament`)
+      .get(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/questionsTournament`
+      )
       .then(response => {
         return response.data.map((tournament: any) => {
           return new QuestionsTournament(tournament);
         });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async registerStudentInTournament(questionsTournamentId: number): Promise<QuestionsTournamentRegistration> {
+    return httpClient
+      .post(`/questionsTournaments/${questionsTournamentId}/studentRegistration`)
+      .then(response => {
+        return new QuestionsTournamentRegistration(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));

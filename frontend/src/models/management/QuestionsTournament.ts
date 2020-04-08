@@ -1,6 +1,7 @@
 import Topic from '@/models/management/Topic';
 import User from '@/models/user/User';
 import Course from '@/models/user/Course';
+import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 
 export class QuestionsTournament {
   id!: number;
@@ -11,6 +12,7 @@ export class QuestionsTournament {
   course!: Course;
 
   topics: Topic[] = [];
+  registrations: QuestionsTournamentRegistration[] = [];
 
   constructor(jsonObj?: QuestionsTournament) {
     if (jsonObj) {
@@ -22,8 +24,12 @@ export class QuestionsTournament {
       this.course = jsonObj.course;
 
       if (jsonObj.topics) {
-        this.topics = jsonObj.topics.map(
-          (topic: Topic) => new Topic(topic)
+        this.topics = jsonObj.topics.map((topic: Topic) => new Topic(topic));
+      }
+      if (jsonObj.registrations) {
+        this.registrations = jsonObj.registrations.map(
+          (registration: QuestionsTournamentRegistration) =>
+            new QuestionsTournamentRegistration(registration)
         );
       }
     }
