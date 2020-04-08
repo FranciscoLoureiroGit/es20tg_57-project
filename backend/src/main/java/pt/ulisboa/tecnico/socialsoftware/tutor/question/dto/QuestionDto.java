@@ -39,7 +39,6 @@ public class QuestionDto implements Serializable {
 
     public QuestionDto(Question question) {
         this.id = question.getId();
-        this.key = question.getKey();
         this.title = question.getTitle();
         this.content = question.getContent();
         this.difficulty = question.getDifficulty();
@@ -63,7 +62,6 @@ public class QuestionDto implements Serializable {
             this.image = new ImageDto(question.getImage());
         if (question.getCreationDate() != null)
             this.creationDate = question.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-
     }
 
     public Integer getId() {
