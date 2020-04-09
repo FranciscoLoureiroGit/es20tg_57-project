@@ -18,17 +18,18 @@
             class="mx-2"
           />
           <v-spacer />
+          <v-btn color="primary" dark @click="$emit('newTournament')">New Tournament</v-btn>
         </v-card-title>
       </template>
 
       <template v-slot:item.numberOfRegistration="{ item }">
         <p>
-          {{item.registrations.length}}
+          {{ item.registrations.length }}
         </p>
       </template>
 
       <template v-slot:item.registered="{ item }">
-        <v-icon>{{getRegisteredIcon(item)}}</v-icon>
+        <v-icon>{{ getRegisteredIcon(item) }}</v-icon>
       </template>
 
       <template v-slot:item.action="{ item }">
@@ -51,13 +52,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 
 @Component
-export default class OpenTournamentsView extends Vue {
-  questionsTournaments: QuestionsTournament[] = [];
+export default class OpenTournamentsList extends Vue {
+  @Prop({ type: Array, required: true }) readonly questionsTournaments!: QuestionsTournament[];
   search: string = '';
 
   headers: object = [
@@ -65,7 +66,7 @@ export default class OpenTournamentsView extends Vue {
     { text: 'Topics', value: 'topics', align: 'center', sortable: false },
     { text: 'Starting Date', value: 'startingDate', align: 'center' },
     { text: 'Ending Date', value: 'endingDate', align: 'center' },
-    { text: 'Student Creator', value: 'username', align: 'center' },
+    { text: 'Student Creator', value: 'studentTournamentCreator', align: 'center' },
     {
       text: 'Number of Questions',
       value: 'numberOfQuestions',
@@ -90,7 +91,7 @@ export default class OpenTournamentsView extends Vue {
     }
   ];
 
-  async created() {
+  /*async created() {
     await this.$store.dispatch('loading');
     try {
       this.questionsTournaments = await RemoteServices.getOpenTournaments();
@@ -98,32 +99,32 @@ export default class OpenTournamentsView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
+  }*/
 
-  async registerStudent(tournament: QuestionsTournament) {
+  async registerStudent(questionsTournament: QuestionsTournament) {
     if (
-      tournament.id &&
-      confirm('Are you sure you want to register to this tournament?')
+      questionsTournament.id &&
+      confirm('Are you sure you want to register to this questionsTournament?')
     ) {
       try {
-        await RemoteServices.registerStudentInTournament(tournament.id);
+        await RemoteServices.registerStudentInTournament(questionsTournament.id);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
     }
   }
 
-  isStudentRegistered(tournament: QuestionsTournament) {
+  isStudentRegistered(questionsTournament: QuestionsTournament) {
     let userId = this.$store.getters.getUser.id;
     return (
-      tournament.registrations.filter(
+      questionsTournament.registrations.filter(
         registration => registration.userId == userId
       ).length >= 1
     );
   }
 
-  getRegisteredIcon(tournament: QuestionsTournament) {
-    if (this.isStudentRegistered(tournament))
+  getRegisteredIcon(questionsTournament: QuestionsTournament) {
+    if (this.isStudentRegistered(questionsTournament))
       return 'mdi-checkbox-marked-circle';
     else return 'mdi-checkbox-blank-circle';
   }
