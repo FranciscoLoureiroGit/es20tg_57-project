@@ -132,6 +132,17 @@ public class QuestionController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/questions/{questionId}/change-status")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public QuestionDto questionChangeStatus(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
+        logger.debug("questionChangeStatus questionId: {}: ", questionId);
+        Question.Status status = Question.Status.valueOf(question.getStatus());
+        String justification = question.getJustification();
+
+        return questionService.questionChangeStatus(questionId, status, justification);
+        //ResponseEntity.ok().build();
+    }
+
     @PutMapping("/questions/{questionId}/image")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public String uploadImage(@PathVariable Integer questionId, @RequestParam("file") MultipartFile file) throws IOException {
