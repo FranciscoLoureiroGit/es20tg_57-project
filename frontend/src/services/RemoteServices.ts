@@ -141,7 +141,7 @@ export default class RemoteServices {
   static createQuestion(question: Question): Promise<Question> {
     return httpClient
       .post(
-        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/`,
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/createQuestion`,
         question
       )
       .then(response => {
