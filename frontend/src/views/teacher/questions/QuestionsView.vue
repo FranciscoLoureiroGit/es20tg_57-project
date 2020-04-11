@@ -273,6 +273,7 @@ export default class QuestionsView extends Vue {
   getStatusColor(status: string) {
     if (status === 'REMOVED') return 'red';
     else if (status === 'DISABLED') return 'orange';
+    else if (status == 'PENDING') return 'gray';
     else return 'green';
   }
 
