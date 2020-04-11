@@ -118,16 +118,7 @@
                 <v-icon>create</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Submit</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item  to="/student/submittedQuestions">
-              <v-list-item-action>
-                <v-icon>question_answer</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>Submitted</v-list-item-title>
+                <v-list-item-title>My Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -323,13 +314,6 @@
               <v-icon>create</v-icon>
             </v-list-item-action>
             <v-list-item-content>Submit Question</v-list-item-content>
-          </v-list-item>
-
-          <v-list-item to="/student/submittedQuestions" v-if="isStudent && currentCourse">
-            <v-list-item-action>
-              <v-icon>question_answer</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>Submitted Questions</v-list-item-content>
           </v-list-item>
 
           <!-- STOPS HERE-->
