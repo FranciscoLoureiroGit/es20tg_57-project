@@ -1,189 +1,192 @@
 <template v-if="clarifications">
-    <v-card class="table">
-        <v-data-table
-                :headers="headers"
-                :custom-filter="customFilter"
-                :items="clarifications"
-                :search="search"
-                :mobile-breakpoint="0"
-                :items-per-page="50"
-                :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
-        >
-            <template v-slot:top>
-                <v-card-title>
-                    <v-text-field
-                            v-model="search"
-                            append-icon="search"
-                            label="Search for clarification request"
-                            single-line
-                            hide-details
-                    />
-                    <v-spacer />
-                </v-card-title>
-            </template>
+  <v-card class="table">
+    <v-data-table
+      :headers="headers"
+      :custom-filter="customFilter"
+      :items="clarifications"
+      :search="search"
+      :mobile-breakpoint="0"
+      :items-per-page="50"
+      :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
+    >
+      <template v-slot:top>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search for a doubt"
+            single-line
+            hide-details
+          />
+          <v-spacer />
+        </v-card-title>
+      </template>
 
-            <template v-slot:item.status="{ item }">
-                <v-select
-                        v-model="item.status"
-                        :items="statusList"
-                        dense
-                        @change="setStatus(item.id, item.status)"
-                >
-                    <template v-slot:selection="{ item }">
-                        <v-chip :color="getStatusColor(item)" small>
-                            <span>{{ item }}</span>
-                        </v-chip>
-                    </template>
-                </v-select>
-            </template>
+      <template v-slot:item.question="{ item }">
+        <p
+          v-html="
+            convertMarkDownNoFigure(
+              item.questionAnswerDto.question.content,
+              null
+            )
+          "
+          @click="showQuestionDialog(item.questionAnswerDto.question)"
+      /></template>
 
-            <template v-slot:item.image="{ item }">
-                <v-file-input
-                        show-size
-                        dense
-                        small-chips
-                        @change="handleFileUpload($event, item)"
-                        accept="image/*"
-                />
-            </template>
+      <template v-slot:item.description="{ item }">
+        <p v-html="item.description" @click="showClarificationDialog(item)"
+      /></template>
 
-            <template v-slot:item.action="{ item }">
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                        <v-icon
-                                small
-                                class="mr-2"
-                                v-on="on"
-                                @click="showClarificationAnswerDialog(item)"
-                        >visibility</v-icon
-                        >
-                    </template>
-                    <span>Show Answer</span>
-                </v-tooltip>
-            </template>
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="getStatusColor(item.status)" small>
+          <span>{{ item.status }}</span>
+        </v-chip>
+      </template>
 
-            <!-- TODO MAYBE GET THE QUESTION FROM BACKEND AND PRESENT BOTH QUESTION, CLARIFICATION REQUEST AND ANSWER  -->
-            <template v-slot:item.action="{ item }">
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                        <v-icon
-                                small
-                                class="mr-2"
-                                v-on="on"
-                                @click="showClarificationAnswerDialog(item)"
-                        >visibility</v-icon
-                        >
-                    </template>
-                    <span>Show Question</span>
-                </v-tooltip>
-            </template>
+      <template v-slot:item.answer="{ item }">
+        <span @click="showClarificationAnswerDialog(item)">{{ item.clarificationAnswerDto }}</span>
+       </template>
 
-        </v-data-table>
-    </v-card>
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="showClarificationAnswerDialog(item)"
+              >visibility</v-icon
+            >
+          </template>
+          <span>Show Answer</span>
+        </v-tooltip>
+      </template>
+    </v-data-table>
+    <show-question-dialog
+      v-if="currentQuestion"
+      v-model="questionDialog"
+      :question="currentQuestion"
+      v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+    />
+    <show-clarification-dialog
+      v-if="currentClarification"
+      v-model="clarificationDialog"
+      :clarification="currentClarification"
+      v-on:close-show-clarification-dialog="onCloseShowClarificationDialog"
+    />
+    <show-clarification-answer-dialog
+      v-if="currentClarificationAnswer"
+      v-model="clarificationAnswerDialog"
+      :clarification-answer="currentClarificationAnswer"
+      v-on:close-show-question-dialog="onCloseShowClarificationAnswerDialog"
+    />
+  </v-card>
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import RemoteServices from '@/services/RemoteServices';
-  import Clarification from '@/models/management/Clarification';
-  import Image from '@/models/management/Image';
-  import ShowClarificationAnswerDialog from '@/views/student/clarifications/ShowClarificationAnswerDialog.vue';
+import { Component, Vue } from 'vue-property-decorator';
+import RemoteServices from '@/services/RemoteServices';
+import Clarification from '@/models/management/Clarification';
+import ShowClarificationAnswerDialog from '@/views/student/clarifications/ShowClarificationAnswerDialog.vue';
+import ClarificationAnswer from '@/models/management/ClarificationAnswer';
+import Question from '@/models/management/Question';
+import ShowClarificationDialog from '@/views/student/clarifications/ShowClarificationDialog.vue';
+import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
+import Image from '@/models/management/Image';
+import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 
-  @Component({
-    components: {
-      'show-clarification-answer-dialog': ShowClarificationAnswerDialog,
-    }
-  })
-  export default class ClarificationsView extends Vue {
-    clarifications: Clarification[] = [];
-    currentClarification: Clarification | null = null;
-    clarificationAnswerDialog: boolean = false;
-    search: string = '';
-    statusList = ['OPEN', 'CLOSED'];
-    headers: object = [
-      { text: 'Clarification Title', value: 'title', align: 'center' },
-      { text: 'Description', value: 'content', align: 'left' },
-      { text: 'Answer', value: 'content', align: 'left' },
-      { text: 'Status', value: 'status', align: 'center' },
-      {
-        text: 'Creation Date',
-        value: 'creationDate',
-        align: 'center'
-      },
-      {
-        text: 'Image',
-        value: 'image',
-        align: 'center',
-        sortable: false
-      },
-      {
-        text: 'Actions',
-        value: 'action',
-        align: 'center',
-        sortable: false
-      }
-    ];
-
-    getStatusColor(status: string) {
-      if (status === 'CLOSED') return 'red';
-      else return 'green';
-    }
-
-    // TODO add this when controller for uploading image is added
-    /*
-    async handleFileUpload(event: File, clarification: Clarification) {
-      if (clarification.id) {
-        try {
-          const imageURL = await RemoteServices.uploadClarificationImage(event, clarification.id);
-          clarification.image = new Image();
-          clarification.image.url = imageURL;
-          confirm('Image ' + imageURL + ' was uploaded!');
-        } catch (error) {
-          await this.$store.dispatch('error', error);
-        }
-      }
-    }*/
-
-    // TODO add this when controller for changing status is created
-    /*
-    async setStatus(questionId: number, status: string) {
-      try {
-        await RemoteServices.setQuestionStatus(questionId, status);
-        let question = this.questions.find(
-          question => question.id === questionId
-        );
-        if (question) {
-          question.status = status;
-        }
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }*/
-
-    async created() {
-      await this.$store.dispatch('loading');
-      try {
-        this.clarifications = await RemoteServices.getClarifications();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-      await this.$store.dispatch('clearLoading');
-    }
-
-    showClarificationAnswerDialog(clarification: Clarification) {
-      this.currentClarification = clarification;
-      this.clarificationAnswerDialog = true;
-    }
-
-    customFilter(value: string, search: string) {
-      // noinspection SuspiciousTypeOfGuard,SuspiciousTypeOfGuard
-      return (
-        search != null &&
-        typeof value === 'string' &&
-        value.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1
-      );
-    }
+@Component({
+  components: {
+    'show-clarification-answer-dialog': ShowClarificationAnswerDialog,
+    'show-clarification-dialog': ShowClarificationDialog,
+    'show-question-dialog': ShowQuestionDialog
   }
+})
+export default class ClarificationsView extends Vue {
+  clarifications: Clarification[] = [];
+  questions: Question[] = [];
+  currentClarification: Clarification | null = null;
+  currentClarificationAnswer: ClarificationAnswer | null = null;
+  currentQuestion: Question | null = null;
+  clarificationAnswerDialog: boolean = false;
+  clarificationDialog: boolean = false;
+  questionDialog: boolean = false;
+
+  search: string = '';
+  headers: object = [
+    { text: 'Question', value: 'question', align: 'left' },
+    { text: 'Doubt Title', value: 'title', align: 'center' },
+    { text: 'Doubt Description', value: 'description', align: 'left' },
+    { text: 'Status', value: 'status', align: 'center' },
+    { text: 'Teacher Response', value: 'answer', align: 'left' },
+    {
+      text: 'Creation Date',
+      value: 'creationDate',
+      align: 'center'
+    },
+    {
+      text: 'Actions',
+      value: 'action',
+      align: 'center',
+      sortable: false
+    }
+  ];
+
+  getStatusColor(status: string) {
+    if (status === 'CLOSED') return 'red';
+    else return 'green';
+  }
+
+  async created() {
+    await this.$store.dispatch('loading');
+    try {
+      this.clarifications = await RemoteServices.getClarifications();
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
+  showClarificationAnswerDialog(clarification: Clarification) {
+    this.currentClarificationAnswer = clarification.clarificationAnswerDto;
+    this.clarificationAnswerDialog = true;
+  }
+
+  showClarificationDialog(clarification: Clarification) {
+    this.currentClarification = clarification;
+    this.clarificationDialog = true;
+  }
+
+  showQuestionDialog(question: Question) {
+    this.currentQuestion = question;
+    this.questionDialog = true;
+  }
+
+  onCloseShowClarificationDialog() {
+    this.clarificationDialog = false;
+  }
+
+  onCloseShowClarificationAnswerDialog() {
+    this.clarificationAnswerDialog = false;
+  }
+
+  onCloseShowQuestionDialog() {
+    this.questionDialog = false;
+  }
+
+  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
+    return convertMarkDownNoFigure(text, image);
+  }
+
+  customFilter(value: string, search: string) {
+    // noinspection SuspiciousTypeOfGuard,SuspiciousTypeOfGuard
+    return (
+      search != null &&
+      typeof value === 'string' &&
+      value.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1
+    );
+  }
+}
 </script>
 
 <style lang="scss" scoped />

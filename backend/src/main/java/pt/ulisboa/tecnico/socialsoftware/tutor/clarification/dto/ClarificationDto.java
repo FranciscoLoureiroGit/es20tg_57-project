@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuestionAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ImageDto;
 
@@ -12,10 +14,11 @@ public class ClarificationDto implements Serializable {
     private String title;
     private String description;
     private Integer studentId;
-    private Integer questionAnswerId;
+    private QuestionAnswerDto questionAnswerDto;
     private ImageDto image = null;
     private String creationDate = null;
     private String status;
+    private ClarificationAnswerDto clarificationAnswerDto;
 
     public ClarificationDto() {}
 
@@ -24,7 +27,6 @@ public class ClarificationDto implements Serializable {
         this.description = clarification.getDescription();
         this.title = clarification.getTitle();
         this.studentId = clarification.getUser().getId();
-        this.questionAnswerId = clarification.getQuestionAnswer().getId();
 
         if (clarification.getStatus() != null)
             this.status = clarification.getStatus().name();
@@ -32,9 +34,23 @@ public class ClarificationDto implements Serializable {
             this.image = new ImageDto(clarification.getImage());
         if (clarification.getCreationDate() != null)
             this.creationDate = clarification.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-
+        if (clarification.getClarificationAnswer() != null)
+            this.clarificationAnswerDto = new ClarificationAnswerDto(clarification.getClarificationAnswer());
+        if (clarification.getQuestionAnswer() != null)
+            this.questionAnswerDto = new QuestionAnswerDto(clarification.getQuestionAnswer());
     }
 
+    public ClarificationAnswerDto getClarificationAnswerDto() {
+        return clarificationAnswerDto;
+    }
+
+    public void setClarificationAnswerDto(ClarificationAnswerDto clarificationAnswerDto) {
+        this.clarificationAnswerDto = clarificationAnswerDto;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
+    }
 
     public Integer getId() {
         return id;
@@ -68,9 +84,9 @@ public class ClarificationDto implements Serializable {
 
     public void setStudentId(Integer studentId1) { this.studentId = studentId1; }
 
-    public Integer getQuestionAnswerId() { return questionAnswerId; }
+    public QuestionAnswerDto getQuestionAnswerDto() { return questionAnswerDto; }
 
-    public void setQuestionAnswerId(Integer questionAnswerId1) {this.questionAnswerId = questionAnswerId1; }
+    public void setQuestionAnswerDto(QuestionAnswerDto questionAnswerDto) {this.questionAnswerDto = questionAnswerDto; }
 
     @Override
     public String toString() {
@@ -78,7 +94,7 @@ public class ClarificationDto implements Serializable {
                 "id=" + id +
                 ", title=" + title +
                 ", studentId=" + studentId +
-                ", questionId=" + questionAnswerId +
+                ", questionId=" + questionAnswerDto.getId() +
                 ", image=" + image +
                 '}';
     }

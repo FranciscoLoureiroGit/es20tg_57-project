@@ -74,6 +74,10 @@ public class Clarification {
             setImage(img);
             img.setClarification(this);
         }
+
+        if(clarificationDto.getClarificationAnswerDto() != null) {
+            this.clarificationAnswer = new ClarificationAnswer(clarificationDto.getClarificationAnswerDto());
+        }
     }
 
     public ClarificationAnswer getClarificationAnswer() {

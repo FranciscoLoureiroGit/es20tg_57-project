@@ -6,9 +6,13 @@
     max-width="75%"
   >
     <v-card>
-      <v-card-text class="text-left" style="padding-top: 20px;">
+      <v-card-title>
+        <span class="headline">{{ clarification.title }}</span>
+      </v-card-title>
+
+      <v-card-text class="text-left">
         <div style="font-size: 18px">
-          <span v-html="clarificationAnswer.answer" />
+          <span v-html="clarification.description" />
           <br />
         </div>
       </v-card-text>
@@ -23,14 +27,14 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Model } from 'vue-property-decorator';
-import ClarificationAnswer from '@/models/management/ClarificationAnswer';
+import Clarification from '@/models/management/Clarification';
 
 @Component({
   components: {}
 })
-export default class ShowClarificationAnswerDialog extends Vue {
+export default class ShowQuestionDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: ClarificationAnswer, required: true })
-  readonly clarificationAnswer!: ClarificationAnswer;
+  @Prop({ type: Clarification, required: true })
+  readonly clarification!: Clarification;
 }
 </script>
