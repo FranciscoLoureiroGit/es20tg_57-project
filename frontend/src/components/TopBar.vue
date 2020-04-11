@@ -328,6 +328,13 @@
             </v-list-item-action>
             <v-list-item-content>Stats</v-list-item-content>
           </v-list-item>
+
+          <v-list-item to="/student/clarifications">
+            <v-list-item-action>
+              <v-icon>mdi-comment-question</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Doubts</v-list-item-content>
+          </v-list-item>
         </v-list-group>
 
         <v-list-item to="/courses" v-if="isLoggedIn && moreThanOneCourse">

@@ -21,10 +21,10 @@ export default class Clarification {
       this.status = jsonObj.status;
 
       if(jsonObj.questionAnswerDto)
-        this.questionAnswerDto = jsonObj.questionAnswerDto;
+        this.questionAnswerDto = new QuestionAnswer(jsonObj.questionAnswerDto);
 
       if (jsonObj.clarificationAnswerDto) {
-        this.clarificationAnswerDto = jsonObj.clarificationAnswerDto;
+        this.clarificationAnswerDto = new ClarificationAnswer(jsonObj.clarificationAnswerDto);
       }
     }
   }

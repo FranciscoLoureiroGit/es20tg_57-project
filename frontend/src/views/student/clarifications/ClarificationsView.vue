@@ -43,9 +43,9 @@
         </v-chip>
       </template>
 
-      <template v-slot:item.answer="{ item }">
-        <span @click="showClarificationAnswerDialog(item)">{{ item.clarificationAnswerDto }}</span>
-       </template>
+      <template v-slot:item.answers="{ item }">
+        <span v-html="getAnswer(item)" />
+      </template>
 
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
@@ -118,7 +118,7 @@ export default class ClarificationsView extends Vue {
     { text: 'Doubt Title', value: 'title', align: 'center' },
     { text: 'Doubt Description', value: 'description', align: 'left' },
     { text: 'Status', value: 'status', align: 'center' },
-    { text: 'Teacher Response', value: 'answer', align: 'left' },
+    { text: 'Teacher Response', value: 'answers', align: 'left' },
     {
       text: 'Creation Date',
       value: 'creationDate',
@@ -135,6 +135,12 @@ export default class ClarificationsView extends Vue {
   getStatusColor(status: string) {
     if (status === 'CLOSED') return 'red';
     else return 'green';
+  }
+
+  getAnswer(clarification: Clarification) {
+    if (clarification.clarificationAnswerDto)
+      return clarification.clarificationAnswerDto.answer;
+    else return 'None';
   }
 
   async created() {

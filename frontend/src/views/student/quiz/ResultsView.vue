@@ -60,11 +60,11 @@
         <v-card-title>
           <span class="headline">{{ formTitle() }}</span>
         </v-card-title>
-        <v-card-subtitle style="position: absolute; padding-top: 10px; padding-bottom: 10px;">
+        <v-card-subtitle style="position: absolute; padding-top: 10px; padding-bottom: 20px;">
           <span class="subtitle-1">{{ formSubTitle() }}</span>
         </v-card-subtitle>
 
-        <v-card-text v-if="editClarification">
+        <v-card-text v-if="editClarification" style="padding-top: 20px;">
           <v-container grid-list-md fluid>
             <v-layout column wrap>
               <v-flex xs24 sm12 md8>
@@ -89,10 +89,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import StatementManager from '@/models/statement/StatementManager';
 import ResultComponent from '@/views/student/quiz/ResultComponent.vue';
-import Question from '@/models/management/Question';
 import Clarification from '@/models/management/Clarification';
 import RemoteServices from '@/services/RemoteServices';
-import Topic from '@/models/management/Topic';
 
 @Component({
   components: {
