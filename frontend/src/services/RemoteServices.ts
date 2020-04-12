@@ -196,6 +196,23 @@ export default class RemoteServices {
       });
   }
 
+  //NOVO
+  //Assim ou criar questiondto para passar os param
+/*  static setQuestionJustification(
+      questionId: number,
+      status: String,
+      justification: String
+  ): Promise<Question> {
+    return httpClient
+        .post(`/questions/${questionId}/change-status`, status, justification,{})
+        .then(response => {
+          return new Question(response.data);
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }*/
+
   static uploadImage(file: File, questionId: number): Promise<string> {
     let formData = new FormData();
     formData.append('file', file);
