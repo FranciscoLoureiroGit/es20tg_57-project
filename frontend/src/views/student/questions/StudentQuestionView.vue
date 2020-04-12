@@ -92,6 +92,44 @@
                     </template>
                     <span>Show Question</span>
                 </v-tooltip>
+
+                <v-tooltip bottom v-if="item.numberOfAnswers === 0">
+                    <template v-slot:activator="{ on }">
+                        <v-icon small class="mr-2" v-on="on" @click="editQuestion(item)"
+                        >edit</v-icon
+                        >
+                    </template>
+                    <span>Edit Question</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-icon
+                                small
+                                class="mr-2"
+                                v-on="on"
+                                @click="duplicateQuestion(item)"
+                        >cached</v-icon
+                        >
+                    </template>
+                    <span>Duplicate Question</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-icon
+                                small
+                                class="mr-2"
+                                v-on="on"
+                                @click="deleteQuestion(item)"
+                                color="red"
+                        >delete</v-icon
+                        >
+                    </template>
+                    <span>Delete Question</span>
+                </v-tooltip>
+
+
             </template>
         </v-data-table>
 
@@ -112,14 +150,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch} from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
+import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import Question from '@/models/management/Question';
+import Image from '@/models/management/Image';
+import Topic from '@/models/management/Topic';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import EditQuestionDialog from '@/views/teacher/questions/EditQuestionDialog.vue';
 import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue';
-import Topic from '@/models/management/Topic';
-import Image from '@/models/management/Image';
 
 @Component({
   components: {
@@ -130,28 +169,46 @@ import Image from '@/models/management/Image';
 })
 export default class StudentQuestionView extends Vue{
   questions: Question[] = [];
-  question: Question | null = null;
-  questionDialog: boolean = false;
+  topics: Topic[] = [];
   currentQuestion: Question | null = null;
   editQuestionDialog: boolean = false;
+  questionDialog: boolean = false;
   search: string = '';
   statusList = ['DISABLED', 'AVAILABLE', 'REMOVED', 'PENDING'];
-  topics: Topic[] = [];
 
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
     { text: 'Question', value: 'content', align: 'left' },
-    { text: 'Status', value: 'status', align: 'center' },
     {
-      text: 'Justification',
-      value: 'justification',
+      text: 'Topics',
+      value: 'topics',
       align: 'center',
       sortable: false
     },
+    { text: 'Difficulty', value: 'difficulty', align: 'center' },
+    { text: 'Answers', value: 'numberOfAnswers', align: 'center' },
+    {
+      text: 'Nº of generated quizzes',
+      value: 'numberOfGeneratedQuizzes',
+      align: 'center'
+    },
+    {
+      text: 'Nº of non generated quizzes',
+      value: 'numberOfNonGeneratedQuizzes',
+      align: 'center'
+    },
+    { text: 'Status', value: 'status', align: 'center' },
+    { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
     {
       text: 'Creation Date',
       value: 'creationDate',
       align: 'center'
+    },
+    {
+      text: 'Image',
+      value: 'image',
+      align: 'center',
+      sortable: false
     },
     {
       text: 'Actions',
@@ -190,16 +247,24 @@ export default class StudentQuestionView extends Vue{
     );
   }
 
+  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
+    return convertMarkDownNoFigure(text, image);
+  }
+
+  onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
+    let question = this.questions.find(
+      (question: Question) => question.id == questionId
+    );
+    if (question) {
+      question.topics = changedTopics;
+    }
+  }
+
   getStatusColor(status: string) {
     if (status === 'REMOVED') return 'red';
     else if (status === 'DISABLED') return 'orange';
     else if (status == 'PENDING') return 'gray';
     else return 'green';
-  }
-
-  showQuestionDialog(question: Question) {
-    this.currentQuestion = question;
-    this.questionDialog = true;
   }
 
   getDifficultyColor(difficulty: number) {
@@ -209,16 +274,17 @@ export default class StudentQuestionView extends Vue{
     else return 'red';
   }
 
-  onCloseShowQuestionDialog() {
-    this.questionDialog = false;
-  }
-
-  onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
-    let question = this.questions.find(
-      (question: Question) => question.id == questionId
-    );
-    if (question) {
-      question.topics = changedTopics;
+  async setStatus(questionId: number, status: string) {
+    try {
+      await RemoteServices.setQuestionStatus(questionId, status);
+      let question = this.questions.find(
+        question => question.id === questionId
+      );
+      if (question) {
+        question.status = status;
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
     }
   }
 
@@ -235,18 +301,13 @@ export default class StudentQuestionView extends Vue{
     }
   }
 
-  async setStatus(questionId: number, status: string) {
-    try {
-      await RemoteServices.setQuestionStatus(questionId, status);
-      let question = this.questions.find(
-        question => question.id === questionId
-      );
-      if (question) {
-        question.status = status;
-      }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
+  showQuestionDialog(question: Question) {
+    this.currentQuestion = question;
+    this.questionDialog = true;
+  }
+
+  onCloseShowQuestionDialog() {
+    this.questionDialog = false;
   }
 
   newQuestion() {
@@ -270,6 +331,22 @@ export default class StudentQuestionView extends Vue{
     this.questions.unshift(question);
     this.editQuestionDialog = false;
     this.currentQuestion = null;
+  }
+
+  async deleteQuestion(toDeletequestion: Question) {
+    if (
+      toDeletequestion.id &&
+      confirm('Are you sure you want to delete this question?')
+    ) {
+      try {
+        await RemoteServices.deleteQuestion(toDeletequestion.id);
+        this.questions = this.questions.filter(
+          question => question.id != toDeletequestion.id
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 
 
