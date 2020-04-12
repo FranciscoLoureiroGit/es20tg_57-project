@@ -82,16 +82,16 @@ public class QuestionController {
         return this.questionService.createQuestion(courseId, question);
     }
 
-    @GetMapping("/questions/showMyQuestions/{user_id}")
+    @GetMapping("/questions/showMyQuestions/")
     @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')")
-    public List<QuestionDto> showMyQuestions(Principal principal, @PathVariable int user_id) {
+    public List<QuestionDto> showMyQuestions(Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
 
         if(user == null || user.getRole().name().equals(User.Role.DEMO_ADMIN.name()) || user.getRole().name().equals(User.Role.ADMIN.name()))
             throw new TutorException(AUTHENTICATION_ERROR);
 
 
-        return questionService.findQuestionsByUserId(user_id);
+        return questionService.findQuestionsByUserId(user.getId());
 
 
     }
