@@ -96,6 +96,14 @@
           </template>
           <span>Edit Question</span>
         </v-tooltip>
+        <!--NOVO - botao para mudar justificacao-status  !!!!!falta implementar-->
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon small class="mr-2" v-on="on">edit</v-icon>
+          </template>
+          <span>Edit Justification</span>
+        </v-tooltip>
+        <!--FIM NOVO - botao para mudar justificacao-status-->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
@@ -187,6 +195,7 @@ export default class QuestionsView extends Vue {
       align: 'center'
     },
     { text: 'Status', value: 'status', align: 'center' },
+    { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
     {
       text: 'Creation Date',
       value: 'creationDate',
@@ -269,6 +278,26 @@ export default class QuestionsView extends Vue {
       await this.$store.dispatch('error', error);
     }
   }
+
+  /*  //NOVO
+  async setJustification(
+    questionId: number,
+    status: string,
+    justification: string
+  ) {
+    try {
+      await RemoteServices.setQuestionJustification(questionId, status, justification);
+      let question = this.questions.find(
+              question => question.id === questionId
+      );
+      if (question) {
+        question.status = status;
+        question.justification = justification;
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+  }*/
 
   getStatusColor(status: string) {
     if (status === 'REMOVED') return 'red';
