@@ -2,13 +2,13 @@ export class QuestionsTournamentRegistration {
   id!: number;
   tournamentId!: number;
   userId!: number;
-  username!: string;
+  userName!: string;
   registrationDate!: string;
 
   constructor(jsonObj?: QuestionsTournamentRegistration) {
     if (jsonObj) {
       this.id = jsonObj.id;
-      this.username = jsonObj.username;
+      this.userName = jsonObj.userName;
       this.tournamentId = jsonObj.tournamentId;
       this.userId = jsonObj.userId;
       this.registrationDate = jsonObj.registrationDate;

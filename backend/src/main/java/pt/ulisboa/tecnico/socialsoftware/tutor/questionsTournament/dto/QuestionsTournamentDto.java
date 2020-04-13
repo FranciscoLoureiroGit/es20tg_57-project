@@ -28,7 +28,7 @@ public class QuestionsTournamentDto {
     private List<TopicDto> topics = new ArrayList<>();
     private UserDto studentTournamentCreator;
     private CourseDto course;
-    private Set<StudentTournamentRegistrationDto> studentTournamentRegistrations;
+    private List<StudentTournamentRegistrationDto> studentTournamentRegistrations = new ArrayList<>();
 
     @Transient
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -44,14 +44,14 @@ public class QuestionsTournamentDto {
         this.topics = questionsTournament.getTopics().stream().map(TopicDto::new).collect(Collectors.toList());
         this.studentTournamentCreator = new UserDto(questionsTournament.getStudentTournamentCreator());
         this.course = new CourseDto(questionsTournament.getCourseExecution());
-        this.studentTournamentRegistrations = questionsTournament.getStudentTournamentRegistrations().stream().map(StudentTournamentRegistrationDto::new).collect(Collectors.toSet());
+        this.studentTournamentRegistrations = questionsTournament.getStudentTournamentRegistrations().stream().map(StudentTournamentRegistrationDto::new).collect(Collectors.toList());
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
-        public String getStartingDate() {
+    public String getStartingDate() {
         return startingDate;
     }
 
@@ -117,11 +117,11 @@ public class QuestionsTournamentDto {
         return id;
     }
 
-    public Set<StudentTournamentRegistrationDto> getStudentTournamentRegistrations() {
+    public List<StudentTournamentRegistrationDto> getStudentTournamentRegistrations() {
         return studentTournamentRegistrations;
     }
 
-    public void setStudentTournamentRegistrations(Set<StudentTournamentRegistrationDto> studentTournamentRegistrations) {
+    public void setStudentTournamentRegistrations(List<StudentTournamentRegistrationDto> studentTournamentRegistrations) {
         this.studentTournamentRegistrations = studentTournamentRegistrations;
     }
 }

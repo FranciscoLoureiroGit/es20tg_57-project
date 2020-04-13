@@ -12,7 +12,7 @@ export class QuestionsTournament {
   course!: Course;
 
   topics: Topic[] = [];
-  registrations: QuestionsTournamentRegistration[] = [];
+  studentTournamentRegistrations: QuestionsTournamentRegistration[] = [];
 
   constructor(jsonObj?: QuestionsTournament) {
     if (jsonObj) {
@@ -26,8 +26,9 @@ export class QuestionsTournament {
       if (jsonObj.topics) {
         this.topics = jsonObj.topics.map((topic: Topic) => new Topic(topic));
       }
-      if (jsonObj.registrations) {
-        this.registrations = jsonObj.registrations.map(
+
+      if (jsonObj.studentTournamentRegistrations) {
+        this.studentTournamentRegistrations = jsonObj.studentTournamentRegistrations.map(
           (registration: QuestionsTournamentRegistration) =>
             new QuestionsTournamentRegistration(registration)
         );
