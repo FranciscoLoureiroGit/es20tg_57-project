@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Clarifications View</h1>
+        <h1>Clarifications Management View</h1>
     </div>
 </template>
 
