@@ -14,7 +14,7 @@
           <v-text-field
             v-model="search"
             append-icon="search"
-            label="Search for a doubt"
+            label="Search for a clarification"
             single-line
             hide-details
           />
@@ -34,7 +34,7 @@
       /></template>
 
       <template v-slot:item.description="{ item }">
-        <p v-html="item.description" @click="showClarificationDialog(item)"
+        <p data-cy="showClarification" v-html="item.description" @click="showClarificationDialog(item)"
       /></template>
 
       <template v-slot:item.status="{ item }">
@@ -58,7 +58,7 @@
               >visibility</v-icon
             >
           </template>
-          <span>Show Answer</span>
+          <span>Show Response</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -115,8 +115,8 @@ export default class ClarificationsView extends Vue {
   search: string = '';
   headers: object = [
     { text: 'Question', value: 'question', align: 'left' },
-    { text: 'Doubt Title', value: 'title', align: 'center' },
-    { text: 'Doubt Description', value: 'description', align: 'left' },
+    { text: 'Clarification Title', value: 'title', align: 'center' },
+    { text: 'Clarification Description', value: 'description', align: 'left' },
     { text: 'Status', value: 'status', align: 'center' },
     { text: 'Teacher Response', value: 'answers', align: 'left' },
     {

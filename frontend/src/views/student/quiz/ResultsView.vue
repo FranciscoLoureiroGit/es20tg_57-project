@@ -41,7 +41,7 @@
 
     <div style="position: relative; padding-top: 15px;">
       <v-spacer />
-      <v-btn color="green" dark @click="newClarification">I have a doubt <v-icon>mdi-comment-question</v-icon>
+      <v-btn data-cy="createClarificationButton" color="green" dark @click="newClarification">I have a doubt <v-icon>mdi-comment-question</v-icon>
       </v-btn>
     </div>
 
@@ -68,8 +68,8 @@
           <v-container grid-list-md fluid>
             <v-layout column wrap>
               <v-flex xs24 sm12 md8>
-                <v-text-field v-model="clarification.title" label="Title" />
-                <v-text-field v-model="clarification.description" label="Description" />
+                <v-text-field data-cy="title" v-model="clarification.title" label="Title" />
+                <v-text-field data-cy="description" v-model="clarification.description" label="Description" />
               </v-flex>
             </v-layout>
           </v-container>
@@ -77,8 +77,8 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn color="blue darken-1" @click="closeDialogue">Cancel</v-btn>
-          <v-btn color="blue darken-1" @click="saveClarification">Save</v-btn>
+          <v-btn data-cy="cancelButton"  color="blue darken-1" @click="closeDialogue">Cancel</v-btn>
+          <v-btn data-cy="saveButton" color="blue darken-1" @click="saveClarification">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
