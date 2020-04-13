@@ -19,6 +19,8 @@ import ResultsView from './views/student/quiz/ResultsView.vue';
 import StatsView from './views/student/StatsView.vue';
 import ScanView from './views/student/ScanView.vue';
 import ClarificationsView from './views/student/clarifications/ClarificationsView.vue';
+import SubmitQuestionView from './views/student/questions/SubmitQuestionView.vue';
+import SubmittedQuestionsView from './views/student/questions/SubmittedQuestionsView.vue';
 
 import AdminManagementView from './views/admin/AdminManagementView.vue';
 import NotFoundView from './views/NotFoundView.vue';
@@ -145,6 +147,24 @@ let router = new Router({
       name: 'student',
       component: StudentView,
       children: [
+        {
+          path: 'submitQuestion',
+          name: 'submit-question',
+          component: SubmitQuestionView,
+          meta:{
+            title: process.env.VUE_APP_NAME + ' - Submit Question',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'submittedQuestions',
+          name: 'submitted-questions',
+          component: SubmittedQuestionsView,
+          meta:{
+            title: process.env.VUE_APP_NAME + ' - Submitted Questions',
+            requiredAuth: 'Student'
+          }
+        },
         {
           path: 'available',
           name: 'available-quizzes',
