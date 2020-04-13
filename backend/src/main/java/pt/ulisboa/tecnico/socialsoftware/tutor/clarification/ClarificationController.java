@@ -47,6 +47,12 @@ public class ClarificationController {
         return answerService.getClarificationAnswer(clarificationId);
     }
 
+    @GetMapping("/teacher/clarifications")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public List<ClarificationDto> getTeacherClarifications(Principal principal){
+        return clarificationService.getClarificationsByTeacher(((User)((Authentication)principal).getPrincipal()).getId());
+    }
+
     @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS') ")
     public ClarificationDto createClarification(@PathVariable int questionAnswerId,

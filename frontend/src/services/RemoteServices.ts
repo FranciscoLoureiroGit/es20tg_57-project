@@ -15,6 +15,7 @@ import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
 import Clarification from '@/models/management/Clarification';
+import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -152,6 +153,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getTeacherClarifications(): Promise<Clarification[]> {
+    return httpClient
+      .get(`/teacher/clarifications`)
+      .then(response => {
+        return response.data.map((clarification: any) => {
+          return new Clarification(clarification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static createQuestion(question: Question): Promise<Question> {
     return httpClient
       .post(
@@ -182,6 +196,8 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+
 
   static updateQuestion(question: Question): Promise<Question> {
     return httpClient
