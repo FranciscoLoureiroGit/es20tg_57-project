@@ -65,15 +65,23 @@ public class QuestionController {
         return this.questionService.findAvailableQuestions(courseId);
     }
 
+    @GetMapping("/courses/{courseId}/questions/availableFiltered")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public List<QuestionDto> getAvailableQuestionsIncludesMadeByStudentsAccepted(@PathVariable int courseId){
+        return questionService.findAvailableQuestionsWithStudentsIncluded(courseId);
+    }
+
     @GetMapping("/courses/{courseId}/questions/studentQuestions")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<QuestionDto> getStudentSubmittedQuestions(@PathVariable int courseId){
 
-        List<QuestionDto> availables = this.questionService.findAvailableQuestions(courseId);
+        List<QuestionDto> av = this.questionService.findQuestions(courseId);
         List<QuestionDto> outputList = new ArrayList<>();
 
-        for (QuestionDto question : availables) {
-            if(question.getUser().getRole().name().equals("STUDENT"))
+        for (QuestionDto question : av) {
+            if(question.getRoleAuthor() == null) //The old data in database does not have role author on question, however, the new data does.
+                continue;
+            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()))
                 outputList.add(question);
         }
 
@@ -95,6 +103,7 @@ public class QuestionController {
 
         question.setUser(user);
         question.setUser_id(user.getId());
+        question.setRoleAuthor(user.getRole().name());
         return this.questionService.createQuestion(courseId, question);
     }
 

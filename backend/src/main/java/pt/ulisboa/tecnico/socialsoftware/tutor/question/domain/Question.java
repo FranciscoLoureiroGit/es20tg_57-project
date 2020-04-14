@@ -78,6 +78,9 @@ public class Question implements DomainEntity {
     @Column(name = "student_id")
     private Integer student_id=0;
 
+    @Column(name = "role_author")
+    private String roleAuthor="";
+
     public Question() {
     }
 
@@ -88,7 +91,7 @@ public class Question implements DomainEntity {
         this.content = questionDto.getContent();
         this.status = Status.valueOf(questionDto.getStatus());
         this.creationDate = LocalDateTime.parse(questionDto.getCreationDate(), Course.formatter);
-
+        this.roleAuthor = questionDto.getRoleAuthor();
         this.course = course;
         this.student_id = questionDto.getUser_id();
         course.addQuestion(this);
@@ -199,6 +202,14 @@ public class Question implements DomainEntity {
 
     public Set<QuizQuestion> getQuizQuestions() {
         return quizQuestions;
+    }
+
+    public String getRoleAuthor() {
+        return this.roleAuthor;
+    }
+
+    public void setRoleAuthor(String roleAuthor){
+        this.roleAuthor = roleAuthor;
     }
 
     public Integer getNumberOfAnswers() {

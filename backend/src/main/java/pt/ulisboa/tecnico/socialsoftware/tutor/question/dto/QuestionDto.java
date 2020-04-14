@@ -33,6 +33,7 @@ public class QuestionDto implements Serializable {
     private User user;
     private String justification;
     private Integer user_id;
+    private String roleAuthor = "";
 
     public QuestionDto() {
     }
@@ -57,6 +58,7 @@ public class QuestionDto implements Serializable {
         this.user = question.getUser();
         this.justification = question.getJustification();
         this.user_id = question.getStudent_id();
+        this.roleAuthor = question.getRoleAuthor();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -153,6 +155,14 @@ public class QuestionDto implements Serializable {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getRoleAuthor(){
+        return roleAuthor;
+    }
+
+    public void setRoleAuthor(String roleAuthor){
+        this.roleAuthor = roleAuthor;
     }
 
     public void setStatus(String status) {
