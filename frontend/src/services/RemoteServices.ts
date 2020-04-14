@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Store from '@/store';
 import Question from '@/models/management/Question';
+import QuestionSubmittedByStudent from '@/models/management/QuestionSubmittedByStudent';
 import { Quiz } from '@/models/management/Quiz';
 import Course from '@/models/user/Course';
 import StatementCorrectAnswer from '@/models/statement/StatementCorrectAnswer';
@@ -197,20 +198,19 @@ export default class RemoteServices {
   }
 
   //NOVO
-  //Assim ou criar questiondto para passar os param???
-  /*  static changeQuestionState(
-      questionId: number,
-      status: String,
-      justification: String
-  ): Promise<Question> {
+  /*  static changeQuestionStatus(
+    questionId: number,
+    status: String,
+    justification: String
+  ): Promise<QuestionSubmittedByStudent> {
     return httpClient
-        .post(`/questions/${questionId}/change-status`, status, justification,{})
-        .then(response => {
-          return new Question(response.data);
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
-        });
+      .post(`/questions/${questionId}/change-status`, status, justification, {})
+      .then(response => {
+        return new QuestionSubmittedByStudent(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }*/
 
   static uploadImage(file: File, questionId: number): Promise<string> {

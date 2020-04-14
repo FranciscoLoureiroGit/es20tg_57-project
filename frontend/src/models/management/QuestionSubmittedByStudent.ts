@@ -2,7 +2,7 @@ import Option from '@/models/management/Option';
 import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 
-export default class Question {
+export default class QuestionSubmittedByStudent {
   id: number | null = null;
   title: string = '';
   status: string = 'PENDING';
@@ -15,7 +15,7 @@ export default class Question {
   options: Option[] = [new Option(), new Option(), new Option(), new Option()];
   topics: Topic[] = [];
 
-  constructor(jsonObj?: Question) {
+  constructor(jsonObj?: QuestionSubmittedByStudent) {
     if (jsonObj) {
       this.id = jsonObj.id;
       this.title = jsonObj.title;

@@ -20,7 +20,7 @@
           />
 
           <v-spacer />
-          <v-btn color="primary" dark @click="newQuestion">New Question</v-btn>
+          <!--<v-btn color="primary" dark @click="newQuestion">New Question</v-btn>-->
           <v-btn color="primary" dark @click="exportCourseQuestions"
             >Export Questions</v-btn
           >
@@ -97,11 +97,14 @@
           <span>Edit Question</span>
         </v-tooltip>
         <!--NOVO - botao para mudar justificacao-status  !!!!!falta implementar-->
+        <!--@click="changeStatus()"-->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on">edit</v-icon>
+            <v-icon small class="mr-2" v-on="on"
+              >edit</v-icon
+            >
           </template>
-          <span>Edit Justification</span>
+          <span>ChangeStatus</span>
         </v-tooltip>
         <!--FIM NOVO - botao para mudar justificacao-status-->
         <v-tooltip bottom>
@@ -151,6 +154,8 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import Question from '@/models/management/Question';
+import QuestionSubmittedByStudent from '@/models/management/QuestionSubmittedByStudent';
+
 import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
@@ -164,10 +169,10 @@ import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue
     'edit-question-topics': EditQuestionTopics
   }
 })
-export default class QuestionsView extends Vue {
+export default class QuestionsSubmittedView extends Vue {
   questions: Question[] = [];
   topics: Topic[] = [];
-  currentQuestion: Question | null = null;
+  currentQuestion: QuestionSubmittedByStudent | null = null;
   editQuestionDialog: boolean = false;
   questionDialog: boolean = false;
   search: string = '';
@@ -279,16 +284,12 @@ export default class QuestionsView extends Vue {
     }
   }
 
-  /*  //NOVO
-  async changeQuestionStatus(
-    questionId: number,
-    status: string,
-    justification: string
-  ) {
+  //NOVO
+  /*  async changeStatus(questionId: number, status: string, justification: string) {
     try {
-      await RemoteServices.setQuestionJustification(questionId, status, justification);
+      await RemoteServices.changeQuestionStatus(questionId, status, justification);
       let question = this.questions.find(
-              question => question.id === questionId
+        question => question.id === questionId
       );
       if (question) {
         question.status = status;
@@ -319,7 +320,7 @@ export default class QuestionsView extends Vue {
     }
   }
 
-  showQuestionDialog(question: Question) {
+  showQuestionDialog(question: QuestionSubmittedByStudent) {
     this.currentQuestion = question;
     this.questionDialog = true;
   }
@@ -328,18 +329,18 @@ export default class QuestionsView extends Vue {
     this.questionDialog = false;
   }
 
-  newQuestion() {
+  /*  newQuestion() {
     this.currentQuestion = new Question();
     this.editQuestionDialog = true;
-  }
+  }*/
 
-  editQuestion(question: Question) {
+  editQuestion(question: QuestionSubmittedByStudent) {
     this.currentQuestion = question;
     this.editQuestionDialog = true;
   }
 
-  duplicateQuestion(question: Question) {
-    this.currentQuestion = new Question(question);
+  duplicateQuestion(question: QuestionSubmittedByStudent) {
+    this.currentQuestion = new QuestionSubmittedByStudent(question);
     this.currentQuestion.id = null;
     this.editQuestionDialog = true;
   }
