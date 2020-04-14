@@ -50,7 +50,7 @@
 
             <template v-slot:item.action="{ item }">
                 <v-tooltip bottom v-if="getAnswer(item) != 'None'">
-                    <template v-slot:activator="{ on }" >
+                    <template v-slot:activator="{ on }">
                         <v-icon
                                 small
                                 class="mr-2"
@@ -63,7 +63,7 @@
                 </v-tooltip>
 
                 <v-tooltip bottom v-if="getAnswer(item) == 'None'">
-                    <template v-slot:activator="{ on }" >
+                    <template v-slot:activator="{ on }" data-cy="answerClarification">
                         <v-icon
                                 small
                                 class="mr-2"

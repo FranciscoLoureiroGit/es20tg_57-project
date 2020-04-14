@@ -18,7 +18,7 @@
                     <v-container grid-list-md fluid>
                         <v-layout column wrap>
                             <v-flex xs24 sm12 md8>
-                                <v-text-field v-model="clarificationAnswer.answer" label="Answer" />
+                                <v-text-field v-model="clarificationAnswer.answer" label="Answer" data-cy="answerField"/>
                             </v-flex>
                         </v-layout>
                     </v-container>

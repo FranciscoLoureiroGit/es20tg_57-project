@@ -37,6 +37,11 @@ Cypress.Commands.add('demoStudentLogin', () => {
   cy.get('[data-cy="quizzesButton"]').click()
 })
 
+Cypress.Commands,add('demoTeacherLogin', () => {
+  cy.visit('/')
+  cy.get('[data-cy="teacherButton"]').click()
+})
+
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="createButton"]').click();
   cy.get('[data-cy="Name"]').type(name);
@@ -126,4 +131,27 @@ Cypress.Commands.add('openClarificationQuestion', (title) => {
     .find('[data-cy="showQuestion"]')
     .click()
   cy.get('[data-cy="closeButton"]').click()
+})
+
+Cypress.Commands.add('addClarification&QA', (variation) => {
+  cy.get('[data-cy="logoutButton"]').click()
+  cy.demoStudentLogin()
+  cy.createAndAnswerQuiz()
+  cy.createClarificationRequestFromQuiz('TITLE_' + String(variation), 'DESC')
+  cy.get('[data-cy="logoutButton"]').click()
+})
+
+Cypress.Commands.add('answerClarification', (answer, variation) => {
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains('TITLE_' + String(variation))
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="answerClarification"]')
+    .click()
+
+  cy.get('[data-cy="answerField"]').type(answer)
+  cy.contains('Save').click()
 })
