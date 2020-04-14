@@ -27,6 +27,7 @@ import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
 import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
+import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
 
 Vue.use(Router);
 
@@ -125,10 +126,19 @@ let router = new Router({
       component: StudentView,
       children: [
         {
+          path: 'openTournaments',
+          name: 'open-tournaments',
+          component: OpenTournamentsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Open Tournaments',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'submitQuestion',
           name: 'submit-question',
           component: SubmitQuestionView,
-          meta:{
+          meta: {
             title: process.env.VUE_APP_NAME + ' - Submit Question',
             requiredAuth: 'Student'
           }
@@ -137,7 +147,7 @@ let router = new Router({
           path: 'submittedQuestions',
           name: 'submitted-questions',
           component: SubmittedQuestionsView,
-          meta:{
+          meta: {
             title: process.env.VUE_APP_NAME + ' - Submitted Questions',
             requiredAuth: 'Student'
           }

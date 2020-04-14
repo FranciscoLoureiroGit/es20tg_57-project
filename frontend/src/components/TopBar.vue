@@ -103,8 +103,25 @@
             </v-list-item>
           </v-list>
         </v-menu>
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" text dark>
+              Questions Tournament
+              <v-icon>fas fa-file-alt</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/student/openTournaments">
+              <v-list-item-action>
+                <v-icon>assignment</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Open</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-        <!-- Here STARTS the new implementation for a student submit questions and check your submitted questions -->
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark>
@@ -122,7 +139,7 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item  to="/student/submittedQuestions">
+            <v-list-item to="/student/submittedQuestions">
               <v-list-item-action>
                 <v-icon>question_answer</v-icon>
               </v-list-item-action>
@@ -132,8 +149,6 @@
             </v-list-item>
           </v-list>
         </v-menu>
-
-        <!-- STOPS Here -->
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
@@ -307,6 +322,16 @@
           </template>
 
           <v-list-item
+            to="/student/openTournaments"
+            v-if="isStudent && currentCourse"
+          >
+            <v-list-item-action>
+              <v-icon>assignment</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Open</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item
             to="/student/available"
             v-if="isStudent && currentCourse"
           >
@@ -318,14 +343,20 @@
 
           <!-- Implementation for a student submit a question and check then STARTS HERE -->
 
-          <v-list-item to="/student/submitQuestion" v-if="isStudent && currentCourse">
+          <v-list-item
+            to="/student/submitQuestion"
+            v-if="isStudent && currentCourse"
+          >
             <v-list-item-action>
               <v-icon>create</v-icon>
             </v-list-item-action>
             <v-list-item-content>Submit Question</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/submittedQuestions" v-if="isStudent && currentCourse">
+          <v-list-item
+            to="/student/submittedQuestions"
+            v-if="isStudent && currentCourse"
+          >
             <v-list-item-action>
               <v-icon>question_answer</v-icon>
             </v-list-item-action>
