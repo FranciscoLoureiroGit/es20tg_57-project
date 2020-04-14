@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,6 +63,21 @@ public class QuestionController {
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<QuestionDto> getAvailableQuestions(@PathVariable int courseId){
         return this.questionService.findAvailableQuestions(courseId);
+    }
+
+    @GetMapping("/courses/{courseId}/questions/studentQuestions")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public List<QuestionDto> getStudentSubmittedQuestions(@PathVariable int courseId){
+
+        List<QuestionDto> availables = this.questionService.findAvailableQuestions(courseId);
+        List<QuestionDto> outputList = new ArrayList<>();
+
+        for (QuestionDto question : availables) {
+            if(question.getUser().getRole().name().equals("STUDENT"))
+                outputList.add(question);
+        }
+
+        return outputList;
     }
 
     @PostMapping("/courses/{courseId}/questions/createQuestion")
