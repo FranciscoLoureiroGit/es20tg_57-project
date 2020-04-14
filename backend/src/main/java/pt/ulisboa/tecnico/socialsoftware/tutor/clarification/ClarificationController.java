@@ -41,9 +41,9 @@ public class ClarificationController {
         return clarificationService.getClarificationsByStudent(((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @GetMapping("/{quizId}/quizAnswer/questionAnswer/{clarificationId}/answers")
-    @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission(#quizId,'QUIZ.ACCESS')")
-    public ClarificationAnswerDto getClarificationAnswer(@PathVariable int quizId, @PathVariable int clarificationId) {
+    @GetMapping("/quiz/quizAnswer/{questionAnswerId}/{clarificationId}/answers")
+    @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission(#questionAnswerId,'QUESTION_ANSWER.ACCESS')")
+    public ClarificationAnswerDto getClarificationAnswer(@PathVariable int questionAnswerId, @PathVariable int clarificationId) {
         return answerService.getClarificationAnswer(clarificationId);
     }
 
@@ -61,9 +61,9 @@ public class ClarificationController {
         return clarificationService.createClarification(questionAnswerId, clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @PostMapping("/{quizId}/quizAnswer/questionAnswer/clarifications/answer")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public ClarificationAnswerDto createClarificationAnswer(@PathVariable int quizId,
+    @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications/answer")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
+    public ClarificationAnswerDto createClarificationAnswer(@PathVariable int questionAnswerId,
                                                             @RequestBody ClarificationAnswerDto clarificationAnswerDto,
                                                             Principal principal){
 

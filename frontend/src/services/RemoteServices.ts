@@ -197,6 +197,23 @@ export default class RemoteServices {
       });
   }
 
+  static createClarificationAnswer(
+    questionAnswerId: number,
+    clarificationAnswer: ClarificationAnswer
+  ): Promise<ClarificationAnswer>{
+    return httpClient
+      .post(
+        `/quiz/quizAnswer/${questionAnswerId}/clarifications/answer`,
+        clarificationAnswer
+      )
+      .then(response => {
+        return new ClarificationAnswer(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
 
 
   static updateQuestion(question: Question): Promise<Question> {

@@ -94,6 +94,16 @@
                 :clarification-answer="currentClarificationAnswer"
                 v-on:close-show-question-dialog="onCloseShowClarificationAnswerDialog"
         />
+
+        <create-clarification-answer-dialog
+            v-if="clarificationAnswer"
+            v-model="createClarificationAnswerDialog"
+            :clarification-answer="clarificationAnswer"
+            v-on:close-dialog="closeCreateClarificationAnswerDialog"
+            v-on:save-answer="saveCreateClarificationAnswerDialog"
+        />
+
+
     </v-card>
 
 </template>
@@ -109,13 +119,14 @@
   import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
   import Image from '@/models/management/Image';
   import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
+  import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 
   @Component({
     components: {
       'show-clarification-answer-dialog': ShowClarificationAnswerDialog,
       'show-clarification-dialog': ShowClarificationDialog,
       'show-question-dialog': ShowQuestionDialog,
-      //'show-create-clarification-answer-dialog': ShowCreateClarificationAnswerDialog
+      'create-clarification-answer-dialog': ClarificationAnswerView
     }
   })
   export default class ClarificationsManagementView extends Vue {
@@ -127,7 +138,9 @@
     clarificationAnswerDialog: boolean = false;
     clarificationDialog: boolean = false;
     questionDialog: boolean = false;
+
     createClarificationAnswerDialog: boolean = false;
+    clarificationAnswer: ClarificationAnswer | null = null;
 
     search: string = '';
     headers: object = [
@@ -185,10 +198,6 @@
       this.questionDialog = true;
     }
 
-    showCreateClarificationAnswerDialog() {
-      this.createClarificationAnswerDialog = true;
-    }
-
     onCloseShowClarificationDialog() {
       this.clarificationDialog = false;
     }
@@ -199,6 +208,32 @@
 
     onCloseShowQuestionDialog() {
       this.questionDialog = false;
+    }
+
+    showCreateClarificationAnswerDialog(clarification: Clarification) {
+
+      this.clarificationAnswer = new ClarificationAnswer();
+      this.clarificationAnswer.clarificationId = clarification.id;
+      this.currentClarification = clarification;
+      this.createClarificationAnswerDialog = true;
+    }
+
+    closeCreateClarificationAnswerDialog() {
+      this.createClarificationAnswerDialog = false;
+    }
+
+    async saveCreateClarificationAnswerDialog() {
+      try {
+        if (this.clarificationAnswer) {
+          this.clarificationAnswer = await RemoteServices.createClarificationAnswer(this.currentClarification!.questionAnswerDto!.id ,this.clarificationAnswer);
+        }
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      this.closeCreateClarificationAnswerDialog();
+
+
+
     }
 
     convertMarkDownNoFigure(text: string, image: Image | null = null): string {
