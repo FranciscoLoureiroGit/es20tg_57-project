@@ -154,17 +154,18 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import Question from '@/models/management/Question';
-import QuestionSubmittedByStudent from '@/models/management/QuestionSubmittedByStudent';
 
 import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import EditQuestionDialog from '@/views/teacher/questions/EditQuestionDialog.vue';
 import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue';
+import ChangeQuestionStateDialog from '@/views/teacher/questions/ChangeQuestionStateDialog.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
+    'change-question-state-dialog': ChangeQuestionStateDialog,
     'edit-question-dialog': EditQuestionDialog,
     'edit-question-topics': EditQuestionTopics
   }
@@ -172,7 +173,7 @@ import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue
 export default class QuestionsSubmittedView extends Vue {
   questions: Question[] = [];
   topics: Topic[] = [];
-  currentQuestion: QuestionSubmittedByStudent | null = null;
+  currentQuestion: Question | null = null;
   editQuestionDialog: boolean = false;
   questionDialog: boolean = false;
   search: string = '';
@@ -285,20 +286,19 @@ export default class QuestionsSubmittedView extends Vue {
   }
 
   //NOVO
-  /*  async changeStatus(questionId: number, status: string, justification: string) {
+  async changeStatus(questionToChange: Question) {
     try {
-      await RemoteServices.changeQuestionStatus(questionId, status, justification);
+      await RemoteServices.changeQuestionStatus(questionToChange);
       let question = this.questions.find(
-        question => question.id === questionId
+        question => question.id === questionToChange.id
       );
       if (question) {
-        question.status = status;
-        question.justification = justification;
+        question.status = questionToChange.status;
       }
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
-  }*/
+  }
 
   getStatusColor(status: string) {
     if (status === 'REMOVED') return 'red';
@@ -320,7 +320,7 @@ export default class QuestionsSubmittedView extends Vue {
     }
   }
 
-  showQuestionDialog(question: QuestionSubmittedByStudent) {
+  showQuestionDialog(question: Question) {
     this.currentQuestion = question;
     this.questionDialog = true;
   }
@@ -334,13 +334,13 @@ export default class QuestionsSubmittedView extends Vue {
     this.editQuestionDialog = true;
   }*/
 
-  editQuestion(question: QuestionSubmittedByStudent) {
+  editQuestion(question: Question) {
     this.currentQuestion = question;
     this.editQuestionDialog = true;
   }
 
-  duplicateQuestion(question: QuestionSubmittedByStudent) {
-    this.currentQuestion = new QuestionSubmittedByStudent(question);
+  duplicateQuestion(question: Question) {
+    this.currentQuestion = new Question(question);
     this.currentQuestion.id = null;
     this.editQuestionDialog = true;
   }

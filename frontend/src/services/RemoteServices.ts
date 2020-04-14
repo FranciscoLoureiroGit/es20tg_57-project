@@ -1,7 +1,6 @@
 import axios from 'axios';
 import Store from '@/store';
 import Question from '@/models/management/Question';
-import QuestionSubmittedByStudent from '@/models/management/QuestionSubmittedByStudent';
 import { Quiz } from '@/models/management/Quiz';
 import Course from '@/models/user/Course';
 import StatementCorrectAnswer from '@/models/statement/StatementCorrectAnswer';
@@ -106,6 +105,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getQuestionsSubmittedByStudents(): Promise<Question[]> {
+    return httpClient
+        .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/studentQuestions`)
+        .then(response => {
+          return response.data.map((question: any) => {
+            return new Question(question);
+          });
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async getStudentQuestions(): Promise<Question[]> {
     return httpClient
       .get('/questions/showMyQuestions/')
@@ -197,21 +209,17 @@ export default class RemoteServices {
       });
   }
 
-  //NOVO
-  /*  static changeQuestionStatus(
-    questionId: number,
-    status: String,
-    justification: String
-  ): Promise<QuestionSubmittedByStudent> {
+  //NOVO metodo para alterar estado e justificacao
+  static changeQuestionStatus(question: Question): Promise<Question> {
     return httpClient
-      .post(`/questions/${questionId}/change-status`, status, justification, {})
+      .post(`/questions/${question.id}/change-status`, question)
       .then(response => {
-        return new QuestionSubmittedByStudent(response.data);
+        return new Question(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
-  }*/
+  }
 
   static uploadImage(file: File, questionId: number): Promise<string> {
     let formData = new FormData();
