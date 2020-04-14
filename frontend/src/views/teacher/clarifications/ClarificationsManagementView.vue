@@ -40,7 +40,7 @@
 
             <template v-slot:item.status="{ item }">
                 <v-chip :color="getStatusColor(item.status)" small>
-                    <span>{{ item.status }}</span>
+                    <span data-cy="requestStatus">{{ item.status }}</span>
                 </v-chip>
             </template>
 
@@ -56,6 +56,7 @@
                                 class="mr-2"
                                 v-on="on"
                                 @click="showClarificationAnswerDialog(item)"
+                                data-cy="showAnswer"
                         >visibility</v-icon
                         >
                     </template>

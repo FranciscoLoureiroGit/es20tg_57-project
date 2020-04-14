@@ -1,7 +1,7 @@
 describe('Teacher clarifications walkthrough', () => {
   let variation = Date.now()
   beforeEach(() => {
-    cy.addClarificationQA(variation)
+
     cy.demoTeacherLogin()
   })
 
@@ -11,8 +11,13 @@ describe('Teacher clarifications walkthrough', () => {
   })
 
   it('login answers existing clarification request', () => {
-    cy.answerClarification('ANSWER', variation)
+    cy.addClarificationQA(variation)
+    cy.answerClarification('ANSWER_' + String(variation), variation)
   });
+
+  it('check for closed clarification in the management list', () => {
+    cy.listClarificationWithAnswer('TITLE_' + String(variation))
+  })
 
 
 

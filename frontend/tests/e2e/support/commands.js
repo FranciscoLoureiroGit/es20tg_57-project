@@ -134,10 +134,12 @@ Cypress.Commands.add('openClarificationQuestion', (title) => {
 })
 
 Cypress.Commands.add('addClarificationQA', (variation) => {
+  cy.get('[data-cy="logoutButton"]').click()
   cy.demoStudentLogin()
   cy.createAndAnswerQuiz()
   cy.createClarificationRequestFromQuiz('TITLE_' + String(variation), 'DESC')
   cy.get('[data-cy="logoutButton"]').click()
+  cy.demoTeacherLogin()
 })
 
 Cypress.Commands.add('answerClarification', (answer, variation) => {
@@ -156,16 +158,22 @@ Cypress.Commands.add('answerClarification', (answer, variation) => {
 
 })
 
-Cypress.Commands.add('listClarificationWithAnswer', (answer) => {
+Cypress.Commands.add('listClarificationWithAnswer', (title) => {
   cy.contains('Management').click();
   cy.contains('Clarification Requests').click();
-  cy.contains(answer)
+  cy.contains(title)
     .parent()
     .should('have.length', 1)
     .children()
     .should('have.length', 7)
+    .find('[data-cy="requestStatus"]')
+    .should('contain.text', 'CLOSED')
+
+  cy.contains(title)
+    .parent()
     .find('[data-cy="showAnswer"]')
     .click()
+  cy.contains('close').click()
 
 
 
