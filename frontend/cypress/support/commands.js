@@ -31,6 +31,11 @@ Cypress.Commands.add('demoAdminLogin', () => {
     cy.contains('Manage Courses').click()
 })
 
+Cypress.Commands.add('demoStudentLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="studentButton"]').click()
+})
+
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="createButton"]').click()
     cy.get('[data-cy="Name"]').type(name)
@@ -67,5 +72,19 @@ Cypress.Commands.add('createFromCourseExecution', (name, acronym, academicTerm) 
     cy.get('[data-cy="Acronym"]').type(acronym)
     cy.get('[data-cy="AcademicTerm"]').type(academicTerm)
     cy.get('[data-cy="saveButton"]').click()
+})
+
+Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
+    cy.contains('Questions Tournaments').click()
+    cy.contains('Open').click()
+})
+
+Cypress.Commands.add('registerStudentInTournament', (tournamentId) => {
+    cy.contains(tournamentId)
+      .parent()
+      .children()
+      .should('have.length', 9)
+      .find('[data-cy="registerStudent"]')
+      .click()
 })
 
