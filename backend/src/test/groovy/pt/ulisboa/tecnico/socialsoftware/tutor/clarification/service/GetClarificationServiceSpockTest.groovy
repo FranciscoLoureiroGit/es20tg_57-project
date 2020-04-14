@@ -137,11 +137,11 @@ class GetClarificationServiceSpockTest extends Specification {
         then: "the returned data is correct"
         result1.description == DESCRIPTION
         result1.title == TITLE
-        result1.questionAnswerId == questAnswer.getId()
+        result1.questionAnswerDto.getId() == questAnswer.getId()
         result1.studentId == student.getId()
         result2.description == DESCRIPTION2
         result2.title == TITLE2
-        result2.questionAnswerId == questAnswer2.getId()
+        result2.questionAnswerDto.getId() == questAnswer2.getId()
         result2.studentId == student2.getId()
 
     }
@@ -155,12 +155,12 @@ class GetClarificationServiceSpockTest extends Specification {
         def result1 = result.get(0)
         result1.description == DESCRIPTION
         result1.title == TITLE
-        result1.questionAnswerId == questAnswer.getId()
+        result1.questionAnswerDto.getId() == questAnswer.getId()
         result1.studentId == student.getId()
         def result2 = result.get(1)
         result2.description == DESCRIPTION2
         result2.title == TITLE2
-        result2.questionAnswerId == questAnswer2.getId()
+        result2.questionAnswerDto.getId() == questAnswer2.getId()
         result2.studentId == student2.getId()
 
     }

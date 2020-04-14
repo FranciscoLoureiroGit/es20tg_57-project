@@ -13,6 +13,7 @@ import Assessment from '@/models/management/Assessment';
 import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
+import Clarification from '@/models/management/Clarification';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 
@@ -139,6 +140,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getClarifications(): Promise<Clarification[]> {
+    return httpClient
+      .get('/quiz/quizAnswer/questionAnswers/clarifications')
+      .then(response => {
+        return response.data.map((clarification: any) => {
+          return new Clarification(clarification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createQuestion(question: Question): Promise<Question> {
     return httpClient
       .post(
@@ -147,6 +161,23 @@ export default class RemoteServices {
       )
       .then(response => {
         return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createClarification(
+    questionAnswerId: number,
+    clarification: Clarification
+  ): Promise<Clarification> {
+    return httpClient
+      .post(
+        `/quiz/quizAnswer/${questionAnswerId}/clarifications/`,
+        clarification
+      )
+      .then(response => {
+        return new Clarification(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));

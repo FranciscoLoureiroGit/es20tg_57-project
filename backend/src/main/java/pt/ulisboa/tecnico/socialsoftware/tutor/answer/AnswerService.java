@@ -270,6 +270,7 @@ public class AnswerService {
 
         clarification.setClarificationAnswer(clarificationAnswer);
         clarification.setStatus(Clarification.Status.CLOSED);
+        
 
         return clarificationAnswer;
     }
