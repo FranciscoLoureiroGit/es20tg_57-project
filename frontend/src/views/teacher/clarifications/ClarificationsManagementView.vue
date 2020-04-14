@@ -63,12 +63,13 @@
                 </v-tooltip>
 
                 <v-tooltip bottom v-if="getAnswer(item) == 'None'">
-                    <template v-slot:activator="{ on }" data-cy="answerClarification">
+                    <template v-slot:activator="{ on }" >
                         <v-icon
                                 small
                                 class="mr-2"
                                 v-on="on"
                                 @click="showCreateClarificationAnswerDialog(item)"
+                                data-cy="answerClarification"
                         >edit</v-icon
                         >
                     </template>
