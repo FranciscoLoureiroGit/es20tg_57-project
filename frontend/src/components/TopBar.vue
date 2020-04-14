@@ -145,7 +145,7 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark>
+            <v-btn data-cy="quizzesButton" v-on="on" text dark>
               Quizzes
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -188,7 +188,8 @@
                 <v-icon>mdi-comment-question</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Clarifications</v-list-item-title>
+                <v-list-item-title data-cy="clarificationsButton">
+                  Clarifications</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -210,7 +211,7 @@
           <v-icon>fa fa-book</v-icon>
         </v-btn>
 
-        <v-btn v-if="isLoggedIn" @click="logout" text dark>
+        <v-btn data-cy="logoutButton" v-if="isLoggedIn" @click="logout" text dark>
           Logout
           <v-icon>fas fa-sign-out-alt</v-icon>
         </v-btn>
@@ -392,7 +393,7 @@
           </v-list-item-action>
           <v-list-item-content>Change course</v-list-item-content>
         </v-list-item>
-        <v-list-item @click="logout" v-if="isLoggedIn">
+        <v-list-item data-cy="logoutMobileButton" @click="logout" v-if="isLoggedIn">
           <v-list-item-action>
             <v-icon>fas fa-sign-out-alt</v-icon>
           </v-list-item-action>

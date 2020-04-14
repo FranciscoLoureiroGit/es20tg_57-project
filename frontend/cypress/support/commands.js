@@ -34,7 +34,7 @@ Cypress.Commands.add('demoAdminLogin', () => {
 Cypress.Commands.add('demoStudentLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="studentButton"]').click()
-    cy.contains('Quizzes').click()
+    cy.get('[data-cy="quizzesButton"]').click()
 })
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
@@ -99,8 +99,8 @@ Cypress.Commands.add('createClarificationRequestFromSolved', (title, description
 })
 
 Cypress.Commands.add('showClarificationRequests', () => {
-    cy.contains('Quizzes').click()
-    cy.contains('Clarifications').click()
+    cy.get('[data-cy="quizzesButton"]').click()
+    cy.get('[data-cy="clarificationsButton"]').click()
 })
 
 Cypress.Commands.add('openClarificationDescription', (title) => {
@@ -110,6 +110,17 @@ Cypress.Commands.add('openClarificationDescription', (title) => {
       .children()
       .should('have.length', 7)
       .find('[data-cy="showClarification"]')
+      .click()
+    cy.get('[data-cy="closeButton"]').click()
+})
+
+Cypress.Commands.add('openClarificationQuestion', (title) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 7)
+      .find('[data-cy="showQuestion"]')
       .click()
     cy.get('[data-cy="closeButton"]').click()
 })

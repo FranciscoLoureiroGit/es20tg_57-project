@@ -23,7 +23,7 @@
       </template>
 
       <template v-slot:item.question="{ item }">
-        <p
+        <p data-cy="showQuestion"
           v-html="
             convertMarkDownNoFigure(
               item.questionAnswerDto.question.content,
