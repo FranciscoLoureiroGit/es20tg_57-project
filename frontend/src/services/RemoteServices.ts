@@ -105,7 +105,7 @@ export default class RemoteServices {
       });
   }
 
-  static async getStudentQuestions(): Promise<Question[]>{
+  static async getStudentQuestions(): Promise<Question[]> {
     return httpClient
       .get('/questions/showMyQuestions/')
       .then(response => {
@@ -197,8 +197,8 @@ export default class RemoteServices {
   }
 
   //NOVO
-  //Assim ou criar questiondto para passar os param
-/*  static setQuestionJustification(
+  //Assim ou criar questiondto para passar os param???
+  /*  static changeQuestionState(
       questionId: number,
       status: String,
       justification: String

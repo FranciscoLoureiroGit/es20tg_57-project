@@ -279,6 +279,26 @@ export default class QuestionsView extends Vue {
     }
   }
 
+  /*  //NOVO
+  async changeQuestionStatus(
+    questionId: number,
+    status: string,
+    justification: string
+  ) {
+    try {
+      await RemoteServices.setQuestionJustification(questionId, status, justification);
+      let question = this.questions.find(
+              question => question.id === questionId
+      );
+      if (question) {
+        question.status = status;
+        question.justification = justification;
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+  }*/
+
   getStatusColor(status: string) {
     if (status === 'REMOVED') return 'red';
     else if (status === 'DISABLED') return 'orange';
