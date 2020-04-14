@@ -124,8 +124,9 @@ public class QuestionService {
         for (QuestionDto question : av) {
             if (question.getRoleAuthor() == null) //for old data inside database (a.k.a demo.sql), however, the question IS NEVER NULL!
                 output.add(question);
-            else if(question.getRoleAuthor().equals(User.Role.TEACHER.name()) ||
-                    (question.getRoleAuthor().equals(User.Role.STUDENT.name()) && question.getStatus().equals(Question.Status.AVAILABLE)))
+            else if(question.getRoleAuthor().equals(User.Role.TEACHER.name()))
+                output.add(question);
+            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()) && question.getStatus().equals(Question.Status.AVAILABLE.name()))
                 output.add(question);
         }
 

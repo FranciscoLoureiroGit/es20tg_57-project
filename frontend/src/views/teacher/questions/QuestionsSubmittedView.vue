@@ -233,7 +233,7 @@ export default class QuestionsSubmittedView extends Vue {
     try {
       [this.topics, this.questions] = await Promise.all([
         RemoteServices.getTopics(),
-        RemoteServices.getQuestions()
+        RemoteServices.getQuestionsSubmittedByStudents()
       ]);
     } catch (error) {
       await this.$store.dispatch('error', error);
