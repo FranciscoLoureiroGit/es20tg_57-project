@@ -111,10 +111,56 @@
             </v-list-item>
           </v-list>
         </v-menu>
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" text dark>
+              Questions Tournament
+              <v-icon>fas fa-file-alt</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/student/openTournaments">
+              <v-list-item-action>
+                <v-icon>assignment</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Open</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark>
+              Questions
+              <v-icon>fas fa-file-alt</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/student/submitQuestion">
+              <v-list-item-action>
+                <v-icon>create</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Submit</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item to="/student/submittedQuestions">
+              <v-list-item-action>
+                <v-icon>question_answer</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Submitted</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn data-cy="quizzesButton" v-on="on" text dark>
               Quizzes
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -157,7 +203,8 @@
                 <v-icon>mdi-comment-question</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Doubts</v-list-item-title>
+                <v-list-item-title data-cy="clarificationsButton">
+                  Clarifications</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -179,7 +226,7 @@
           <v-icon>fa fa-book</v-icon>
         </v-btn>
 
-        <v-btn v-if="isLoggedIn" @click="logout" text dark>
+        <v-btn data-cy="logoutButton" v-if="isLoggedIn" @click="logout" text dark>
           Logout
           <v-icon>fas fa-sign-out-alt</v-icon>
         </v-btn>
@@ -292,6 +339,16 @@
           </template>
 
           <v-list-item
+            to="/student/openTournaments"
+            v-if="isStudent && currentCourse"
+          >
+            <v-list-item-action>
+              <v-icon>assignment</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Open</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item
             to="/student/available"
             v-if="isStudent && currentCourse"
           >
@@ -300,6 +357,30 @@
             </v-list-item-action>
             <v-list-item-content>Available Quizzes</v-list-item-content>
           </v-list-item>
+
+          <!-- Implementation for a student submit a question and check then STARTS HERE -->
+
+          <v-list-item
+            to="/student/submitQuestion"
+            v-if="isStudent && currentCourse"
+          >
+            <v-list-item-action>
+              <v-icon>create</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Submit Question</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item
+            to="/student/submittedQuestions"
+            v-if="isStudent && currentCourse"
+          >
+            <v-list-item-action>
+              <v-icon>question_answer</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Submitted Questions</v-list-item-content>
+          </v-list-item>
+
+          <!-- STOPS HERE-->
 
           <v-list-item to="/student/create">
             <v-list-item-action>
@@ -333,7 +414,7 @@
             <v-list-item-action>
               <v-icon>mdi-comment-question</v-icon>
             </v-list-item-action>
-            <v-list-item-content>Doubts</v-list-item-content>
+            <v-list-item-content>Clarifications</v-list-item-content>
           </v-list-item>
         </v-list-group>
 
@@ -343,7 +424,7 @@
           </v-list-item-action>
           <v-list-item-content>Change course</v-list-item-content>
         </v-list-item>
-        <v-list-item @click="logout" v-if="isLoggedIn">
+        <v-list-item data-cy="logoutMobileButton" @click="logout" v-if="isLoggedIn">
           <v-list-item-action>
             <v-icon>fas fa-sign-out-alt</v-icon>
           </v-list-item-action>

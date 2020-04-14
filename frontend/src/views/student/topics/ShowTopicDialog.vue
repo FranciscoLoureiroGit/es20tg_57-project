@@ -7,16 +7,16 @@
   >
     <v-card>
       <v-card-title>
-        <span class="headline">{{ question.title }}</span>
+        <span class="headline">{{ topic.name }}</span>
       </v-card-title>
 
       <v-card-text class="text-left">
-        <show-question :question="question" />
+        <show-topic :topic="topic" />
       </v-card-text>
 
       <v-card-actions>
         <v-spacer />
-        <v-btn data-cy="closeButton" dark color="blue darken-1" @click="$emit('dialog')">close</v-btn>
+        <v-btn dark color="blue darken-1" @click="$emit('dialog')">close</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -24,16 +24,17 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Model } from 'vue-property-decorator';
-import Question from '@/models/management/Question';
-import ShowQuestion from '@/views/teacher/questions/ShowQuestion.vue';
+import ShowTopic from '@/views/student/topics/ShowTopic.vue';
+import Topic from '@/models/management/Topic';
 
 @Component({
   components: {
-    'show-question': ShowQuestion
+    ShowTopic,
+    'show-topic': ShowTopic
   }
 })
-export default class ShowQuestionDialog extends Vue {
+export default class ShowTopicDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Question, required: true }) readonly question!: Question;
+  @Prop({ type: Topic, required: true }) readonly topic!: Topic;
 }
 </script>

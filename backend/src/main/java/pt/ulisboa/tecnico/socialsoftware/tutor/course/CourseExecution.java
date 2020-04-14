@@ -137,14 +137,14 @@ public class CourseExecution {
     }
 
     public List<QuestionsTournamentDto> getOpenQuestionsTournamentsDto(){
-        List<QuestionsTournamentDto> QuestionsTournamentsDto = new ArrayList<>();
+        List<QuestionsTournamentDto> questionsTournamentsDto = new ArrayList<>();
         for (QuestionsTournament tournament: this.questionsTournaments) {
             if(tournament.isOpen()){
                 QuestionsTournamentDto tournamentDto = new QuestionsTournamentDto(tournament);
-                QuestionsTournamentsDto.add(tournamentDto);
+                questionsTournamentsDto.add(tournamentDto);
             }
         }
-        return QuestionsTournamentsDto;
+        return questionsTournamentsDto;
     }
 
     public void addQuiz(Quiz quiz) {
