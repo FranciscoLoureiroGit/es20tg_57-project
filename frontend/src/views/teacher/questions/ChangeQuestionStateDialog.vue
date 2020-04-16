@@ -10,46 +10,32 @@
       <v-card-title>
         <span class="headline">
           {{
-            editQuestion && editQuestion.id === null
-              ? 'ChangeStatus Question'
-              : 'Edit Question'
+            changedQuestion && changedQuestion.id === null
+              ? 'Edit TheQuestion'
+              : 'Change QuestionStatus'
           }}
         </span>
       </v-card-title>
 
-      <v-card-text class="text-left" v-if="editQuestion">
+      <v-card-text class="text-left" v-if="changedQuestion">
         <v-container grid-list-md fluid>
           <v-layout column wrap>
-            <v-flex xs24 sm12 md8>
-              <v-text-field v-model="editQuestion.title" label="Title" />
+            <!--NOVO-->
+            <v-flex xs24 sm12 md12>
+              <v-textarea
+                outline
+                v-model="changedQuestion.status"
+                label="Status"
+              ></v-textarea>
             </v-flex>
             <v-flex xs24 sm12 md12>
               <v-textarea
                 outline
-                rows="10"
-                v-model="editQuestion.content"
-                label="Content"
+                v-model="changedQuestion.justification"
+                label="Justification"
               ></v-textarea>
             </v-flex>
-            <v-flex
-              xs24
-              sm12
-              md12
-              v-for="index in editQuestion.options.length"
-              :key="index"
-            >
-              <v-switch
-                v-model="editQuestion.options[index - 1].correct"
-                class="ma-4"
-                label="Correct"
-              />
-              <v-textarea
-                outline
-                rows="10"
-                v-model="editQuestion.options[index - 1].content"
-                label="Content"
-              ></v-textarea>
-            </v-flex>
+            <!-- NOVO-->
           </v-layout>
         </v-container>
       </v-card-text>
@@ -59,7 +45,7 @@
         <v-btn color="blue darken-1" @click="$emit('dialog', false)"
           >Cancel</v-btn
         >
-        <v-btn color="blue darken-1" @click="saveQuestion">Save</v-btn>
+        <v-btn color="blue darken-1" @click="changeQuestion">ChangeStatus</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -75,16 +61,16 @@ export default class ChangeQuestionStateDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: Question, required: true }) readonly question!: Question;
 
-  editQuestion!: Question;
+  changedQuestion!: Question;
 
   created() {
-    this.editQuestion = new Question(this.question);
+    this.changedQuestion = new Question(this.question);
   }
 
   async changeQuestion() {
     if (
-      this.editQuestion &&
-      (!this.editQuestion.status)
+      this.changedQuestion &&
+      (!this.changedQuestion.status)
     ) {
       await this.$store.dispatch(
         'error',
@@ -93,9 +79,9 @@ export default class ChangeQuestionStateDialog extends Vue {
       return;
     }
 
-    if (this.editQuestion && this.editQuestion.id != null) {
+    if (this.changedQuestion && this.changedQuestion.id != null) {
       try {
-        const result = await RemoteServices.updateQuestion(this.editQuestion);
+        const result = await RemoteServices.changeQuestionStatus(this.changedQuestion);
         this.$emit('save-question', result);
       } catch (error) {
         await this.$store.dispatch('error', error);

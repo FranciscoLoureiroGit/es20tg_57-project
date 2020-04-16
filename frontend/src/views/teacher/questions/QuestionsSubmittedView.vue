@@ -20,7 +20,6 @@
           />
 
           <v-spacer />
-          <!--<v-btn color="primary" dark @click="newQuestion">New Question</v-btn>-->
           <v-btn color="primary" dark @click="exportCourseQuestions"
             >Export Questions</v-btn
           >
@@ -41,21 +40,21 @@
         />
       </template>
 
-      <template v-slot:item.difficulty="{ item }">
+      <!--      <template v-slot:item.difficulty="{ item }">
         <v-chip
           v-if="item.difficulty"
           :color="getDifficultyColor(item.difficulty)"
           dark
           >{{ item.difficulty + '%' }}</v-chip
         >
-      </template>
+      </template>-->
 
+     <!-- @click apagado, porque continua a funcionar???-->
       <template v-slot:item.status="{ item }">
         <v-select
           v-model="item.status"
           :items="statusList"
           dense
-          @change="setStatus(item.id, item.status)"
         >
           <template v-slot:selection="{ item }">
             <v-chip :color="getStatusColor(item)" small>
@@ -88,6 +87,20 @@
           </template>
           <span>Show Question</span>
         </v-tooltip>
+        <!--NOVO botao para mudar estado e justificacao-->
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="changeQuestionStateDialog(item)"
+              >edit</v-icon
+            >
+          </template>
+          <span>Change QuestionState</span>
+        </v-tooltip>
+        <!--NOVO botao para mudar estado e justificacao-->
         <v-tooltip bottom v-if="item.numberOfAnswers === 0">
           <template v-slot:activator="{ on }">
             <v-icon small class="mr-2" v-on="on" @click="editQuestion(item)"
@@ -96,17 +109,6 @@
           </template>
           <span>Edit Question</span>
         </v-tooltip>
-        <!--NOVO - botao para mudar justificacao-status  !!!!!falta implementar-->
-        <!--@click="changeStatus()"-->
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on"
-              >edit</v-icon
-            >
-          </template>
-          <span>ChangeStatus</span>
-        </v-tooltip>
-        <!--FIM NOVO - botao para mudar justificacao-status-->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
@@ -137,6 +139,12 @@
     <edit-question-dialog
       v-if="currentQuestion"
       v-model="editQuestionDialog"
+      :question="currentQuestion"
+      v-on:save-question="onSaveQuestion"
+    />
+    <change-question-state-dialog
+      v-if="currentQuestion"
+      v-model="changedQuestionDialog"
       :question="currentQuestion"
       v-on:save-question="onSaveQuestion"
     />
@@ -176,6 +184,7 @@ export default class QuestionsSubmittedView extends Vue {
   currentQuestion: Question | null = null;
   editQuestionDialog: boolean = false;
   questionDialog: boolean = false;
+  changedQuestionDialog: boolean = false;
   search: string = '';
   statusList = ['DISABLED', 'AVAILABLE', 'REMOVED', 'PENDING'];
 
@@ -187,18 +196,6 @@ export default class QuestionsSubmittedView extends Vue {
       value: 'topics',
       align: 'center',
       sortable: false
-    },
-    { text: 'Difficulty', value: 'difficulty', align: 'center' },
-    { text: 'Answers', value: 'numberOfAnswers', align: 'center' },
-    {
-      text: 'Nº of generated quizzes',
-      value: 'numberOfGeneratedQuizzes',
-      align: 'center'
-    },
-    {
-      text: 'Nº of non generated quizzes',
-      value: 'numberOfNonGeneratedQuizzes',
-      align: 'center'
     },
     { text: 'Status', value: 'status', align: 'center' },
     { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
@@ -224,6 +221,13 @@ export default class QuestionsSubmittedView extends Vue {
   @Watch('editQuestionDialog')
   closeError() {
     if (!this.editQuestionDialog) {
+      this.currentQuestion = null;
+    }
+  }
+
+  @Watch('changedQuestionDialog')
+  closeError2() {
+    if (!this.changedQuestionDialog) {
       this.currentQuestion = null;
     }
   }
@@ -264,29 +268,8 @@ export default class QuestionsSubmittedView extends Vue {
     }
   }
 
-  getDifficultyColor(difficulty: number) {
-    if (difficulty < 25) return 'green';
-    else if (difficulty < 50) return 'lime';
-    else if (difficulty < 75) return 'orange';
-    else return 'red';
-  }
-
-  async setStatus(questionId: number, status: string) {
-    try {
-      await RemoteServices.setQuestionStatus(questionId, status);
-      let question = this.questions.find(
-        question => question.id === questionId
-      );
-      if (question) {
-        question.status = status;
-      }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-  }
-
   //NOVO
-  async changeStatus(questionToChange: Question) {
+  /*  async changeStatus(questionToChange: Question) {
     try {
       await RemoteServices.changeQuestionStatus(questionToChange);
       let question = this.questions.find(
@@ -298,7 +281,7 @@ export default class QuestionsSubmittedView extends Vue {
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
-  }
+  }*/
 
   getStatusColor(status: string) {
     if (status === 'REMOVED') return 'red';
@@ -329,10 +312,10 @@ export default class QuestionsSubmittedView extends Vue {
     this.questionDialog = false;
   }
 
-  /*  newQuestion() {
-    this.currentQuestion = new Question();
-    this.editQuestionDialog = true;
-  }*/
+  changeQuestionStateDialog(question: Question) {
+    this.currentQuestion = question;
+    this.changedQuestionDialog = true;
+  }
 
   editQuestion(question: Question) {
     this.currentQuestion = question;
@@ -349,6 +332,7 @@ export default class QuestionsSubmittedView extends Vue {
     this.questions = this.questions.filter(q => q.id !== question.id);
     this.questions.unshift(question);
     this.editQuestionDialog = false;
+    this.changedQuestionDialog = false;
     this.currentQuestion = null;
   }
 

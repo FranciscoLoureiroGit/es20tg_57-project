@@ -97,12 +97,12 @@
           <span>Edit Question</span>
         </v-tooltip>
         <!--NOVO - botao para mudar justificacao-status  !!!!!falta implementar-->
-        <v-tooltip bottom>
+        <!--        <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon small class="mr-2" v-on="on">edit</v-icon>
           </template>
           <span>Edit Justification</span>
-        </v-tooltip>
+        </v-tooltip>-->
         <!--FIM NOVO - botao para mudar justificacao-status-->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
