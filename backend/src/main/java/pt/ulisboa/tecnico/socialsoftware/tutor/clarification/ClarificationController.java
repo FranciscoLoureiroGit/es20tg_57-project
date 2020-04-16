@@ -55,7 +55,7 @@ public class ClarificationController {
     public ClarificationAnswerDto getClarificationAnswer(@PathVariable int questionAnswerId, @PathVariable int clarificationId) {
         return answerService.getClarificationAnswer(clarificationId);
     }
-    
+
     @GetMapping("/teacher/clarifications")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     public List<ClarificationDto> getTeacherClarifications(Principal principal){
@@ -78,10 +78,9 @@ public class ClarificationController {
         return answerService.createClarificationAnswer(clarificationAnswerDto, ((User)((Authentication)principal).getPrincipal()).getId());
     }
 
-    @PostMapping("/{quizId}/quizAnswer/questionAnswer/{clarificationId}")
+    @PostMapping("/quiz/quizAnswer/questionAnswer/{clarificationId}/privacy")
     @PreAuthorize("hasRole('ROLE_TEACHER') ") //and hasPermission(#quizId, 'QUIZ.ACCESS')
-    public ResponseEntity setClarificationPrivacy(@PathVariable int quizId,
-                                                  @PathVariable int clarificationId,
+    public ResponseEntity setClarificationPrivacy(@PathVariable int clarificationId,
                                                   @RequestBody boolean isPublic, Principal principal){
         clarificationService.setPrivacy(clarificationId, isPublic);
         return ResponseEntity.ok().build();
