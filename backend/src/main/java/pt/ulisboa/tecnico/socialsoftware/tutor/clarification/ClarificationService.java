@@ -94,6 +94,17 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void setPrivacy(int clarificationId, boolean isPublic) {
+        Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
+                new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
+
+        clarification.setPublic(true);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ClarificationDto createClarification(Integer questionAnswerId, ClarificationDto clarificationDto, Integer userId){
         // Gets question answer from database
         QuestionAnswer questionAnswer = getQuestionAnswer(questionAnswerId);
