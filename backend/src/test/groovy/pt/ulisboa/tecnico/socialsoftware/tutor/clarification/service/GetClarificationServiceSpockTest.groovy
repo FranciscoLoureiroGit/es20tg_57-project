@@ -192,7 +192,30 @@ class GetClarificationServiceSpockTest extends Specification {
         result2.title == TITLE2
         result2.questionAnswerDto.getId() == questAnswer2.getId()
         result2.studentId == student2.getId()
+    }
 
+    def "get all public clarification requests" () {
+        given: 'a new clarification request'
+        def newClarification = new Clarification()
+        newClarification.setTitle(TITLE)
+        newClarification.setDescription(DESCRIPTION)
+        newClarification.setUser(student)
+        newClarification.setQuestionAnswer(questAnswer)
+        newClarification.setPublic(true)
+        clarificationRepository.save(newClarification)
+
+        when:
+        def result = clarificationService.getPublicClarifications()
+
+        then: "the returned data is correct"
+        result.size() == 1
+        def result1 = result.get(0)
+        result1.id == newClarification.getId()
+        result1.description == DESCRIPTION
+        result1.title == TITLE
+        result1.questionAnswerDto.getId() == questAnswer.getId()
+        result1.studentId == student.getId()
+        result1.public == newClarification.getPublic()
     }
 
     def "get all teacher clarifications" (){
