@@ -40,28 +40,11 @@
         />
       </template>
 
-      <!--      <template v-slot:item.difficulty="{ item }">
-        <v-chip
-          v-if="item.difficulty"
-          :color="getDifficultyColor(item.difficulty)"
-          dark
-          >{{ item.difficulty + '%' }}</v-chip
-        >
-      </template>-->
-
-     <!-- @click apagado, porque continua a funcionar???-->
+      <!--Para mostrar o status com cor-->
       <template v-slot:item.status="{ item }">
-        <v-select
-          v-model="item.status"
-          :items="statusList"
-          dense
-        >
-          <template v-slot:selection="{ item }">
-            <v-chip :color="getStatusColor(item)" small>
-              <span>{{ item }}</span>
-            </v-chip>
-          </template>
-        </v-select>
+        <v-chip :color="getStatusColor(item.status)" small>
+          <span>{{ item.status }}</span>
+        </v-chip>
       </template>
 
       <template v-slot:item.image="{ item }">
@@ -186,7 +169,6 @@ export default class QuestionsSubmittedView extends Vue {
   questionDialog: boolean = false;
   changedQuestionDialog: boolean = false;
   search: string = '';
-  statusList = ['DISABLED', 'AVAILABLE', 'REMOVED', 'PENDING'];
 
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
