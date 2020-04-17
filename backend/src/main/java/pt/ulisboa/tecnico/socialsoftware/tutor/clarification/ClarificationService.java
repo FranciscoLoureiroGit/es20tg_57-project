@@ -12,7 +12,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarificatio
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -52,8 +51,7 @@ public class ClarificationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ClarificationDto> getClarificationsByQuestion(int questionAnswerId) {
         return clarificationRepository.findByQuestionAnswer(questionAnswerId).stream().map(ClarificationDto::new)
-                .sorted(Comparator
-                        .comparing(ClarificationDto::getTitle))
+                .sorted(Comparator.comparing(ClarificationDto::getTitle))
                 .collect(Collectors.toList());
     }
 
@@ -79,6 +77,14 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationDto> getPublicClarifications() {
+        return this.getAllClarifications().stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ClarificationDto getClarification(int studentId, int questionAnswerId) {
         List<ClarificationDto> clarificationDtoList = getClarificationsByQuestion(questionAnswerId);
 
@@ -88,6 +94,32 @@ public class ClarificationService {
             }
         }
         throw new TutorException(NO_CLARIFICATION_REQUEST);
+    }
+
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationDto> getClarificationsByTeacher(int teacherId) {
+        return clarificationRepository.findClarificationsByTeacher(teacherId).stream().map(ClarificationDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationDto> getPublicQuestionClarification(int questionAnswerId) {
+        return getClarificationsByQuestion(questionAnswerId).stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void setPrivacy(int clarificationId, boolean isPublic) {
+        Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
+                new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
+        clarification.setPublic(isPublic);
     }
 
     @Retryable(
@@ -102,7 +134,7 @@ public class ClarificationService {
         if (userId != null){
             User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
             checkInput(questionAnswer, clarificationDto, user);
-            Clarification clarification = setClarificationValues(clarificationDto, questionAnswer, user, clarificationRepository);
+            Clarification clarification = setClarificationValues(clarificationDto, questionAnswer, user);
             clarificationRepository.save(clarification);
 
             return new ClarificationDto(clarification);
@@ -144,8 +176,7 @@ public class ClarificationService {
         return false;
     }
 
-    private static Clarification setClarificationValues(ClarificationDto clarificationDto, QuestionAnswer questionAnswer,
-                                                        User user, ClarificationRepository clarificationRepository) {
+    private static Clarification setClarificationValues(ClarificationDto clarificationDto, QuestionAnswer questionAnswer, User user) {
         // Creates the clarification object and sets its values
         Clarification clarification = new Clarification(clarificationDto);
 
