@@ -31,6 +31,28 @@ Cypress.Commands.add('demoAdminLogin', () => {
     cy.contains('Manage Courses').click()
 })
 
+/*NOVO*/
+Cypress.Commands.add('demoTeacherLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="teacherButton"]').click()
+    cy.contains('Management').click()
+    cy.contains('StudentSubmittedQuestions').click()
+})
+
+/*NOVO*/
+Cypress.Commands.add('changeQuestionStatusTest', (title, status, justification) => {
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 8)
+        .find('[data-cy="changeQuestionStateDialog"]')
+        .click()
+    cy.get('[data-cy="Status"]').type(status)
+    cy.get('[data-cy="Justification"]').type(justification)
+    cy.get('[data-cy="changeQuestionButton"]').click()
+})
+
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="createButton"]').click()
     cy.get('[data-cy="Name"]').type(name)

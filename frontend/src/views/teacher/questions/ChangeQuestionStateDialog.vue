@@ -31,6 +31,7 @@
                         :items="statusList"
                         chips
                         label="Status"
+                        data-cy="Status"
                       ></v-select>
                     </v-col>
                   </v-row>
@@ -42,6 +43,7 @@
                 outline
                 v-model="changedQuestion.justification"
                 label="Justification"
+                data-cy="Justification"
               ></v-textarea>
             </v-flex>
             <!-- NOVO-->
@@ -54,7 +56,7 @@
         <v-btn color="blue darken-1" @click="$emit('dialog', false)"
           >Cancel</v-btn
         >
-        <v-btn color="blue darken-1" @click="changeQuestion"
+        <v-btn color="blue darken-1" @click="changeQuestion" data-cy="changeQuestionButton"
           >ChangeStatus</v-btn
         >
       </v-card-actions>

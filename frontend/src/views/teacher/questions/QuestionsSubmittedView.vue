@@ -78,6 +78,7 @@
               class="mr-2"
               v-on="on"
               @click="changeQuestionStateDialog(item)"
+              data-cy="changeQuestionStateDialog"
               >edit</v-icon
             >
           </template>
