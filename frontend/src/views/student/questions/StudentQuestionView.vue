@@ -45,28 +45,10 @@
                 />
             </template>
 
-            <template v-slot:item.difficulty="{ item }">
-                <v-chip
-                        v-if="item.difficulty"
-                        :color="getDifficultyColor(item.difficulty)"
-                        dark
-                >{{ item.difficulty + '%' }}</v-chip
-                >
-            </template>
-
             <template v-slot:item.status="{ item }">
-                <v-select
-                        v-model="item.status"
-                        :items="statusList"
-                        dense
-                        @change="setStatus(item.id, item.status)"
-                >
-                    <template v-slot:selection="{ item }">
-                        <v-chip :color="getStatusColor(item)" small>
-                            <span>{{ item }}</span>
-                        </v-chip>
-                    </template>
-                </v-select>
+                <v-chip :color="getStatusColor(item.status)" small>
+                    <span>{{ item.status }}</span>
+                </v-chip>
             </template>
 
             <template v-slot:item.image="{ item }">
@@ -93,16 +75,16 @@
                     <span>Show Question</span>
                 </v-tooltip>
 
-                <v-tooltip bottom v-if="item.numberOfAnswers === 0">
+                <!-- <v-tooltip bottom v-if="item.numberOfAnswers === 0">
                     <template v-slot:activator="{ on }">
                         <v-icon small class="mr-2" v-on="on" @click="editQuestion(item)"
                         >edit</v-icon
                         >
                     </template>
                     <span>Edit Question</span>
-                </v-tooltip>
+                </v-tooltip> -->
 
-                <v-tooltip bottom>
+                <!-- <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-icon
                                 small
@@ -113,9 +95,9 @@
                         >
                     </template>
                     <span>Duplicate Question</span>
-                </v-tooltip>
+                </v-tooltip> -->
 
-                <v-tooltip bottom>
+                <!-- <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-icon
                                 small
@@ -127,7 +109,7 @@
                         >
                     </template>
                     <span>Delete Question</span>
-                </v-tooltip>
+                </v-tooltip> -->
 
 
             </template>
@@ -179,24 +161,6 @@ export default class StudentQuestionView extends Vue{
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
     { text: 'Question', value: 'content', align: 'left' },
-    {
-      text: 'Topics',
-      value: 'topics',
-      align: 'center',
-      sortable: false
-    },
-    { text: 'Difficulty', value: 'difficulty', align: 'center' },
-    { text: 'Answers', value: 'numberOfAnswers', align: 'center' },
-    {
-      text: 'Nº of generated quizzes',
-      value: 'numberOfGeneratedQuizzes',
-      align: 'center'
-    },
-    {
-      text: 'Nº of non generated quizzes',
-      value: 'numberOfNonGeneratedQuizzes',
-      align: 'center'
-    },
     { text: 'Status', value: 'status', align: 'center' },
     { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
     {
