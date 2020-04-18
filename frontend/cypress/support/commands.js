@@ -25,10 +25,6 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 /// <reference types="Cypress" />
 
-import VDatePickerTitle from 'vuetify/lib/components/VDatePicker/VDatePickerTitle';
-import VDatePicker from 'vuetify/lib/components/VDatePicker/VDatePicker';
-
-
 Cypress.Commands.add('demoAdminLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="adminButton"]').click()
