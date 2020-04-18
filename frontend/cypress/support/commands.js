@@ -24,6 +24,11 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 /// <reference types="Cypress" />
+
+import VDatePickerTitle from 'vuetify/lib/components/VDatePicker/VDatePickerTitle';
+import VDatePicker from 'vuetify/lib/components/VDatePicker/VDatePicker';
+
+
 Cypress.Commands.add('demoAdminLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="adminButton"]').click()
@@ -79,6 +84,10 @@ Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
     cy.contains('Open').click()
 })
 
+Cypress.Commands.add('createQuestionsTournament', () => {
+    cy.contains('New Tournament').click()
+})
+
 Cypress.Commands.add('registerStudentInTournament', (tournamentId) => {
     cy.contains(tournamentId)
       .parent()
@@ -86,5 +95,23 @@ Cypress.Commands.add('registerStudentInTournament', (tournamentId) => {
       .should('have.length', 9)
       .find('[data-cy="registerStudent"]')
       .click()
+})
+
+Cypress.Commands.add('createQuestionsTournament', (numberOfQuestions, topicId) => {
+    cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions)
+    cy.contains('*Ending Date').parent().find('input').click()
+    cy.contains('30').click()
+    cy.contains('OK').click()
+    cy.clearLocalStorage()
+    cy.contains('*Starting Date',).parent().find('input').click()
+    cy.get('.v-dialog__content--active').contains('.v-btn__content','25').click()
+    cy.get('.v-dialog__content--active').contains('OK').click()
+    cy.contains(topicId).parent()
+      .should('have.length',1)
+      .children().should('have.length',4)
+      .find('[data-cy="addTopic"]')
+      .click()
+    cy.contains('Show Tournament').click()
+    cy.get('[data-cy="saveButton"]').click({force : true})
 })
 

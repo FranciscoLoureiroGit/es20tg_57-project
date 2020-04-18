@@ -9,12 +9,14 @@
         {{ editMode ? 'Close' : 'Create' }}
       </v-btn>
 
-      <v-btn color="primary" dark v-if="editMode && canSave" @click="save"
+      <v-btn color="primary" data-cy="saveButton" dark v-if="editMode && canSave" @click="save"
         >Save</v-btn
       >
     </v-card-title>
     <v-card-text>
-      <v-text-field v-model="questionsTournament.numberOfQuestions" label="*Number of questions" />
+      <v-text-field v-model="questionsTournament.numberOfQuestions" label="*Number of questions"
+        data-cy="numberOfQuestions"
+      />
       <v-row>
         <v-col cols="12" sm="6">
           <v-datetime-picker
@@ -23,17 +25,20 @@
             v-model="questionsTournament.startingDate"
             date-format="yyyy-MM-dd"
             time-format="HH:mm"
-          >
+            data-cy="startingDate"
+            >startingDate
           </v-datetime-picker>
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="12" sm="6">
           <v-datetime-picker
             label="*Ending Date"
+            format="yyyy-MM-dd HH:mm"
             v-model="questionsTournament.endingDate"
             date-format="yyyy-MM-dd"
             time-format="HH:mm"
-          >
+            data-cy="endingDate"
+            >endingDate
           </v-datetime-picker>
         </v-col>
       </v-row>
@@ -102,6 +107,7 @@
                 class="mr-2"
                 v-on="on"
                 @click="addToTournament(item)"
+                data-cy="addTopic"
               >
                 add</v-icon
               >
@@ -243,22 +249,18 @@ export default class TournamentForm extends Vue {
           .map(tournamentTopic => tournamentTopic.id)
           .includes(topic.id)
       ) {
-        //topic.sequence = topicIds.indexOf(topic.id) + 1;
         this.tournamentTopics.push(topic);
       }
     });
   }
 
   get canSave(): boolean {
-    /*return (
+    return (
       !!this.questionsTournament.startingDate &&
       !!this.questionsTournament.endingDate &&
       !!this.questionsTournament.numberOfQuestions &&
-      ((this.questionsTournament.type == 'IN_CLASS' &&
-        this.questionsTournament.conclusionDate !== undefined) ||
-        this.questionsTournament.type !== 'IN_CLASS')
-    );*/
-    return true;
+      this.questionsTournament.topics.length != 0
+    );
   }
 
   switchMode() {
@@ -335,64 +337,15 @@ export default class TournamentForm extends Vue {
   }
 
   addToTournament(topic: Topic) {
-    //topic.sequence = this.tournamentTopics.length + 1;
     this.tournamentTopics.push(topic);
   }
 
   removeFromTournament(topic: Topic) {
     let index: number = this.tournamentTopics.indexOf(topic);
     this.tournamentTopics.splice(index, 1);
-    //topic.sequence = null;
-    /*this.tournamentTopics.forEach((topic, index) => {
-      topic.sequence = index + 1;
-    });*/
   }
-
-  /*openSetPosition(topic: Topic) {
-    if (topic.sequence) {
-      this.positionDialog = true;
-      this.position = topic.sequence;
-      this.currentTopic = topic;
-    }
-  }
-
-  closeSetPosition() {
-    this.positionDialog = false;
-    this.position = null;
-    this.currentTopic = undefined;
-  }
-
-  saveSetPosition() {
-    if (
-      this.currentTopic &&
-      this.currentTopic.sequence !== this.position &&
-      this.position &&
-      this.position > 0 &&
-      this.position <= this.tournamentTopics.length
-    ) {
-      this.changeTopicPosition(this.currentTopic, this.position - 1);
-    }
-    this.closeSetPosition();
-  }
-
-  changeTopicPosition(topic: Topic, position: number) {
-    if (topic.sequence) {
-      let currentPosition: number = this.tournamentTopics.indexOf(topic);
-      this.tournamentTopics.splice(
-        position,
-        0,
-        this.tournamentTopics.splice(currentPosition, 1)[0]
-      );
-      this.tournamentTopics.forEach((topic, index) => {
-        topic.sequence = index + 1;
-      });
-    }
-  }*/
 
   cleanTournamentTopics() {
-    /*this.tournamentTopics.forEach(topic => {
-      topic.sequence = null;
-    });*/
     this.tournamentTopics = [];
   }
 
