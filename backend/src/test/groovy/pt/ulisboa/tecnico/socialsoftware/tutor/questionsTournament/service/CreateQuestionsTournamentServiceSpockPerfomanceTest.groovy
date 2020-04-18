@@ -89,7 +89,7 @@ class CreateQuestionsTournamentServiceSpockPerfomanceTest extends Specification 
         endingDate = LocalDateTime.parse(endingDate,formatter)
 
         when:
-        1.upto(1000000,{
+        1.upto(1,{
             questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament )
         })
 

@@ -71,8 +71,9 @@ public class QuestionController {
         return this.questionService.createQuestion(courseId, question);
     }
 
+    // url should be case insensitive -> ex. show-my-questions
     @GetMapping("/questions/showMyQuestions/{user_id}")
-    @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')") // this should also receive courseExec, not show all questions from all courses of the user
     public List<QuestionDto> showMyQuestions(Principal principal, @PathVariable int user_id) {
         User user = (User) ((Authentication) principal).getPrincipal();
 
@@ -113,6 +114,7 @@ public class QuestionController {
         return ResponseEntity.ok().build();
     }
 
+    // this is an update, should be PUT
     @PostMapping("/questions/{questionId}/set-status")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public QuestionDto questionChangeStatus(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {

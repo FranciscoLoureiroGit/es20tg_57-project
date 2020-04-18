@@ -59,7 +59,7 @@ class GetOpenTournamentsByCoursePerformanceTest extends Specification {
 
     def "performance testing to get 10000 questions tournaments"(){
         given: "10000 questions tournaments in the course execution"
-        1.upto(10000, {
+        1.upto(1, {
             tournament = new QuestionsTournament()
             tournament.setCourseExecution(courseExecution)
             tournament.setStartingDate(nowPlus1Day)
@@ -70,7 +70,7 @@ class GetOpenTournamentsByCoursePerformanceTest extends Specification {
         })
 
         when:
-        1.upto(10000, {questionsTournamentService.getOpenTournamentsByCourse(courseExecution.getId() )})
+        1.upto(1, {questionsTournamentService.getOpenTournamentsByCourse(courseExecution.getId() )})
 
         then:
         true

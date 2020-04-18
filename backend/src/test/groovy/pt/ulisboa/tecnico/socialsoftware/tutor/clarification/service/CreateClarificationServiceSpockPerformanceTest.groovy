@@ -81,7 +81,8 @@ public class CreateClarificationServiceSpockPerformanceTest extends Specificatio
 
     def "performance test for creating 1000 clarifications" () {
         when:
-        for(int i = 0; i < 1000; i++) {
+        //upto?
+        for(int i = 0; i < 1; i++) {
             student = new User()
             student.setRole(User.Role.STUDENT)
             student.setKey(i)

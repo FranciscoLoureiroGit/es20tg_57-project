@@ -48,7 +48,7 @@ class RegisterStudentPerformanceTest extends Specification {
         def courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO);
         courseExecutionRepository.save(courseExecution)
         and: "2500 students in the courseExecution"
-        1.upto(2500, {
+        1.upto(1, {
             student = new User('Name', it.toString(), it.toInteger(), User.Role.STUDENT)
             student.setId(it.toInteger())
             courseExecution.addUser(student)
@@ -71,7 +71,7 @@ class RegisterStudentPerformanceTest extends Specification {
         questionsTournamentRepository.save(tournament)
 
         when:
-        1.upto(2500, { questionsTournamentService.studentRegister(it.toInteger(), tournament.getId()) })
+        1.upto(1, { questionsTournamentService.studentRegister(it.toInteger(), tournament.getId()) })
 
         then:
         true

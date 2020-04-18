@@ -23,6 +23,8 @@ public class QuestionsTournamentController {
     @Autowired
     QuestionsTournamentService questionsTournamentService;
 
+    // url should be case insensitive -> ex. questions-tournament or even just tournament (smaller urls are better)
+    // why can the admin create a tournament? no reason for the admin to be able to do everything
     @PostMapping("/executions/{executionId}/questionsTournament")
     @PreAuthorize("hasRole('ROLE_DEMO_ADMIN') or (hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS'))")
     public QuestionsTournamentDto createQuestionsTournament(Principal principal, @PathVariable int executionId, @Valid @RequestBody QuestionsTournamentDto questionsTournament) {
@@ -32,6 +34,7 @@ public class QuestionsTournamentController {
         return this.questionsTournamentService.createQuestionsTournament(executionId,user.getId(), questionsTournament);
     }
 
+    // url should be case insensitiv
     @PostMapping("/questionsTournaments/{questionsTournamentId}/studentRegistrations")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS')")
     public StudentTournamentRegistrationDto studentRegister(Principal principal, @PathVariable Integer questionsTournamentId) {
@@ -39,6 +42,7 @@ public class QuestionsTournamentController {
         return this.questionsTournamentService.studentRegister(user.getId(), questionsTournamentId);
     }
 
+    // url should be case insensitiv
     @GetMapping("/executions/{executionId}/questionsTournament")
     @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission(#executionId, 'EXECUTION.ACCESS')")
     public List<QuestionsTournamentDto> getOpenTournamentsByCourse(@PathVariable int executionId) {

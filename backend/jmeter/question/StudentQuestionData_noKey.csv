@@ -1,1 +1,2 @@
+# a csv file with one entry is useless, the idea was to make different request, different users for example. To do this you could have simply defined them in the jmeter test
 Question_Title_FOR_TEST,Question_Content,Option_Content_FOR_TEST,true

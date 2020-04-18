@@ -80,7 +80,7 @@ class ChangeQuestionStatePerformanceTest extends Specification{
 
 
         when:
-        1.upto(100000, {
+        1.upto(1, {
             questionService.questionChangeStatus(question.getId(), Question.Status.AVAILABLE, QUESTION_JUSTIFICATION)})
 
         then:

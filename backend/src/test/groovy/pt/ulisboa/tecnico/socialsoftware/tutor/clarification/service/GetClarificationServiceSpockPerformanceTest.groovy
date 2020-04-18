@@ -109,9 +109,10 @@ public class GetClarificationServiceSpockPerformanceTest extends Specification {
     }
 
     def "get 1000 clarification requests independently" () {
-        def i = 1000
+        def i = 1
 
         when:
+        //upto?
         while(i > 0) {
             clarificationService.getClarification(student.getId(), questAnswer.getId())
             i--

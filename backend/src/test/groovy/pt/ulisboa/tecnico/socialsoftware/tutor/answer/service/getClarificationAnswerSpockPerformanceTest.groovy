@@ -181,7 +181,7 @@ class getClarificationAnswerSpockPerformanceTest extends Specification {
     def "get 1000 clarification answers"() {
         def id = clarificationRequest.getId();
         when:
-        def i = 1000
+        def i = 1
                 while(i > 0){
                     answerService.getClarificationAnswer(id)
                     i--
