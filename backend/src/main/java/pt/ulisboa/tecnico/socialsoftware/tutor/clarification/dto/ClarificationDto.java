@@ -28,8 +28,9 @@ public class ClarificationDto implements Serializable {
         this.description = clarification.getDescription();
         this.title = clarification.getTitle();
         this.studentId = clarification.getUser().getId();
-        this.isPublic = clarification.getPublic();
 
+        if (clarification.getPublic() != null)
+            this.isPublic = clarification.getPublic();
         if (clarification.getStatus() != null)
             this.status = clarification.getStatus().name();
         if (clarification.getImage() != null)

@@ -64,7 +64,9 @@ public class Clarification {
         this.title = clarificationDto.getTitle();
         this.description = clarificationDto.getDescription();
         this.id = clarificationDto.getId();
-        this.isPublic = clarificationDto.getPublic();
+
+        if (clarificationDto.getPublic() != null)
+            this.isPublic = clarificationDto.getPublic();
 
         if (clarificationDto.getStatus() != null) {
             this.status = Clarification.Status.valueOf(clarificationDto.getStatus());
