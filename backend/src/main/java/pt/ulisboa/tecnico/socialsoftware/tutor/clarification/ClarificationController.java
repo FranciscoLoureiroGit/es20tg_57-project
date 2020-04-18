@@ -80,8 +80,7 @@ public class ClarificationController {
 
     @PostMapping("/quiz/quizAnswer/questionAnswer/{clarificationId}/privacy")
     @PreAuthorize("hasRole('ROLE_TEACHER') ") //and hasPermission(#quizId, 'QUIZ.ACCESS')
-    public ResponseEntity setClarificationPrivacy(@PathVariable int clarificationId,
-                                                  @RequestBody boolean isPublic, Principal principal){
+    public ResponseEntity setClarificationPrivacy(@PathVariable int clarificationId, @RequestBody boolean isPublic){
         clarificationService.setPrivacy(clarificationId, isPublic);
         return ResponseEntity.ok().build();
     }
