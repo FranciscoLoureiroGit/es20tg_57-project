@@ -19,6 +19,7 @@ public interface ClarificationRepository extends JpaRepository<Clarification, In
     @Query(value = "SELECT * FROM clarifications c WHERE c.user_id = :student_id", nativeQuery = true)
     List<Clarification> findClarificationsByStudentId(Integer student_id);
 
-    @Query(value = "select * from clarifications c where c.user_id in (select c2.users_id from users_course_executions c1 join users_course_executions c2 on c1.course_executions_id = c2.course_executions_id where c1.users_id = :teacher_id)", nativeQuery = true)
+    @Query(value = "select * from clarifications c where c.user_id in (select c2.users_id from users_course_executions c1 " +
+            "join users_course_executions c2 on c1.course_executions_id = c2.course_executions_id where c1.users_id = :teacher_id)", nativeQuery = true)
     List<Clarification> findClarificationsByTeacher(Integer teacher_id);
 }

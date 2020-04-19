@@ -30,8 +30,6 @@ describe('Student clarifications walkthrough', () => {
 
     cy.closeErrorMessage()
 
-    cy.log('close dialog')
-    cy.get('[data-cy="cancelButton"]').click()
   });
 
   it('login shows clarifications a visualizes a specific one by description', () => {
