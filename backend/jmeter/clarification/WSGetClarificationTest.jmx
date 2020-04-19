@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load Test Web Service getClarification" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load Test Web Service get a Student Clarification" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -116,7 +116,7 @@
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">ars</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
@@ -238,7 +238,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to get clarification" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to get student clarifications" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -254,7 +254,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/quiz/quizAnswer/${questionAnswerId}/clarifications</stringProp>
+            <stringProp name="HTTPSampler.path">/student/clarifications</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -266,7 +266,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
           </HTTPSamplerProxy>
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification title" enabled="true">
-              <stringProp name="JSON_PATH">$.title</stringProp>
+              <stringProp name="JSON_PATH">$..title</stringProp>
               <stringProp name="EXPECTED_VALUE">${titleAssert}</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
@@ -275,7 +275,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             </JSONPathAssertion>
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification description" enabled="true">
-              <stringProp name="JSON_PATH">$.description</stringProp>
+              <stringProp name="JSON_PATH">$..description</stringProp>
               <stringProp name="EXPECTED_VALUE">${descriptionAssert}</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
@@ -284,7 +284,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             </JSONPathAssertion>
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert clarification Id" enabled="true">
-              <stringProp name="JSON_PATH">$.id</stringProp>
+              <stringProp name="JSON_PATH">$..id</stringProp>
               <stringProp name="EXPECTED_VALUE">${clarificationId}</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
@@ -293,7 +293,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             </JSONPathAssertion>
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert User Id" enabled="true">
-              <stringProp name="JSON_PATH">$.studentId</stringProp>
+              <stringProp name="JSON_PATH">$..studentId</stringProp>
               <stringProp name="EXPECTED_VALUE">${demoStudentId}</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
@@ -408,7 +408,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">ars</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">

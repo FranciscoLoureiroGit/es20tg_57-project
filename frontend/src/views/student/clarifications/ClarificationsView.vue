@@ -146,7 +146,7 @@ export default class ClarificationsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.clarifications = await RemoteServices.getClarifications();
+      this.clarifications = await RemoteServices.getStudentClarifications();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

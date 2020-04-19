@@ -23,37 +23,10 @@ public class ClarificationController {
     @Autowired
     private ClarificationService clarificationService;
 
-    @GetMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
-    public ClarificationDto getClarification(@PathVariable int questionAnswerId,
-                                             Principal principal) {
-        return clarificationService.getClarification(((User)((Authentication) principal).getPrincipal()).getId(), questionAnswerId);
-    }
-
-    @GetMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications/public")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
-    public List<ClarificationDto> getPublicQuestionClarification(@PathVariable int questionAnswerId,
-                                             Principal principal) {
-        return clarificationService.getPublicQuestionClarification(questionAnswerId);
-    }
-
-
-    @GetMapping("/quiz/quizAnswer/questionAnswers/clarifications/public")
+    @GetMapping("/clarifications/public")
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')")
     public List<ClarificationDto> getPublicClarifications(Principal principal) {
         return clarificationService.getPublicClarifications();
-    }
-
-    @GetMapping("/quiz/quizAnswer/questionAnswers/clarifications")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public List<ClarificationDto> getStudentClarifications(Principal principal) {
-        return clarificationService.getClarificationsByStudent(((User)((Authentication) principal).getPrincipal()).getId());
-    }
-
-    @GetMapping("/quiz/quizAnswer/{questionAnswerId}/{clarificationId}/answers")
-    @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER')) and hasPermission(#questionAnswerId,'QUESTION_ANSWER.ACCESS')")
-    public ClarificationAnswerDto getClarificationAnswer(@PathVariable int questionAnswerId, @PathVariable int clarificationId) {
-        return answerService.getClarificationAnswer(clarificationId);
     }
 
     @GetMapping("/teacher/clarifications")
@@ -62,15 +35,13 @@ public class ClarificationController {
         return clarificationService.getClarificationsByTeacher(((User)((Authentication)principal).getPrincipal()).getId());
     }
 
-    @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS') ")
-    public ClarificationDto createClarification(@PathVariable int questionAnswerId,
-                                                @Valid @RequestBody ClarificationDto clarificationDto,
-                                                Principal principal){
-        return clarificationService.createClarification(questionAnswerId, clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
+    @GetMapping("/student/clarifications")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<ClarificationDto> getStudentClarifications(Principal principal) {
+        return clarificationService.getClarificationsByStudent(((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @PostMapping("/quiz/quizAnswer/{questionAnswerId}/clarifications/answer")
+    @PostMapping("/question-answer/{questionAnswerId}/clarifications/answer")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
     public ClarificationAnswerDto createClarificationAnswer(@PathVariable int questionAnswerId,
                                                             @RequestBody ClarificationAnswerDto clarificationAnswerDto,
@@ -78,11 +49,38 @@ public class ClarificationController {
         return answerService.createClarificationAnswer(clarificationAnswerDto, ((User)((Authentication)principal).getPrincipal()).getId());
     }
 
-    @PostMapping("/quiz/quizAnswer/questionAnswer/{clarificationId}/privacy")
-    @PreAuthorize("hasRole('ROLE_TEACHER') ") //and hasPermission(#quizId, 'QUIZ.ACCESS')
+    @PostMapping("/question-answer/{questionAnswerId}/clarifications")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS') ")
+    public ClarificationDto createClarification(@PathVariable int questionAnswerId,
+                                                @Valid @RequestBody ClarificationDto clarificationDto,
+                                                Principal principal){
+        return clarificationService.createClarification(questionAnswerId, clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
+    }
+
+    @GetMapping("/question-answer/{questionAnswerId}/clarifications/public")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
+    public List<ClarificationDto> getPublicQuestionClarification(@PathVariable int questionAnswerId) {
+        return clarificationService.getPublicQuestionClarification(questionAnswerId);
+    }
+
+    @GetMapping("/question-answer/{questionAnswerId}/student-clarification")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
+    public ClarificationDto getQuestionClarification(@PathVariable int questionAnswerId,
+                                                                 Principal principal) {
+        return clarificationService.getClarification(((User)((Authentication) principal).getPrincipal()).getId(), questionAnswerId);
+    }
+
+    @PutMapping("/clarifications/{clarificationId}/privacy")
+    @PreAuthorize("hasRole('ROLE_TEACHER')") 
     public ResponseEntity setClarificationPrivacy(@PathVariable int clarificationId, @RequestBody boolean isPublic){
         clarificationService.setPrivacy(clarificationId, isPublic);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/clarifications/{clarificationId}/answers")
+    @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER'))")
+    public ClarificationAnswerDto getClarificationAnswer(@PathVariable @RequestBody int clarificationId) {
+        return answerService.getClarificationAnswer(clarificationId);
     }
 
 }

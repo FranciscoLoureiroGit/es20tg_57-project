@@ -141,9 +141,9 @@ export default class RemoteServices {
       });
   }
 
-  static async getClarifications(): Promise<Clarification[]> {
+  static async getStudentClarifications(): Promise<Clarification[]> {
     return httpClient
-      .get('/quiz/quizAnswer/questionAnswers/clarifications')
+      .get('/student/clarifications')
       .then(response => {
         return response.data.map((clarification: any) => {
           return new Clarification(clarification);
@@ -156,7 +156,7 @@ export default class RemoteServices {
 
   static async getTeacherClarifications(): Promise<Clarification[]> {
     return httpClient
-      .get(`/teacher/clarifications`)
+      .get('/teacher/clarifications')
       .then(response => {
         return response.data.map((clarification: any) => {
           return new Clarification(clarification);
@@ -167,7 +167,6 @@ export default class RemoteServices {
       });
   }
 
-  
   static async createQuestion(question: Question): Promise<Question> {
     return httpClient
       .post(
@@ -187,10 +186,7 @@ export default class RemoteServices {
     clarification: Clarification
   ): Promise<Clarification> {
     return httpClient
-      .post(
-        `/quiz/quizAnswer/${questionAnswerId}/clarifications/`,
-        clarification
-      )
+      .post(`/question-answer/${questionAnswerId}/clarifications`, clarification)
       .then(response => {
         return new Clarification(response.data);
       })
@@ -202,12 +198,9 @@ export default class RemoteServices {
   static createClarificationAnswer(
     questionAnswerId: number,
     clarificationAnswer: ClarificationAnswer
-  ): Promise<ClarificationAnswer>{
+  ): Promise<ClarificationAnswer> {
     return httpClient
-      .post(
-        `/quiz/quizAnswer/${questionAnswerId}/clarifications/answer`,
-        clarificationAnswer
-      )
+      .post(`/question-answer/${questionAnswerId}/clarifications/answer`, clarificationAnswer)
       .then(response => {
         return new ClarificationAnswer(response.data);
       })
@@ -216,9 +209,6 @@ export default class RemoteServices {
       });
   }
 
-
-
-  
   static async updateQuestion(question: Question): Promise<Question> {
     return httpClient
       .put(`/questions/${question.id}`, question)
@@ -484,7 +474,9 @@ export default class RemoteServices {
     }
   }
 
-  static async saveTournament(tournament: QuestionsTournament): Promise<QuestionsTournament> {
+  static async saveTournament(
+    tournament: QuestionsTournament
+  ): Promise<QuestionsTournament> {
     if (tournament.id) {
       return httpClient
         .put(`/tournaments/${tournament.id}`, tournament)
@@ -661,9 +653,13 @@ export default class RemoteServices {
       });
   }
 
-  static async registerStudentInTournament(questionsTournamentId: number): Promise<QuestionsTournamentRegistration> {
+  static async registerStudentInTournament(
+    questionsTournamentId: number
+  ): Promise<QuestionsTournamentRegistration> {
     return httpClient
-      .post(`/questionsTournaments/${questionsTournamentId}/studentRegistrations`)
+      .post(
+        `/questionsTournaments/${questionsTournamentId}/studentRegistrations`
+      )
       .then(response => {
         return new QuestionsTournamentRegistration(response.data);
       })

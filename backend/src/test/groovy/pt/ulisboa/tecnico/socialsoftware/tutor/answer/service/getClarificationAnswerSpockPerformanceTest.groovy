@@ -166,26 +166,23 @@ class getClarificationAnswerSpockPerformanceTest extends Specification {
         clarificationRequest.setDescription("DESC")
         clarificationRequest.setQuestionAnswer(questionAnswer)
 
-
         clarificationRepository.save(clarificationRequest)
-
-        clarificationAnswer = new ClarificationAnswer()
-        clarificationAnswer.setUser(userTeacher)
-        clarificationAnswer.setAnswer(ANSWER)
-        clarificationAnswer.setClarification(clarificationRequest)
-
-        clarificationAnswerRepository.save(clarificationAnswer)
-
     }
 
     def "get 1000 clarification answers"() {
-        def id = clarificationRequest.getId();
+        given:
+        1.upto(1, {
+            clarificationAnswer = new ClarificationAnswer()
+            clarificationAnswer.setUser(userTeacher)
+            clarificationAnswer.setAnswer(ANSWER)
+            clarificationAnswer.setClarification(clarificationRequest)
+
+            clarificationAnswerRepository.save(clarificationAnswer)
+        })
         when:
-        def i = 1000
-                while(i > 0){
-                    answerService.getClarificationAnswer(id)
-                    i--
-                }
+        1.upto(1, {
+            answerService.getAllClarificationAnswers()
+        })
 
         then:
         true
