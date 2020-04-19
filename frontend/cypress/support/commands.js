@@ -46,19 +46,64 @@ Cypress.Commands.add('demoTeacherLogin', () => {
     cy.contains('StudentSubmittedQuestions').click()
 })
 
+
 /*NOVO*/
-Cypress.Commands.add('changeQuestionStatusTest', (title, status, justification) => {
+Cypress.Commands.add('changeQuestionToAvailableTest', (title, justification) => {
     cy.contains(title)
         .parent()
         .should('have.length', 1)
         .children()
-        .should('have.length', 8)
+        .should('have.length', 7)
         .find('[data-cy="changeQuestionStateDialog"]')
-        .click()
-    cy.get('[data-cy="Status"]').type(status)
+        .click({force: true})
+    cy.get('[data-cy="Status"]').type('AVAILABLE{enter}', {force: true})
     cy.get('[data-cy="Justification"]').type(justification)
     cy.get('[data-cy="changeQuestionButton"]').click()
 })
+
+/*NOVO*/
+Cypress.Commands.add('changeQuestionToDisabledTest', (title, justification) => {
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 7)
+        .find('[data-cy="changeQuestionStateDialog"]')
+        .click({force: true})
+    cy.get('[data-cy="Status"]').type('DISABLED{enter}', {force: true})
+    cy.get('[data-cy="changeQuestionButton"]').click()
+    cy.closeErrorMessage()
+    cy.get('[data-cy="Status"]').type('DISABLED{enter}', {force: true})
+    cy.get('[data-cy="Justification"]').type(justification)
+    cy.get('[data-cy="changeQuestionButton"]').click()
+})
+
+/*NOVO*/
+Cypress.Commands.add('changeQuestionToRemovedTest', (title, justification) => {
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 7)
+        .find('[data-cy="changeQuestionStateDialog"]')
+        .click({force: true})
+    cy.get('[data-cy="Status"]').type('REMOVED{enter}', {force: true})
+    cy.get('[data-cy="Justification"]').type(justification)
+    cy.get('[data-cy="changeQuestionButton"]').click()
+})
+
+/*NOVO*/
+Cypress.Commands.add('removeQuestionTest', (title) => {
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 7)
+        .find('[data-cy="deleteQuestionButton"]')
+        .click({force: true})
+})
+
+
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="createButton"]').click()
