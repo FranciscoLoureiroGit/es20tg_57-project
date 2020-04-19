@@ -26,7 +26,7 @@
             </v-flex>
             <v-flex xs24 sm12 md12>
               <v-textarea
-                outline
+                outline="textarea1"
                 rows="10"
                 v-model="editQuestion.content"
                 label="Content"
@@ -43,10 +43,10 @@
                 v-model="editQuestion.options[index - 1].correct"
                 class="ma-4"
                 label="Correct"
-                data-cy="index"
+                data-cy="option"
               />
               <v-textarea
-                outline
+                outline="textarea"
                 rows="10"
                 v-model="editQuestion.options[index - 1].content"
                 label="Content"

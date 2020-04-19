@@ -92,6 +92,12 @@ Cypress.Commands.add('changeQuestionToRemovedTest', (title, justification) => {
     cy.get('[data-cy="changeQuestionButton"]').click()
 })
 
+Cypress.Commands.add( 'checkQuestionByStudent', (title) =>{
+    cy.get('[data-cy="search-question"]').type(title, {force: true})
+    cy.get('[data-cy="show-question"]').click()
+    cy.contains('close').click()
+})
+
 /*NOVO*/
 Cypress.Commands.add('removeQuestionTest', (title) => {
     cy.contains(title)
@@ -113,10 +119,16 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="saveButton"]').click()
 })
 
-Cypress.Commands.add('createQuestionByStudent', () => {
+Cypress.Commands.add('createQuestionByStudent', (title, ans1, ans2, ans3, ans4, ans5) => {
     cy.contains('New Question').click()
-    cy.get('data-cy="QuestionTitle"').type('Teste', {force:true})
-    cy.contains('Cancel').click()
+    cy.get('[data-cy="QuestionTitle"]').type(title, {force:true})
+    cy.get('[outline="textarea1"]').type(ans1, {force:true})
+    cy.get('[data-cy="option"]').filter('#input-110').click({force: true})
+    cy.get('[outline="textarea"]').filter('#input-114').type(ans2,{force: true})
+    cy.get('[outline="textarea"]').filter('#input-121').type(ans3,{force: true})
+    cy.get('[outline="textarea"]').filter('#input-128').type(ans4,{force: true})
+    cy.get('[outline="textarea"]').filter('#input-135').type(ans5,{force: true})
+    cy.contains('Save').click()
 })
 
 Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {

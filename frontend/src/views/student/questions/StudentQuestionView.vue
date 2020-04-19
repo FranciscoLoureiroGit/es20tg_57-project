@@ -23,6 +23,7 @@
                         append-icon="search"
                         label="Search"
                         class="mx-2"
+                        data-cy="search-question"
                     />
                     <v-spacer />
 
@@ -68,7 +69,7 @@
                                 small
                                 class="mr-2"
                                 v-on="on"
-                                @click="showQuestionDialog(item)"
+                                @click="showQuestionDialog(item)" data-cy="show-question"
                         >visibility</v-icon
                         >
                     </template>
