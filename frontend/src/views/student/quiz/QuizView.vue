@@ -16,7 +16,7 @@
           <i class="fas fa-clock"></i>
           <span v-if="!hideTime">{{ getTimeAsHHMMSS }}</span>
         </span>
-        <span class="end-quiz" @click="confirmationDialog = true"
+        <span data-cy="endButton" class="end-quiz" @click="confirmationDialog = true"
           ><i class="fas fa-times" />End Quiz</span
         >
       </header>
@@ -94,7 +94,7 @@
             <v-btn color="secondary" text @click="confirmationDialog = false">
               Cancel
             </v-btn>
-            <v-btn color="primary" text @click="endQuiz">
+            <v-btn data-cy="sureButton" color="primary" text @click="endQuiz">
               I'm sure
             </v-btn>
           </v-card-actions>
@@ -165,6 +165,7 @@ export default class QuizView extends Vue {
   secondsToSubmission: number =
     StatementManager.getInstance.statementQuiz?.secondsToSubmission ?? 0;
   hideTime: boolean = false;
+  timeout: number | null = null;
 
   async created() {
     if (!this.statementQuiz?.id) {
@@ -179,6 +180,9 @@ export default class QuizView extends Vue {
     }
 
     if (this.secondsToSubmission > 0) {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
       this.countDownToResults();
     }
   }
@@ -272,10 +276,12 @@ export default class QuizView extends Vue {
 
   async countDownToResults() {
     if (this.secondsToSubmission && this.secondsToSubmission > -1) {
-      this.secondsToSubmission! -= 1;
-      setTimeout(() => {
-        this.countDownToResults();
-      }, 1000);
+      if (this.$router.currentRoute.name === 'solve-quiz') {
+        this.secondsToSubmission! -= 1;
+        this.timeout = setTimeout(() => {
+          this.countDownToResults();
+        }, 1000);
+      }
     } else {
       await this.endQuiz();
     }

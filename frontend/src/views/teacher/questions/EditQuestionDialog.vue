@@ -29,7 +29,7 @@
                 outline
                 rows="10"
                 v-model="editQuestion.content"
-                label="Content"
+                label="Question"
               ></v-textarea>
             </v-flex>
             <v-flex
@@ -48,7 +48,7 @@
                 outline
                 rows="10"
                 v-model="editQuestion.options[index - 1].content"
-                label="Content"
+                :label="`Option ${index}`"
               ></v-textarea>
             </v-flex>
           </v-layout>

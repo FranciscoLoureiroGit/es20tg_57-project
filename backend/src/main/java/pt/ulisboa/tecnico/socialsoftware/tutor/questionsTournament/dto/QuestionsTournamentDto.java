@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class QuestionsTournamentDto {
@@ -26,6 +28,7 @@ public class QuestionsTournamentDto {
     private List<TopicDto> topics = new ArrayList<>();
     private UserDto studentTournamentCreator;
     private CourseDto course;
+    private List<StudentTournamentRegistrationDto> studentTournamentRegistrations = new ArrayList<>();
 
     @Transient
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -41,13 +44,14 @@ public class QuestionsTournamentDto {
         this.topics = questionsTournament.getTopics().stream().map(TopicDto::new).collect(Collectors.toList());
         this.studentTournamentCreator = new UserDto(questionsTournament.getStudentTournamentCreator());
         this.course = new CourseDto(questionsTournament.getCourseExecution());
+        this.studentTournamentRegistrations = questionsTournament.getStudentTournamentRegistrations().stream().map(StudentTournamentRegistrationDto::new).collect(Collectors.toList());
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
-        public String getStartingDate() {
+    public String getStartingDate() {
         return startingDate;
     }
 
@@ -111,5 +115,13 @@ public class QuestionsTournamentDto {
 
     public Integer getId() {
         return id;
+    }
+
+    public List<StudentTournamentRegistrationDto> getStudentTournamentRegistrations() {
+        return studentTournamentRegistrations;
+    }
+
+    public void setStudentTournamentRegistrations(List<StudentTournamentRegistrationDto> studentTournamentRegistrations) {
+        this.studentTournamentRegistrations = studentTournamentRegistrations;
     }
 }

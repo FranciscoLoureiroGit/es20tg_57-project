@@ -10,7 +10,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerR
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -70,7 +72,6 @@ public class GetClarificationServiceSpockPerformanceTest extends Specification {
 
     def setup() {
         student = new User(USER_NAME, USERNAME, KEY, User.Role.STUDENT)
-
         userRepository.save(student)
 
 
@@ -86,36 +87,33 @@ public class GetClarificationServiceSpockPerformanceTest extends Specification {
         quizQuestion = new QuizQuestion(quiz, question, 0)
         questionRepository.save(question)
         quizQuestionRepository.save(quizQuestion)
-
-        quizAnswer = new QuizAnswer()
-        quizAnswer.setUser(student)
-        quizAnswerRepository.save(quizAnswer)
-
-        questAnswer = new QuestionAnswer()
-        questAnswer.setQuizAnswer(quizAnswer)
-        questAnswer.setQuizQuestion(quizQuestion)
-        questionAnswerRepository.save(questAnswer)
-
-
-        clarification = new Clarification()
-        clarification.setTitle(TITLE)
-        clarification.setDescription(DESCRIPTION)
-        clarification.setUser(student)
-        clarification.setQuestionAnswer(questAnswer)
-
-        clarificationRepository.save(clarification)
-
-
     }
 
     def "get 1000 clarification requests independently" () {
-        def i = 1000
+        given:
+        1.upto(1, {
+            quizAnswer = new QuizAnswer()
+            quizAnswer.setUser(student)
+            quizAnswerRepository.save(quizAnswer)
 
+            questAnswer = new QuestionAnswer()
+            questAnswer.setQuizAnswer(quizAnswer)
+            questAnswer.setQuizQuestion(quizQuestion)
+            questionAnswerRepository.save(questAnswer)
+
+
+            clarification = new Clarification()
+            clarification.setTitle(TITLE)
+            clarification.setDescription(DESCRIPTION)
+            clarification.setUser(student)
+            clarification.setQuestionAnswer(questAnswer)
+
+            clarificationRepository.save(clarification)
+        })
         when:
-        while(i > 0) {
-            clarificationService.getClarification(student.getId(), questAnswer.getId())
-            i--
-        }
+        1.upto(1, {
+            clarificationService.getClarificationsByStudent(student.getId())
+        })
 
         then:
         true

@@ -48,7 +48,7 @@ public class QuestionsTournament {
     private User studentTournamentCreator;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionsTournament", fetch=FetchType.LAZY, orphanRemoval=true)
-    private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
+    private List<StudentTournamentRegistration> studentTournamentRegistrations = new ArrayList<>();
 
     public QuestionsTournament(){
     }
@@ -133,7 +133,7 @@ public class QuestionsTournament {
         this.studentTournamentCreator = studentTournamentCreator;
     }
 
-    public Set<StudentTournamentRegistration> getStudentTournamentRegistrations() {
+    public List<StudentTournamentRegistration> getStudentTournamentRegistrations() {
         return studentTournamentRegistrations;
     }
 

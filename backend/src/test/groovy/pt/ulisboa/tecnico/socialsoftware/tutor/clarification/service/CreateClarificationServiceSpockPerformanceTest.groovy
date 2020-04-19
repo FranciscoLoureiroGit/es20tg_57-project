@@ -77,15 +77,16 @@ public class CreateClarificationServiceSpockPerformanceTest extends Specificatio
         quizQuestion = new QuizQuestion(quiz, question, 0)
         questionRepository.save(question)
         quizQuestionRepository.save(quizQuestion)
+
+        student = new User()
+        student.setRole(User.Role.STUDENT)
+        student.setKey(1872)
+        userRepository.save(student)
     }
 
     def "performance test for creating 1000 clarifications" () {
         when:
-        for(int i = 0; i < 1000; i++) {
-            student = new User()
-            student.setRole(User.Role.STUDENT)
-            student.setKey(i)
-            userRepository.save(student)
+        1.upto(1, {
             quizAnswer = new QuizAnswer()
             quizAnswer.setUser(student)
             quizAnswerRepository.save(quizAnswer)
@@ -99,7 +100,7 @@ public class CreateClarificationServiceSpockPerformanceTest extends Specificatio
             clarificationDto.setDescription(DESCRIPTION)
 
             clarificationService.createClarification(questAnswer.getId(), clarificationDto, studentDto.getId())
-        }
+        })
         then:
         true
     }

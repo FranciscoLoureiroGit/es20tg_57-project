@@ -84,89 +84,65 @@ class AnswerClarificationRequestSpockPerformanceTest extends Specification {
     def optionKO
     def optionOK
 
-    def"performance test for answering 1000 clarifications"(){
-        given: 'a course'
-            course = new Course('course', Course.Type.TECNICO)
-            courseRepository.save(course)
+    def setup() {
+        course = new Course('course', Course.Type.TECNICO)
+        courseRepository.save(course)
 
-        and: 'a course exec'
-            courseExec = new CourseExecution(course, 'COURSE_EXEC', 'TST_TERM',  Course.Type.TECNICO)
-            courseExecutionRepository.save(courseExec)
+        courseExec = new CourseExecution(course, 'COURSE_EXEC', 'TST_TERM',  Course.Type.TECNICO)
+        courseExecutionRepository.save(courseExec)
 
-        and: 'a student and a teacher'
-            userStudent = new User('nameStu', 'userStu', 1, User.Role.STUDENT)
-            userTeacher = new User('nameTch', 'userTch', 2, User.Role.TEACHER)
+        userStudent = new User('nameStu', 'userStu', 1, User.Role.STUDENT)
+        userTeacher = new User('nameTch', 'userTch', 2, User.Role.TEACHER)
 
-            userStudent.getCourseExecutions().add(courseExec)
-            userTeacher.getCourseExecutions().add(courseExec)
+        userStudent.getCourseExecutions().add(courseExec)
+        userTeacher.getCourseExecutions().add(courseExec)
 
-            courseExec.getUsers().add(userStudent)
-            courseExec.getUsers().add(userTeacher)
+        courseExec.getUsers().add(userStudent)
+        courseExec.getUsers().add(userTeacher)
 
+        quiz = new Quiz()
+        quiz.setTitle("QUIZ TITLE")
+        quiz.setType(Quiz.QuizType.GENERATED)
+        quiz.setKey(1)
+        quiz.setCourseExecution(courseExec)
+        courseExec.addQuiz(quiz)
 
+        question = new Question()
+        question.setCourse(course);
+        question.setTitle("TITLE")
+        question.setKey(1)
+        course.addQuestion(question)
 
-        and: 'a quiz'
-            quiz = new Quiz()
-            quiz.setTitle("QUIZ TITLE")
-            quiz.setType(Quiz.QuizType.GENERATED)
-            quiz.setKey(1)
-            quiz.setCourseExecution(courseExec)
-            courseExec.addQuiz(quiz)
-
-
-
-        and: 'a question'
-            question = new Question()
-            question.setCourse(course);
-            question.setTitle("TITLE")
-            question.setKey(1)
-            course.addQuestion(question)
-
-
-        and: 'a quizQuestion'
-            quizQuestion = new QuizQuestion(quiz, question, 0)
-            optionKO = new Option()
-            optionKO.setCorrect(false)
-            question.addOption(optionKO)
-            optionOK = new Option()
-            optionOK.setCorrect(true)
-
-            question.addOption(optionOK)
-
-
-
-        and: 'a quizAnswer'
-            quizAnswer = new QuizAnswer(userStudent, quiz)
-
-
-        and: 'a questionAnswer'
-            questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
-
-
-
+        quizQuestion = new QuizQuestion(quiz, question, 0)
+        optionKO = new Option()
+        optionKO.setCorrect(false)
+        optionKO.setSequence(1)
+        question.addOption(optionKO)
+        optionOK = new Option()
+        optionOK.setCorrect(true)
+        optionOK.setSequence(2)
+        question.addOption(optionOK)
 
         userRepository.save(userStudent)
         userRepository.save(userTeacher)
-
         quizRepository.save(quiz)
-
         questionRepository.save(question)
-
-        quizQuestionRepository.save(quizQuestion)
-
-        quizAnswerRepository.save(quizAnswer)
-
         optionRepository.save(optionOK)
         optionRepository.save(optionKO)
+        quizQuestionRepository.save(quizQuestion)
+    }
 
-        questionAnswerRepository.save(questionAnswer)
-
-
-
-
+    def"performance test for answering 1000 clarifications"(){
+        given: 'a quizAnswer'
+        1.upto(1, {
+            quizAnswer = new QuizAnswer(userStudent, quiz)
+            questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
+            quizAnswerRepository.save(quizAnswer)
+            questionAnswerRepository.save(questionAnswer)
+        })
 
          when:
-            for(int i = 0; i < 1000; i++){
+         1.upto(1, {
                 clarificationRequest = new Clarification()
                 clarificationRequest.setUser(userStudent)
                 clarificationRequest.setTitle("TITLE")
@@ -182,7 +158,7 @@ class AnswerClarificationRequestSpockPerformanceTest extends Specification {
                 clrAnsDto.setAnswer("ANSWER")
 
                 answerService.createClarificationAnswer(clrAnsDto, userTeacher.getId())
-            }
+         })
 
         then:
         true
