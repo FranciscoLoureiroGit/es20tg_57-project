@@ -162,6 +162,12 @@ export default class StudentQuestionView extends Vue{
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
     { text: 'Question', value: 'content', align: 'left' },
+    {
+      text: 'Topics',
+      value: 'topics',
+      align: 'center',
+      sortable: false
+    },
     { text: 'Status', value: 'status', align: 'center' },
     { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
     {
@@ -193,7 +199,8 @@ export default class StudentQuestionView extends Vue{
   async created() {
     await this.$store.dispatch('loading');
     try {
-      [this.questions] = await Promise.all([
+      [this.topics, this.questions] = await Promise.all([
+        RemoteServices.getTopics(),
         RemoteServices.getStudentQuestions()
       ]);
     } catch (error) {
