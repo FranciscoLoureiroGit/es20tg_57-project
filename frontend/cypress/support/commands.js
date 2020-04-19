@@ -119,12 +119,12 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
 Cypress.Commands.add('createQuestionByStudent', (title, ans1, ans2, ans3, ans4, ans5) => {
     cy.contains('New Question').click()
     cy.get('[data-cy="QuestionTitle"]').type(title, {force:true})
-    cy.get('[outline="textarea1"]').type(ans1, {force:true})
-    cy.get('[data-cy="option"]').filter('#input-110').click({force: true})
-    cy.get('[outline="textarea"]').filter('#input-114').type(ans2,{force: true})
-    cy.get('[outline="textarea"]').filter('#input-121').type(ans3,{force: true})
-    cy.get('[outline="textarea"]').filter('#input-128').type(ans4,{force: true})
-    cy.get('[outline="textarea"]').filter('#input-135').type(ans5,{force: true})
+    cy.get('[data-cy="content"]').type(ans1, {force:true})
+    cy.get('[data-cy="option1"]').click({force: true})
+    cy.get('[data-cy="content1"]').type(ans2,{force: true})
+    cy.get('[data-cy="content2"]').type(ans3,{force: true})
+    cy.get('[data-cy="content3"]').type(ans4,{force: true})
+    cy.get('[data-cy="content4"]').type(ans5,{force: true})
     cy.contains('Save').click()
 })
 

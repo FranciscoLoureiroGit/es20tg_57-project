@@ -140,13 +140,13 @@ import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
-import EditQuestionDialog from '@/views/teacher/questions/EditQuestionDialog.vue';
+import EditQuestionDialogStudent from '@/views/student/questions/EditQuestionDialogStudent.vue';
 import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
-    'edit-question-dialog': EditQuestionDialog,
+    'edit-question-dialog': EditQuestionDialogStudent,
     'edit-question-topics': EditQuestionTopics
   }
 })
