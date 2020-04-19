@@ -127,10 +127,11 @@ class AnswerClarificationRequestSpockPerformanceTest extends Specification {
             quizQuestion = new QuizQuestion(quiz, question, 0)
             optionKO = new Option()
             optionKO.setCorrect(false)
+            optionKO.setSequence(1)
             question.addOption(optionKO)
             optionOK = new Option()
             optionOK.setCorrect(true)
-
+            optionOK.setSequence(2)
             question.addOption(optionOK)
 
 

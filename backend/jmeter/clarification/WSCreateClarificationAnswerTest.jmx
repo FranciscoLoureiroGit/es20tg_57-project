@@ -267,7 +267,7 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/${quizId}/quizAnswer/questionAnswer/clarifications/answer</stringProp>
+            <stringProp name="HTTPSampler.path">/quiz/quizAnswer/${questionAnswerId}/clarifications/answer</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>

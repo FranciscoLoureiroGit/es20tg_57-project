@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 
 public class StatementAnswerDto implements Serializable {
+    private Integer id;
     private Integer timeTaken;
     private Integer sequence;
     private Integer optionId;
@@ -13,12 +14,21 @@ public class StatementAnswerDto implements Serializable {
     public StatementAnswerDto(){}
 
     public StatementAnswerDto(QuestionAnswer questionAnswer) {
+        this.id = questionAnswer.getId();
         this.timeTaken = questionAnswer.getTimeTaken();
         this.sequence = questionAnswer.getSequence();
 
         if(questionAnswer.getOption() != null) {
             this.optionId = questionAnswer.getOption().getId();
         }
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getOptionId() {
