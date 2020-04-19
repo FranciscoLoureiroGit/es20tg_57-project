@@ -57,9 +57,9 @@ class GetOpenTournamentsByCoursePerformanceTest extends Specification {
         userRepository.save(user)
     }
 
-    def "performance testing to get 1000 questions tournaments"(){
-        given: "1000 questions tournaments in the course execution"
-        1.upto(1000, {
+    def "performance testing to get 1 questions tournaments"(){
+        given: "1 questions tournaments in the course execution"
+        1.upto(1, {
             tournament = new QuestionsTournament()
             tournament.setCourseExecution(courseExecution)
             tournament.setStartingDate(nowPlus1Day)
@@ -70,7 +70,7 @@ class GetOpenTournamentsByCoursePerformanceTest extends Specification {
         })
 
         when:
-        1.upto(1000, {questionsTournamentService.getOpenTournamentsByCourse(courseExecution.getId() )})
+        1.upto(1, {questionsTournamentService.getOpenTournamentsByCourse(courseExecution.getId() )})
 
         then:
         true
