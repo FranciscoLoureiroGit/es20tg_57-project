@@ -12,4 +12,9 @@ describe('Tournament walkthrough', () => {
     cy.contains('New Tournament').click();
     cy.createQuestionsTournament('12', 'Case Studies');
   });
+
+  it('login registers in a tournament', () => {
+    cy.goToOpenQuestionsTournaments();
+    cy.registerStudentInTournament('1');
+  });
 });
