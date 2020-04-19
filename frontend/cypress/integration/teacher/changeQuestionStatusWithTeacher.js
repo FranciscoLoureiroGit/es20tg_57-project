@@ -7,35 +7,20 @@ describe('Administration walkthrough', () => {
     cy.contains('Logout').click()
   })
 
-  /*PARA EDITAR*/
-  it('login changes the state of question to available', () => {
-    cy.changeQuestionStatusTest('TitleTest','AVAILABLE','justification')
+  /*NOVOS*/
+  it('login changes the state of question to AVAILABLE', () => {
+    cy.changeQuestionToAvailableTest('TitleTest','justification')
   });
 
-/*  it('login creates and deletes a course execution', () => {
-    cy.createCourseExecution('Demo Course','TEST-AO3','Spring Semester')
-
-    cy.deleteCourseExecution('TEST-AO3')
+  it('login changes the state of question to DISABLED without and with justification', () => {
+    cy.changeQuestionToDisabledTest('OtherTest','otherjustification')
   });
 
-  it('login creates two course executions and deletes it', () => {
-    cy.createCourseExecution('Demo Course','TEST-AO3','Spring Semester')
+/*  it('login creates a question, changes the state to REMOVED and deletes the question', () => {
+    /!* falta o teste para criar a pergunta com o titulo 'RemoveTest' *!/
+    cy.changeQuestionToRemovedTest('RemoveTest1','removejustification')
 
-    cy.log('try to create with the same name')
-    cy.createCourseExecution('Demo Course','TEST-AO3','Spring Semester')
-
-    cy.closeErrorMessage()
-
-    cy.log('close dialog')
-    cy.get('[data-cy="cancelButton"]').click()
-
-    cy.deleteCourseExecution('TEST-AO3')
-  });
-
-  it('login creates from a course execution and deletes it', () => {
-    cy.createFromCourseExecution('Demo Course','TEST-AO3','Spring Semester')
-
-    cy.deleteCourseExecution('TEST-AO3')
+    cy.removeQuestionTest('RemoveTest1')
   });*/
 
 });

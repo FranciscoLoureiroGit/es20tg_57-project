@@ -100,6 +100,7 @@
               class="mr-2"
               v-on="on"
               @click="duplicateQuestion(item)"
+              data-cy="duplicateQuestionButton"
               >cached</v-icon
             >
           </template>
@@ -112,6 +113,7 @@
               class="mr-2"
               v-on="on"
               @click="deleteQuestion(item)"
+              data-cy="deleteQuestionButton"
               color="red"
               >delete</v-icon
             >
