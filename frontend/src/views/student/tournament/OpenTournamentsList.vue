@@ -45,6 +45,7 @@
               v-on="on"
               @click="registerStudent(item)"
               color="red"
+              data-cy="registerStudent"
               >add</v-icon
             >
           </template>
