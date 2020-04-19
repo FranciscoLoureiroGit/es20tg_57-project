@@ -38,7 +38,6 @@ Cypress.Commands.add('demoStudentLogin', () => {
     cy.contains('My Questions').click()
 })
 
-/*NOVO*/
 Cypress.Commands.add('demoTeacherLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="teacherButton"]').click()
@@ -47,8 +46,7 @@ Cypress.Commands.add('demoTeacherLogin', () => {
 })
 
 
-/*NOVO*/
-Cypress.Commands.add('changeQuestionToAvailableTest', (title, justification) => {
+Cypress.Commands.add('changeQuestionToAvailableTest', (title) => {
     cy.contains(title)
         .parent()
         .should('have.length', 1)
@@ -57,28 +55,9 @@ Cypress.Commands.add('changeQuestionToAvailableTest', (title, justification) => 
         .find('[data-cy="changeQuestionStateDialog"]')
         .click({force: true})
     cy.get('[data-cy="Status"]').type('AVAILABLE{enter}', {force: true})
-    cy.get('[data-cy="Justification"]').type(justification)
     cy.get('[data-cy="changeQuestionButton"]').click()
 })
 
-/*NOVO*/
-Cypress.Commands.add('changeQuestionToDisabledTest', (title, justification) => {
-    cy.contains(title)
-        .parent()
-        .should('have.length', 1)
-        .children()
-        .should('have.length', 7)
-        .find('[data-cy="changeQuestionStateDialog"]')
-        .click({force: true})
-    cy.get('[data-cy="Status"]').type('DISABLED{enter}', {force: true})
-    cy.get('[data-cy="changeQuestionButton"]').click()
-    cy.closeErrorMessage()
-    cy.get('[data-cy="Status"]').type('DISABLED{enter}', {force: true})
-    cy.get('[data-cy="Justification"]').type(justification)
-    cy.get('[data-cy="changeQuestionButton"]').click()
-})
-
-/*NOVO*/
 Cypress.Commands.add('changeQuestionToRemovedTest', (title, justification) => {
     cy.contains(title)
         .parent()
@@ -88,9 +67,28 @@ Cypress.Commands.add('changeQuestionToRemovedTest', (title, justification) => {
         .find('[data-cy="changeQuestionStateDialog"]')
         .click({force: true})
     cy.get('[data-cy="Status"]').type('REMOVED{enter}', {force: true})
+    cy.get('[data-cy="Justification"]').clear()
     cy.get('[data-cy="Justification"]').type(justification)
     cy.get('[data-cy="changeQuestionButton"]').click()
 })
+
+Cypress.Commands.add('changeQuestionToDisabledTest', (title, justification) => {
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 7)
+        .find('[data-cy="changeQuestionStateDialog"]')
+        .click({force: true})
+    cy.get('[data-cy="Status"]').type('DISABLED{enter}', {force: true})
+    cy.get('[data-cy="Justification"]').clear()
+    cy.get('[data-cy="changeQuestionButton"]').click()
+    cy.closeErrorMessage()
+    cy.get('[data-cy="Status"]').type('DISABLED{enter}', {force: true})
+    cy.get('[data-cy="Justification"]').type(justification)
+    cy.get('[data-cy="changeQuestionButton"]').click()
+})
+
 
 Cypress.Commands.add( 'checkQuestionByStudent', (title) =>{
     cy.get('[data-cy="search-question"]').type(title, {force: true})
@@ -98,7 +96,6 @@ Cypress.Commands.add( 'checkQuestionByStudent', (title) =>{
     cy.contains('close').click()
 })
 
-/*NOVO*/
 Cypress.Commands.add('removeQuestionTest', (title) => {
     cy.contains(title)
         .parent()
