@@ -88,7 +88,8 @@ Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
 });
 
 Cypress.Commands.add('registerStudentInTournament', tournamentId => {
-  cy.contains(tournamentId)
+  cy.get('tbody')
+    .contains(tournamentId)
     .parent()
     .children()
     .should('have.length', 9)
