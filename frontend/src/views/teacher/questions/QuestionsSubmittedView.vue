@@ -32,7 +32,7 @@
           @click="showQuestionDialog(item)"
       /></template>
 
-<!--      <template v-slot:item.topics="{ item }">
+      <!--<template v-slot:item.topics="{ item }">
         <edit-question-topics
           :question="item"
           :topics="topics"
@@ -176,12 +176,12 @@ export default class QuestionsSubmittedView extends Vue {
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
     { text: 'Question', value: 'content', align: 'left' },
-    {
+    /*    {
       text: 'Topics',
       value: 'topics',
       align: 'center',
       sortable: false
-    },
+    },*/
     { text: 'Status', value: 'status', align: 'center' },
     { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
     {

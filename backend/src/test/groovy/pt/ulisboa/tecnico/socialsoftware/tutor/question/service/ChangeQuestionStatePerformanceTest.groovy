@@ -53,7 +53,7 @@ class ChangeQuestionStatePerformanceTest extends Specification{
 
     def question
 
-    def "performance testing to change 100000 times the state of a question"(){
+    def "performance testing to change the state of a question"(){
         given:
         def course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
@@ -80,7 +80,7 @@ class ChangeQuestionStatePerformanceTest extends Specification{
 
 
         when:
-        1.upto(100000, {
+        1.upto(1, {
             questionService.questionChangeStatus(question.getId(), Question.Status.AVAILABLE, QUESTION_JUSTIFICATION)})
 
         then:
