@@ -108,6 +108,45 @@ export default class RemoteServices {
       });
   }
 
+  static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<Question[]> {
+    return httpClient
+      .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`)
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new Question(question);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getQuestionsSubmittedByStudents(): Promise<Question[]> {
+    return httpClient
+        .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/studentQuestions`)
+        .then(response => {
+          return response.data.map((question: any) => {
+            return new Question(question);
+          });
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async getStudentQuestions(): Promise<Question[]> {
+    return httpClient
+      .get('/questions/showMyQuestions/')
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new Question(question);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async exportCourseQuestions(): Promise<Blob> {
     return httpClient
       .get(
@@ -232,6 +271,18 @@ export default class RemoteServices {
   ): Promise<Question> {
     return httpClient
       .post(`/questions/${questionId}/set-status`, status, {})
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  //NOVO metodo para alterar estado e justificacao
+  static async changeQuestionStatus(question: Question): Promise<Question> {
+    return httpClient
+      .post(`/questions/${question.id}/change-status`, question)
       .then(response => {
         return new Question(response.data);
       })

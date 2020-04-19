@@ -19,11 +19,12 @@ import ResultsView from '@/views/student/quiz/ResultsView.vue';
 import StatsView from '@/views/student/StatsView.vue';
 import ScanView from '@/views/student/ScanView.vue';
 import SubmitQuestionView from '@/views/student/questions/SubmitQuestionView.vue';
-import SubmittedQuestionsView from '@/views/student/questions/SubmittedQuestionsView.vue';
+import StudentQuestionView from '@/views/student/questions/StudentQuestionView.vue';
 import ClarificationsView from './views/student/clarifications/ClarificationsView.vue';
 
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
+import QuestionsSubmittedView from '@/views/teacher/questions/QuestionsSubmittedView.vue';
 import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
 import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
@@ -74,6 +75,15 @@ let router = new Router({
           meta: {
             title: process.env.VUE_APP_NAME + ' - Questions',
             requiredAuth: 'Teacher'
+          }
+        },
+        {
+          path: 'submittedQuestions',
+          name: 'submittedQuestion-management',
+          component: QuestionsSubmittedView,
+          meta: {
+              title: process.env.VUE_APP_NAME + '- StudentSubmittedQuestions',
+              requiredAuth: 'Teacher'
           }
         },
         {
@@ -160,18 +170,9 @@ let router = new Router({
         {
           path: 'submitQuestion',
           name: 'submit-question',
-          component: SubmitQuestionView,
+          component: StudentQuestionView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Submit Question',
-            requiredAuth: 'Student'
-          }
-        },
-        {
-          path: 'submittedQuestions',
-          name: 'submitted-questions',
-          component: SubmittedQuestionsView,
-          meta: {
-            title: process.env.VUE_APP_NAME + ' - Submitted Questions',
             requiredAuth: 'Student'
           }
         },

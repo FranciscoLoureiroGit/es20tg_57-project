@@ -21,7 +21,8 @@
         <v-container grid-list-md fluid>
           <v-layout column wrap>
             <v-flex xs24 sm12 md8>
-              <v-text-field v-model="editQuestion.title" label="Title" />
+              <v-text-field v-model="editQuestion.title" label="Title"
+              data-cy="QuestionTitle"/>
             </v-flex>
             <v-flex xs24 sm12 md12>
               <v-textarea

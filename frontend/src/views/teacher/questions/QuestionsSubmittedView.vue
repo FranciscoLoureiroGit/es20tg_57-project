@@ -20,7 +20,6 @@
           />
 
           <v-spacer />
-          <v-btn color="primary" dark @click="newQuestion">New Question</v-btn>
           <v-btn color="primary" dark @click="exportCourseQuestions"
             >Export Questions</v-btn
           >
@@ -33,36 +32,19 @@
           @click="showQuestionDialog(item)"
       /></template>
 
-      <template v-slot:item.topics="{ item }">
+      <!--<template v-slot:item.topics="{ item }">
         <edit-question-topics
           :question="item"
           :topics="topics"
           v-on:question-changed-topics="onQuestionChangedTopics"
         />
-      </template>
+      </template>-->
 
-      <template v-slot:item.difficulty="{ item }">
-        <v-chip
-          v-if="item.difficulty"
-          :color="getDifficultyColor(item.difficulty)"
-          dark
-          >{{ item.difficulty + '%' }}</v-chip
-        >
-      </template>
-
+      <!--To Show Status Color-->
       <template v-slot:item.status="{ item }">
-        <v-select
-          v-model="item.status"
-          :items="statusList"
-          dense
-          @change="setStatus(item.id, item.status)"
-        >
-          <template v-slot:selection="{ item }">
-            <v-chip :color="getStatusColor(item)" small>
-              <span>{{ item }}</span>
-            </v-chip>
-          </template>
-        </v-select>
+        <v-chip :color="getStatusColor(item.status)" small>
+          <span>{{ item.status }}</span>
+        </v-chip>
       </template>
 
       <template v-slot:item.image="{ item }">
@@ -88,6 +70,21 @@
           </template>
           <span>Show Question</span>
         </v-tooltip>
+        <!--NEW button to change Status and Justification-->
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="changeQuestionStateDialog(item)"
+              data-cy="changeQuestionStateDialog"
+              >edit</v-icon
+            >
+          </template>
+          <span>Change QuestionState</span>
+        </v-tooltip>
+        <!--NEW button to change Status and Justification-->
         <v-tooltip bottom v-if="item.numberOfAnswers === 0">
           <template v-slot:activator="{ on }">
             <v-icon small class="mr-2" v-on="on" @click="editQuestion(item)"
@@ -96,14 +93,6 @@
           </template>
           <span>Edit Question</span>
         </v-tooltip>
-        <!--NOVO - botao para mudar justificacao-status  !!!!!falta implementar-->
-        <!--        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on">edit</v-icon>
-          </template>
-          <span>Edit Justification</span>
-        </v-tooltip>-->
-        <!--FIM NOVO - botao para mudar justificacao-status-->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
@@ -111,6 +100,7 @@
               class="mr-2"
               v-on="on"
               @click="duplicateQuestion(item)"
+              data-cy="duplicateQuestionButton"
               >cached</v-icon
             >
           </template>
@@ -123,6 +113,7 @@
               class="mr-2"
               v-on="on"
               @click="deleteQuestion(item)"
+              data-cy="deleteQuestionButton"
               color="red"
               >delete</v-icon
             >
@@ -134,6 +125,12 @@
     <edit-question-dialog
       v-if="currentQuestion"
       v-model="editQuestionDialog"
+      :question="currentQuestion"
+      v-on:save-question="onSaveQuestion"
+    />
+    <change-question-state-dialog
+      v-if="currentQuestion"
+      v-model="changedQuestionDialog"
       :question="currentQuestion"
       v-on:save-question="onSaveQuestion"
     />
@@ -151,49 +148,40 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import Question from '@/models/management/Question';
+
 import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import EditQuestionDialog from '@/views/teacher/questions/EditQuestionDialog.vue';
 import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue';
+import ChangeQuestionStateDialog from '@/views/teacher/questions/ChangeQuestionStateDialog.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
+    'change-question-state-dialog': ChangeQuestionStateDialog,
     'edit-question-dialog': EditQuestionDialog,
     'edit-question-topics': EditQuestionTopics
   }
 })
-export default class QuestionsView extends Vue {
+export default class QuestionsSubmittedView extends Vue {
   questions: Question[] = [];
   topics: Topic[] = [];
   currentQuestion: Question | null = null;
   editQuestionDialog: boolean = false;
   questionDialog: boolean = false;
+  changedQuestionDialog: boolean = false;
   search: string = '';
-  statusList = ['DISABLED', 'AVAILABLE', 'REMOVED', 'PENDING'];
 
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
     { text: 'Question', value: 'content', align: 'left' },
-    {
+    /*    {
       text: 'Topics',
       value: 'topics',
       align: 'center',
       sortable: false
-    },
-    { text: 'Difficulty', value: 'difficulty', align: 'center' },
-    { text: 'Answers', value: 'numberOfAnswers', align: 'center' },
-    {
-      text: 'Nº of generated quizzes',
-      value: 'numberOfGeneratedQuizzes',
-      align: 'center'
-    },
-    {
-      text: 'Nº of non generated quizzes',
-      value: 'numberOfNonGeneratedQuizzes',
-      align: 'center'
-    },
+    },*/
     { text: 'Status', value: 'status', align: 'center' },
     { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
     {
@@ -222,12 +210,19 @@ export default class QuestionsView extends Vue {
     }
   }
 
+  @Watch('changedQuestionDialog')
+  closeError2() {
+    if (!this.changedQuestionDialog) {
+      this.currentQuestion = null;
+    }
+  }
+
   async created() {
     await this.$store.dispatch('loading');
     try {
       [this.topics, this.questions] = await Promise.all([
         RemoteServices.getTopics(),
-        RemoteServices.getFilteredQuestionsIncludeStudentQuestionAvailable()
+        RemoteServices.getQuestionsSubmittedByStudents()
       ]);
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -249,35 +244,14 @@ export default class QuestionsView extends Vue {
     return convertMarkDownNoFigure(text, image);
   }
 
-  onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
+  /*  onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
     let question = this.questions.find(
       (question: Question) => question.id == questionId
     );
     if (question) {
       question.topics = changedTopics;
     }
-  }
-
-  getDifficultyColor(difficulty: number) {
-    if (difficulty < 25) return 'green';
-    else if (difficulty < 50) return 'lime';
-    else if (difficulty < 75) return 'orange';
-    else return 'red';
-  }
-
-  async setStatus(questionId: number, status: string) {
-    try {
-      await RemoteServices.setQuestionStatus(questionId, status);
-      let question = this.questions.find(
-        question => question.id === questionId
-      );
-      if (question) {
-        question.status = status;
-      }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-  }
+  }*/
 
   getStatusColor(status: string) {
     if (status === 'REMOVED') return 'red';
@@ -308,9 +282,9 @@ export default class QuestionsView extends Vue {
     this.questionDialog = false;
   }
 
-  newQuestion() {
-    this.currentQuestion = new Question();
-    this.editQuestionDialog = true;
+  changeQuestionStateDialog(question: Question) {
+    this.currentQuestion = question;
+    this.changedQuestionDialog = true;
   }
 
   editQuestion(question: Question) {
@@ -328,6 +302,7 @@ export default class QuestionsView extends Vue {
     this.questions = this.questions.filter(q => q.id !== question.id);
     this.questions.unshift(question);
     this.editQuestionDialog = false;
+    this.changedQuestionDialog = false;
     this.currentQuestion = null;
   }
 

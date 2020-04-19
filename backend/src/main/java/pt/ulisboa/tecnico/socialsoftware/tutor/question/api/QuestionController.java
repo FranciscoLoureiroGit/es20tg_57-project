@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,6 +65,29 @@ public class QuestionController {
         return this.questionService.findAvailableQuestions(courseId);
     }
 
+    @GetMapping("/courses/{courseId}/questions/availableFiltered")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public List<QuestionDto> getAvailableQuestionsIncludesMadeByStudentsAccepted(@PathVariable int courseId){
+        return questionService.findAvailableQuestionsWithStudentsIncluded(courseId);
+    }
+
+    @GetMapping("/courses/{courseId}/questions/studentQuestions")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public List<QuestionDto> getStudentSubmittedQuestions(@PathVariable int courseId){
+
+        List<QuestionDto> av = this.questionService.findQuestions(courseId);
+        List<QuestionDto> outputList = new ArrayList<>();
+
+        for (QuestionDto question : av) {
+            if(question.getRoleAuthor() == null) //The old data in database does not have role author on question, however, the new data does.
+                continue;
+            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()))
+                outputList.add(question);
+        }
+
+        return outputList;
+    }
+
     @PostMapping("/courses/{courseId}/questions/createQuestion")
     @PreAuthorize("(hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')) and hasPermission(#courseId, 'COURSE.ACCESS')")
     public QuestionDto createQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
@@ -79,19 +103,20 @@ public class QuestionController {
 
         question.setUser(user);
         question.setUser_id(user.getId());
+        question.setRoleAuthor(user.getRole().name());
         return this.questionService.createQuestion(courseId, question);
     }
 
-    @GetMapping("/questions/showMyQuestions/{user_id}")
+    @GetMapping("/questions/showMyQuestions/")
     @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT')")
-    public List<QuestionDto> showMyQuestions(Principal principal, @PathVariable int user_id) {
+    public List<QuestionDto> showMyQuestions(Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
 
         if(user == null || user.getRole().name().equals(User.Role.DEMO_ADMIN.name()) || user.getRole().name().equals(User.Role.ADMIN.name()))
             throw new TutorException(AUTHENTICATION_ERROR);
 
 
-        return questionService.findQuestionsByUserId(user_id);
+        return questionService.findQuestionsByUserId(user.getId());
 
 
     }
@@ -166,7 +191,7 @@ public class QuestionController {
     }
 
     @PutMapping("/questions/{questionId}/topics")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public ResponseEntity updateQuestionTopics(@PathVariable Integer questionId, @RequestBody TopicDto[] topics) {
         questionService.updateQuestionTopics(questionId, topics);
 

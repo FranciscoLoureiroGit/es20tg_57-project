@@ -61,6 +61,14 @@
                 <v-list-item-title>Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/management/submittedQuestions">
+              <v-list-item-action>
+                <v-icon>question_answer</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>StudentSubmittedQuestions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item to="/management/topics">
               <v-list-item-action>
                 <v-icon>category</v-icon>
@@ -132,7 +140,7 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark>
+            <v-btn v-on="on" text dark data-cy="questions">
               Questions
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -143,16 +151,7 @@
                 <v-icon>create</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Submit</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item to="/student/submittedQuestions">
-              <v-list-item-action>
-                <v-icon>question_answer</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>Submitted</v-list-item-title>
+                <v-list-item-title data-cy="my-questions-button">My Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -286,6 +285,14 @@
               <v-list-item-title>Questions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/management/submittedQuestions">
+            <v-list-item-action>
+              <v-icon>question_answer</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>StudentSubmittedQuestions</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item to="/management/topics">
             <v-list-item-action>
               <v-icon>category</v-icon>
@@ -368,16 +375,6 @@
               <v-icon>create</v-icon>
             </v-list-item-action>
             <v-list-item-content>Submit Question</v-list-item-content>
-          </v-list-item>
-
-          <v-list-item
-            to="/student/submittedQuestions"
-            v-if="isStudent && currentCourse"
-          >
-            <v-list-item-action>
-              <v-icon>question_answer</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>Submitted Questions</v-list-item-content>
           </v-list-item>
 
           <!-- STOPS HERE-->

@@ -115,6 +115,25 @@ public class QuestionService {
     }
 
     @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<QuestionDto> findAvailableQuestionsWithStudentsIncluded(int courseId) {
+        List<QuestionDto> av = questionRepository.findQuestions(courseId).stream().map(QuestionDto::new).collect(Collectors.toList());
+        List<QuestionDto> output = new ArrayList<QuestionDto>();
+        for (QuestionDto question : av) {
+            if (question.getRoleAuthor() == null) //for old data inside database (a.k.a demo.sql), however, the question IS NEVER NULL!
+                output.add(question);
+            else if(question.getRoleAuthor().equals(User.Role.TEACHER.name()))
+                output.add(question);
+            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()) && question.getStatus().equals(Question.Status.AVAILABLE.name()))
+                output.add(question);
+        }
+
+        return output;
+    }
+
+    @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
