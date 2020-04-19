@@ -21,7 +21,8 @@
         <v-container grid-list-md fluid>
           <v-layout column wrap>
             <v-flex xs24 sm12 md8>
-              <v-text-field v-model="editQuestion.title" label="Title" />
+              <v-text-field v-model="editQuestion.title" label="Title"
+              data-cy="QuestionTitle"/>
             </v-flex>
             <v-flex xs24 sm12 md12>
               <v-textarea
@@ -42,6 +43,7 @@
                 v-model="editQuestion.options[index - 1].correct"
                 class="ma-4"
                 label="Correct"
+                data-cy="index"
               />
               <v-textarea
                 outline

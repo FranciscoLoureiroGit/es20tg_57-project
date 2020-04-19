@@ -31,6 +31,13 @@ Cypress.Commands.add('demoAdminLogin', () => {
     cy.contains('Manage Courses').click()
 })
 
+Cypress.Commands.add('demoStudentLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="studentButton"]').click()
+    cy.contains('Questions').click()
+    cy.contains('My Questions').click()
+})
+
 /*NOVO*/
 Cypress.Commands.add('demoTeacherLogin', () => {
     cy.visit('/')
@@ -59,6 +66,12 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="Acronym"]').type(acronym)
     cy.get('[data-cy="AcademicTerm"]').type(academicTerm)
     cy.get('[data-cy="saveButton"]').click()
+})
+
+Cypress.Commands.add('createQuestionByStudent', () => {
+    cy.contains('New Question').click()
+    cy.get('data-cy="QuestionTitle"').type('Teste', {force:true})
+    cy.contains('Cancel').click()
 })
 
 Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {
