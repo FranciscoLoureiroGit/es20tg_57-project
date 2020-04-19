@@ -31,6 +31,11 @@ Cypress.Commands.add('demoAdminLogin', () => {
   cy.contains('Manage Courses').click();
 });
 
+Cypress.Commands.add('demoStudentLogin', () => {
+  cy.visit('/');
+  cy.get('[data-cy="studentButton"]').click();
+});
+
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="createButton"]').click();
   cy.get('[data-cy="Name"]').type(name);
@@ -69,5 +74,52 @@ Cypress.Commands.add(
     cy.get('[data-cy="Acronym"]').type(acronym);
     cy.get('[data-cy="AcademicTerm"]').type(academicTerm);
     cy.get('[data-cy="saveButton"]').click();
+  }
+);
+
+Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
+  cy.contains('Questions Tournaments').click();
+  cy.contains('Open').click();
+});
+
+Cypress.Commands.add('registerStudentInTournament', tournamentId => {
+  cy.contains(tournamentId)
+    .parent()
+    .children()
+    .should('have.length', 9)
+    .find('[data-cy="registerStudent"]')
+    .click();
+});
+
+Cypress.Commands.add(
+  'createQuestionsTournament',
+  (numberOfQuestions, topicId) => {
+    cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
+    cy.contains('*Ending Date')
+      .parent()
+      .find('input')
+      .click();
+    cy.contains('30').click();
+    cy.contains('OK').click();
+    cy.clearLocalStorage();
+    cy.contains('*Starting Date')
+      .parent()
+      .find('input')
+      .click();
+    cy.get('.v-dialog__content--active')
+      .contains('.v-btn__content', '25')
+      .click();
+    cy.get('.v-dialog__content--active')
+      .contains('OK')
+      .click();
+    cy.contains(topicId)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 4)
+      .find('[data-cy="addTopic"]')
+      .click();
+    cy.contains('Show Tournament').click();
+    cy.get('[data-cy="saveButton"]').click({ force: true });
   }
 );
