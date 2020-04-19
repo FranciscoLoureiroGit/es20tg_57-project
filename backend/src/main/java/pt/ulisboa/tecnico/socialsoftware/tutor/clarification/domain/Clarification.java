@@ -5,7 +5,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -37,6 +36,9 @@ public class Clarification {
     @Column(name = "has_answer")
     private Boolean hasAnswer = false;
 
+    @Column(name = "is_public")
+    private Boolean isPublic = false;
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
     private Image image;
 
@@ -62,6 +64,7 @@ public class Clarification {
         this.title = clarificationDto.getTitle();
         this.description = clarificationDto.getDescription();
         this.id = clarificationDto.getId();
+        this.isPublic = clarificationDto.getPublic();
 
         if (clarificationDto.getStatus() != null) {
             this.status = Clarification.Status.valueOf(clarificationDto.getStatus());
@@ -75,6 +78,10 @@ public class Clarification {
             setImage(img);
             img.setClarification(this);
         }
+
+        if(clarificationDto.getClarificationAnswerDto() != null) {
+            this.clarificationAnswer = new ClarificationAnswer(clarificationDto.getClarificationAnswerDto());
+        }
     }
 
     public ClarificationAnswer getClarificationAnswer() {
@@ -85,6 +92,10 @@ public class Clarification {
         this.clarificationAnswer = clarificationAnswer;
         this.hasAnswer = true;
     }
+
+    public Boolean getPublic() { return isPublic; }
+
+    public void setPublic(Boolean aPublic) { isPublic = aPublic; }
 
     public Boolean getHasAnswer() {
         return hasAnswer;
@@ -130,8 +141,6 @@ public class Clarification {
     public void setUser(User student1) { this.user = student1;}
 
     public QuestionAnswer getQuestionAnswer() { return questionAnswer; }
-
-    public void setQuestion(QuestionAnswer questionAnswer1) { this.questionAnswer = questionAnswer1; }
 
     public LocalDateTime getCreationDate() { return creationDate; }
 

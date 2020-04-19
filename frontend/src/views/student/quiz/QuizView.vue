@@ -16,7 +16,7 @@
           <i class="fas fa-clock"></i>
           <span v-if="!hideTime">{{ getTimeAsHHMMSS }}</span>
         </span>
-        <span class="end-quiz" @click="confirmationDialog = true"
+        <span data-cy="endButton" class="end-quiz" @click="confirmationDialog = true"
           ><i class="fas fa-times" />End Quiz</span
         >
       </header>
@@ -94,7 +94,7 @@
             <v-btn color="secondary" text @click="confirmationDialog = false">
               Cancel
             </v-btn>
-            <v-btn color="primary" text @click="endQuiz">
+            <v-btn data-cy="sureButton" color="primary" text @click="endQuiz">
               I'm sure
             </v-btn>
           </v-card-actions>

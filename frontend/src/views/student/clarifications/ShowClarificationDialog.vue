@@ -7,11 +7,14 @@
   >
     <v-card>
       <v-card-title>
-        <span class="headline">{{ question.title }}</span>
+        <span class="headline">{{ clarification.title }}</span>
       </v-card-title>
 
       <v-card-text class="text-left">
-        <show-question :question="question" />
+        <div style="font-size: 18px">
+          <span v-html="clarification.description" />
+          <br />
+        </div>
       </v-card-text>
 
       <v-card-actions>
@@ -24,16 +27,14 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Model } from 'vue-property-decorator';
-import Question from '@/models/management/Question';
-import ShowQuestion from '@/views/teacher/questions/ShowQuestion.vue';
+import Clarification from '@/models/management/Clarification';
 
 @Component({
-  components: {
-    'show-question': ShowQuestion
-  }
+  components: {}
 })
 export default class ShowQuestionDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Question, required: true }) readonly question!: Question;
+  @Prop({ type: Clarification, required: true })
+  readonly clarification!: Clarification;
 }
 </script>

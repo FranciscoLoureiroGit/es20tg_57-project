@@ -138,10 +138,14 @@ class AnswerClarificationRequestTest extends Specification{
         quizQuestion = new QuizQuestion(quiz, question, 0)
         optionKO = new Option()
         optionKO.setCorrect(false)
+        optionKO.setSequence(1);
         question.addOption(optionKO)
         optionOK = new Option()
         optionOK.setCorrect(true)
+        optionOK.setSequence(2);
         question.addOption(optionOK)
+        optionRepository.save(optionOK)
+        optionRepository.save(optionKO)
 
         date = LocalDateTime.now()
 
@@ -167,9 +171,6 @@ class AnswerClarificationRequestTest extends Specification{
         quizQuestionRepository.save(quizQuestion)
 
         quizAnswerRepository.save(quizAnswer)
-
-        optionRepository.save(optionOK)
-        optionRepository.save(optionKO)
 
         questionAnswerRepository.save(questionAnswer)
 
@@ -224,7 +225,7 @@ class AnswerClarificationRequestTest extends Specification{
         def result = answerService.createClarificationAnswer(clrAnsDto, userTeacher.getId())
 
         then: 'answer is linked with request'
-        clarificationRequest.getHasAnswer() == true
+        clarificationRequest.getHasAnswer()
         clarificationAnswerRepository.findAll().get(0).getId() == result.getId()
 
     }
