@@ -32,15 +32,15 @@
           @click="showQuestionDialog(item)"
       /></template>
 
-      <template v-slot:item.topics="{ item }">
+<!--      <template v-slot:item.topics="{ item }">
         <edit-question-topics
           :question="item"
           :topics="topics"
           v-on:question-changed-topics="onQuestionChangedTopics"
         />
-      </template>
+      </template>-->
 
-      <!--Para mostrar o status com cor-->
+      <!--To Show Status Color-->
       <template v-slot:item.status="{ item }">
         <v-chip :color="getStatusColor(item.status)" small>
           <span>{{ item.status }}</span>
@@ -70,7 +70,7 @@
           </template>
           <span>Show Question</span>
         </v-tooltip>
-        <!--NOVO botao para mudar estado e justificacao-->
+        <!--NEW button to change Status and Justification-->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
@@ -84,7 +84,7 @@
           </template>
           <span>Change QuestionState</span>
         </v-tooltip>
-        <!--NOVO botao para mudar estado e justificacao-->
+        <!--NEW button to change Status and Justification-->
         <v-tooltip bottom v-if="item.numberOfAnswers === 0">
           <template v-slot:activator="{ on }">
             <v-icon small class="mr-2" v-on="on" @click="editQuestion(item)"
@@ -176,12 +176,12 @@ export default class QuestionsSubmittedView extends Vue {
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
     { text: 'Question', value: 'content', align: 'left' },
-    /*{
+    {
       text: 'Topics',
       value: 'topics',
       align: 'center',
       sortable: false
-    },*/
+    },
     { text: 'Status', value: 'status', align: 'center' },
     { text: 'Justification', value: 'justification', align: 'center' }, //NOVO
     {
@@ -244,27 +244,12 @@ export default class QuestionsSubmittedView extends Vue {
     return convertMarkDownNoFigure(text, image);
   }
 
-  onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
+  /*  onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
     let question = this.questions.find(
       (question: Question) => question.id == questionId
     );
     if (question) {
       question.topics = changedTopics;
-    }
-  }
-
-  //NOVO
-  /*  async changeStatus(questionToChange: Question) {
-    try {
-      await RemoteServices.changeQuestionStatus(questionToChange);
-      let question = this.questions.find(
-        question => question.id === questionToChange.id
-      );
-      if (question) {
-        question.status = questionToChange.status;
-      }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
     }
   }*/
 
