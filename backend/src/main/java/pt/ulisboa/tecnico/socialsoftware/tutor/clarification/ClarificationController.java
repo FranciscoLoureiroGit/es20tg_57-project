@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.api.QuestionController;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.validation.Valid;
@@ -17,6 +20,8 @@ import java.util.List;
 
 @RestController
 public class ClarificationController {
+    private static Logger logger = LoggerFactory.getLogger(QuestionController.class);
+
     @Autowired
     private AnswerService answerService;
 
@@ -57,29 +62,23 @@ public class ClarificationController {
         return clarificationService.createClarification(questionAnswerId, clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @GetMapping("/question-answer/{questionAnswerId}/clarifications/public")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
-    public List<ClarificationDto> getPublicQuestionClarification(@PathVariable int questionAnswerId) {
-        return clarificationService.getPublicQuestionClarification(questionAnswerId);
-    }
-
-    @GetMapping("/question-answer/{questionAnswerId}/student-clarification")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
-    public ClarificationDto getQuestionClarification(@PathVariable int questionAnswerId,
-                                                                 Principal principal) {
-        return clarificationService.getClarification(((User)((Authentication) principal).getPrincipal()).getId(), questionAnswerId);
+    @GetMapping("/question/{questionId}/clarifications/public")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<ClarificationDto> getPublicQuestionClarifications(@PathVariable int questionId) {
+        return clarificationService.getPublicQuestionClarifications(questionId);
     }
 
     @PutMapping("/clarifications/{clarificationId}/privacy")
     @PreAuthorize("hasRole('ROLE_TEACHER')") 
-    public ResponseEntity setClarificationPrivacy(@PathVariable int clarificationId, @RequestBody boolean isPublic){
+    public ResponseEntity setClarificationPrivacy(@PathVariable int clarificationId, @Valid @RequestBody boolean isPublic){
+        logger.debug("inserted object: {}: ", isPublic);
         clarificationService.setPrivacy(clarificationId, isPublic);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/clarifications/{clarificationId}/answers")
     @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER'))")
-    public ClarificationAnswerDto getClarificationAnswer(@PathVariable @RequestBody int clarificationId) {
+    public ClarificationAnswerDto getClarificationAnswer(@PathVariable int clarificationId) {
         return answerService.getClarificationAnswer(clarificationId);
     }
 

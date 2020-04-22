@@ -10,13 +10,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerR
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
@@ -25,11 +23,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
-import spock.lang.Unroll
-
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 
 @DataJpaTest
 class GetClarificationServiceSpockTest extends Specification {
@@ -156,6 +150,9 @@ class GetClarificationServiceSpockTest extends Specification {
         clarification2.setQuestionAnswer(questAnswer2)
         clarificationRepository.save(clarification)
         clarificationRepository.save(clarification2)
+        questAnswer.addClarification(clarification)
+        questAnswer.addClarification(clarification2)
+
 
     }
 
@@ -229,6 +226,28 @@ class GetClarificationServiceSpockTest extends Specification {
         result1.title == TITLE
         result1.questionAnswerDto.getId() == questAnswer.getId()
         result1.studentId == student.getId()
+    }
+
+    def "get all clarifications of a question answer"() {
+        given: 'a new clarification request of student 2'
+        def newClarification = new Clarification()
+        newClarification.setTitle(TITLE2)
+        newClarification.setDescription(DESCRIPTION2)
+        newClarification.setUser(student2)
+        newClarification.setQuestionAnswer(questAnswer)
+        newClarification.setPublic(true)
+        clarificationRepository.save(newClarification)
+        questAnswer.addClarification(newClarification)
+
+
+        when:
+        def result = clarificationService.getPublicQuestionClarifications(questAnswer.getId())
+
+        then:
+        result.size() == 1
+        def result1 = result.get(0)
+        result1.description == DESCRIPTION2
+        result1.studentId == student2.getId()
     }
 
 
