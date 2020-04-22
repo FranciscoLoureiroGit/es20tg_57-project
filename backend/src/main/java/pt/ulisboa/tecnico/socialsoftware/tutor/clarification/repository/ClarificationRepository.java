@@ -13,8 +13,10 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface ClarificationRepository extends JpaRepository<Clarification, Integer> {
-    @Query(value = "SELECT * FROM clarifications c WHERE c.question_answer_id = :questionAnswerId", nativeQuery = true)
-    List<Clarification> findByQuestionAnswer(int questionAnswerId);
+    @Query(value = "select * from clarifications c where c.id in (select c1.id from clarifications c1 "+
+            "join question_answers qA on c1.question_answer_id = qA.id join quiz_questions q on " +
+            "qA.quiz_question_id = q.id where q.question_id = :questionId)", nativeQuery = true)
+    List<Clarification> findByQuestion(int questionId);
 
     @Query(value = "SELECT * FROM clarifications c WHERE c.user_id = :student_id", nativeQuery = true)
     List<Clarification> findClarificationsByStudentId(Integer student_id);

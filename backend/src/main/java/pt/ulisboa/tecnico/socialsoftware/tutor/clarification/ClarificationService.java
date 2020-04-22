@@ -36,23 +36,15 @@ public class ClarificationService {
     @Autowired
     private ClarificationRepository clarificationRepository;
 
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationDto getClarificationById(Integer clarificationId) {
-        return clarificationRepository.findById(clarificationId).map(ClarificationDto::new)
-                .orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
-    }
+    // ---- GET Services ----
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getClarificationsByQuestion(int questionAnswerId) {
-        return clarificationRepository.findByQuestionAnswer(questionAnswerId).stream().map(ClarificationDto::new)
-                .sorted(Comparator.comparing(ClarificationDto::getTitle))
-                .collect(Collectors.toList());
+    public ClarificationDto findClarificationById(Integer clarificationId) {
+        return clarificationRepository.findById(clarificationId).map(ClarificationDto::new)
+                .orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
     }
 
     @Retryable(
@@ -74,29 +66,6 @@ public class ClarificationService {
     }
 
     @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getPublicClarifications() {
-        return this.getAllClarifications().stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationDto getClarification(int studentId, int questionAnswerId) {
-        List<ClarificationDto> clarificationDtoList = getClarificationsByQuestion(questionAnswerId);
-
-        for (ClarificationDto cc : clarificationDtoList ) {
-            if (cc.getStudentId().equals(studentId)) {
-                return cc;
-            }
-        }
-        throw new TutorException(NO_CLARIFICATION_REQUEST);
-    }
-
-    @Retryable(
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -108,9 +77,23 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getPublicQuestionClarification(int questionAnswerId) {
-        return getClarificationsByQuestion(questionAnswerId).stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
+    public List<ClarificationDto> getPublicClarifications() {
+        return this.getAllClarifications().stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
     }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationDto> getPublicQuestionClarifications(int questionId) {
+        return clarificationRepository.findByQuestion(questionId).stream().map(ClarificationDto::new)
+                .sorted(Comparator.comparing(ClarificationDto::getTitle))
+                .collect(Collectors.toList());
+    }
+
+
+    // ------- SET / CREATE Services -------
+
 
     @Retryable(
             value = { SQLException.class },
