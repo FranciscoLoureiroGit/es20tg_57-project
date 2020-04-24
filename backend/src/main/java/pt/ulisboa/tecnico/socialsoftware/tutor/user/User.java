@@ -100,6 +100,10 @@ public class User implements UserDetails, DomainEntity {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Integer getKey() {
         return key;
     }
@@ -493,6 +497,10 @@ public class User implements UserDetails, DomainEntity {
 
     public void setClarificationAnswers(Set<ClarificationAnswer> clarificationAnswers) {
         this.clarificationAnswers = clarificationAnswers;
+    }
+
+    public void setStudentTournamentRegistrations(Set<StudentTournamentRegistration> studentTournamentRegistrations) {
+        this.studentTournamentRegistrations = studentTournamentRegistrations;
     }
 
     public void addClarificationAnswer(ClarificationAnswer clarificationAnswer){

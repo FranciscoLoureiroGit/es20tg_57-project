@@ -93,6 +93,10 @@ public class QuestionAnswer implements DomainEntity {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Integer getTimeTaken() {
         return timeTaken;
     }

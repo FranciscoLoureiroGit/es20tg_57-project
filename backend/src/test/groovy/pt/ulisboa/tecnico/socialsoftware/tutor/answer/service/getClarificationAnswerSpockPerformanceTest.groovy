@@ -20,6 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
@@ -131,18 +132,18 @@ class getClarificationAnswerSpockPerformanceTest extends Specification {
         course.addQuestion(question)
 
         quizQuestion = new QuizQuestion(quiz, question, 1)
-        optionKO = new Option()
-        optionKO.setCorrect(false)
-        optionKO.setContent("CONTENT")
-        optionKO.setSequence(1)
-        question.addOption(optionKO)
-        optionOK = new Option()
-        optionOK.setContent("CONTENT")
-        optionOK.setCorrect(true)
-        optionKO.setSequence(2)
-        question.addOption(optionOK)
+        def optionDto = new OptionDto()
+        optionDto.setContent("CONTENT")
+        optionDto.setSequence(1)
+        optionDto.setCorrect(false)
+        optionKO = new Option(optionDto)
+        optionDto.setSequence(2)
+        optionDto.setCorrect(true)
+        optionOK = new Option(optionDto)
         optionRepository.save(optionOK)
         optionRepository.save(optionKO)
+        question.addOption(optionKO)
+        question.addOption(optionOK)
         quizQuestionRepository.save(quizQuestion)
 
         date = LocalDateTime.now()
