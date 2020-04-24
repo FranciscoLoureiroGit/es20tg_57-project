@@ -158,8 +158,8 @@ class GetClarificationServiceSpockTest extends Specification {
 
     def "get two clarification requests independently" () {
         when:
-        def result1 = clarificationService.getClarification(student.getId(), questAnswer.getId())
-        def result2 = clarificationService.getClarification(student2.getId(), questAnswer2.getId())
+        def result1 = clarificationService.findClarificationById(clarification.getId())
+        def result2 = clarificationService.findClarificationById(clarification2.getId())
 
         then: "the returned data is correct"
         result1.description == DESCRIPTION
@@ -241,7 +241,7 @@ class GetClarificationServiceSpockTest extends Specification {
 
 
         when:
-        def result = clarificationService.getPublicQuestionClarifications(questAnswer.getId())
+        def result = clarificationService.getPublicQuestionClarifications(questAnswer.getQuizQuestion().getQuestion().getId())
 
         then:
         result.size() == 1
