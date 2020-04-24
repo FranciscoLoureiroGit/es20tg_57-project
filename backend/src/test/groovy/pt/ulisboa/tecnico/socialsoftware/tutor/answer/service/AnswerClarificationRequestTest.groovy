@@ -121,7 +121,7 @@ class AnswerClarificationRequestTest extends Specification{
 
         quiz = new Quiz()
         quiz.setTitle("QUIZ TITLE")
-        quiz.setType(Quiz.QuizType.GENERATED)
+        quiz.setType("GENERATED")
         quiz.setKey(1)
         quiz.setCourseExecution(courseExec)
         courseExec.addQuiz(quiz)

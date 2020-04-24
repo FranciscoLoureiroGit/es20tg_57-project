@@ -108,56 +108,49 @@ class getClarificationAnswerSpockPerformanceTest extends Specification {
 
         userStudent.getCourseExecutions().add(courseExec)
         userTeacher.getCourseExecutions().add(courseExec)
-
+        userRepository.save(userStudent)
+        userRepository.save(userTeacher)
 
         courseExec.getUsers().add(userStudent)
         courseExec.getUsers().add(userTeacher)
 
         quiz = new Quiz()
         quiz.setTitle("QUIZ TITLE")
-        quiz.setType(Quiz.QuizType.GENERATED)
+        quiz.setType("GENERATED")
         quiz.setKey(1)
         quiz.setCourseExecution(courseExec)
+        quizRepository.save(quiz)
         courseExec.addQuiz(quiz)
-
 
 
         def question = new Question()
         question.setCourse(course);
         question.setTitle(QUESTION_TITLE)
         question.setKey(1)
+        questionRepository.save(question)
         course.addQuestion(question)
 
-
-        quizQuestion = new QuizQuestion(quiz, question, 0)
+        quizQuestion = new QuizQuestion(quiz, question, 1)
         optionKO = new Option()
         optionKO.setCorrect(false)
+        optionKO.setContent("CONTENT")
+        optionKO.setSequence(1)
         question.addOption(optionKO)
         optionOK = new Option()
+        optionOK.setContent("CONTENT")
         optionOK.setCorrect(true)
+        optionKO.setSequence(2)
         question.addOption(optionOK)
+        optionRepository.save(optionOK)
+        optionRepository.save(optionKO)
+        quizQuestionRepository.save(quizQuestion)
 
         date = LocalDateTime.now()
 
         quizAnswer = new QuizAnswer(userStudent, quiz)
-
-        questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
-
-        userRepository.save(userStudent)
-        userRepository.save(userTeacher)
-
-
-        quizRepository.save(quiz)
-
-        questionRepository.save(question)
-
-        quizQuestionRepository.save(quizQuestion)
-
         quizAnswerRepository.save(quizAnswer)
 
-        optionRepository.save(optionOK)
-        optionRepository.save(optionKO)
-
+        questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
         questionAnswerRepository.save(questionAnswer)
 
         clarificationRequest = new Clarification()

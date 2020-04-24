@@ -119,7 +119,7 @@ class getClarificationAnswerSpockTest extends Specification {
 
         quiz = new Quiz()
         quiz.setTitle("QUIZ TITLE")
-        quiz.setType(Quiz.QuizType.GENERATED)
+        quiz.setType("GENERATED")
         quiz.setKey(1)
         quiz.setCourseExecution(courseExec)
         courseExec.addQuiz(quiz)
@@ -133,21 +133,27 @@ class getClarificationAnswerSpockTest extends Specification {
         course.addQuestion(question)
 
 
-        quizQuestion = new QuizQuestion(quiz, question, 0)
+        quizQuestion = new QuizQuestion(quiz, question, 1)
         optionKO = new Option()
         optionKO.setCorrect(false)
-        question.addOption(optionKO)
+        optionKO.setContent("CONTENT")
+        optionKO.setSequence(1)
         optionOK = new Option()
+        optionOK.setContent("CONTENT")
         optionOK.setCorrect(true)
+        optionKO.setSequence(2)
         question.addOption(optionOK)
+        question.addOption(optionKO)
+        optionRepository.save(optionOK)
+        optionRepository.save(optionKO)
 
         date = LocalDateTime.now()
 
         quizAnswer = new QuizAnswer(userStudent, quiz)
         quizAnswer2 = new QuizAnswer(userStudent2, quiz)
 
-        questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
-        questionAnswer2 = new QuestionAnswer(quizAnswer, quizQuestion, 0)
+        questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 1)
+        questionAnswer2 = new QuestionAnswer(quizAnswer, quizQuestion, 1)
 
         userRepository.save(userStudent)
         userRepository.save(userTeacher)
@@ -161,9 +167,6 @@ class getClarificationAnswerSpockTest extends Specification {
 
         quizAnswerRepository.save(quizAnswer)
         quizAnswerRepository.save(quizAnswer2)
-
-        optionRepository.save(optionOK)
-        optionRepository.save(optionKO)
 
         questionAnswerRepository.save(questionAnswer)
         questionAnswerRepository.save(questionAnswer2)
@@ -236,7 +239,7 @@ class getClarificationAnswerSpockTest extends Specification {
         }
 
         @Bean
-        AnswersXmlImport aswersXmlImport() {
+        AnswersXmlImport answersXmlImport() {
             return new AnswersXmlImport()
         }
     }

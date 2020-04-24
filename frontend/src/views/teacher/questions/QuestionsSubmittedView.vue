@@ -28,7 +28,7 @@
 
       <template v-slot:item.content="{ item }">
         <p
-          v-html="convertMarkDownNoFigure(item.content, null)"
+          v-html="convertMarkDown(item.content, null)"
           @click="showQuestionDialog(item)"
       /></template>
 
@@ -146,7 +146,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
+import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import Question from '@/models/management/Question';
 
 import Image from '@/models/management/Image';
@@ -240,8 +240,8 @@ export default class QuestionsSubmittedView extends Vue {
     );
   }
 
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
+  convertMarkDown(text: string, image: Image | null = null): string {
+    return convertMarkDown(text, image);
   }
 
   /*  onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
