@@ -1,16 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.api.QuestionController;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.validation.Valid;
@@ -77,8 +73,8 @@ public class ClarificationController {
     // === HTTP PUT REQUESTS ===
     @PutMapping("/clarifications/{clarificationId}/privacy")
     @PreAuthorize("hasRole('ROLE_TEACHER')") 
-    public ResponseEntity setClarificationPrivacy(@PathVariable int clarificationId, @Valid @RequestBody boolean isPublic){
-        clarificationService.setPrivacy(clarificationId, isPublic);
-        return ResponseEntity.ok().build();
+    public ClarificationDto setClarificationPrivacy(@PathVariable int clarificationId, @RequestBody ClarificationDto clarificationDto){
+        return clarificationService.setPrivacy(clarificationId, clarificationDto.getPublic());
     }
+
 }
