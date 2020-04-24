@@ -1,11 +1,14 @@
 describe('Administration walkthrough', () => {
   beforeEach(() => {
-    cy.demoAdminLogin()
-  })
+    cy.demoAdminLogin();
+
+    cy.contains('Administration').click();
+    cy.contains('Manage Courses').click();
+  });
 
   afterEach(() => {
-    cy.contains('Logout').click()
-  })
+    cy.logout();
+  });
 
   it('login creates and deletes a course execution', () => {
     cy.createCourseExecution('Demo Course','TEST-AO3','Spring Semester')

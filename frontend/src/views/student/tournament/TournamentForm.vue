@@ -9,12 +9,19 @@
         {{ editMode ? 'Close' : 'Create' }}
       </v-btn>
 
-      <v-btn color="primary" data-cy="saveButton" dark v-if="editMode && canSave" @click="save"
+      <v-btn
+        color="primary"
+        data-cy="saveButton"
+        dark
+        v-if="editMode && canSave"
+        @click="save"
         >Save</v-btn
       >
     </v-card-title>
     <v-card-text>
-      <v-text-field v-model="questionsTournament.numberOfQuestions" label="*Number of questions"
+      <v-text-field
+        v-model="questionsTournament.numberOfQuestions"
+        label="*Number of questions"
         data-cy="numberOfQuestions"
       />
       <v-row>
@@ -75,7 +82,7 @@
         <template v-slot:item.content="{ item }">
           <div
             class="text-left"
-            v-html="convertMarkDownNoFigure(item.content, item.image)"
+            v-html="convertMarkDown(item.content, item.image)"
             @click="openShowTopicDialog(item)"
           ></div>
         </template>
@@ -165,7 +172,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
+import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import Image from '@/models/management/Image';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import Topic from '@/models/management/Topic';
@@ -332,8 +339,8 @@ export default class TournamentForm extends Vue {
     this.topicDialog = false;
   }
 
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
+  convertMarkDown(text: string, image: Image | null = null): string {
+    return convertMarkDown(text, image);
   }
 
   addToTournament(topic: Topic) {
