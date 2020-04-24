@@ -77,7 +77,7 @@ public class GetClarificationServiceSpockPerformanceTest extends Specification {
 
         quiz = new Quiz()
         quiz.setTitle(QUIZ_TITLE)
-        quiz.setType(Quiz.QuizType.GENERATED)
+        quiz.setType("GENERATED")
         quiz.setKey(KEY)
         quizRepository.save(quiz)
 

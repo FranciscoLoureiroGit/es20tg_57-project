@@ -18,7 +18,8 @@ public class QuestionAnswerDto implements Serializable {
 
         if(questionAnswer.getQuizQuestion() != null && questionAnswer.getQuizQuestion().getQuestion() != null)
             this.question = new QuestionDto(questionAnswer.getQuizQuestion().getQuestion());
-        if(questionAnswer.getOption() != null)
+
+        if (questionAnswer.getOption() != null)
             this.option = new OptionDto(questionAnswer.getOption());
 
     }

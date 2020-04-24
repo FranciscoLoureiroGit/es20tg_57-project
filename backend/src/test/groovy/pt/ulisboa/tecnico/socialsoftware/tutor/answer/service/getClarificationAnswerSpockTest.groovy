@@ -20,6 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
@@ -119,7 +120,7 @@ class getClarificationAnswerSpockTest extends Specification {
 
         quiz = new Quiz()
         quiz.setTitle("QUIZ TITLE")
-        quiz.setType(Quiz.QuizType.GENERATED)
+        quiz.setType("GENERATED")
         quiz.setKey(1)
         quiz.setCourseExecution(courseExec)
         courseExec.addQuiz(quiz)
@@ -133,21 +134,28 @@ class getClarificationAnswerSpockTest extends Specification {
         course.addQuestion(question)
 
 
-        quizQuestion = new QuizQuestion(quiz, question, 0)
-        optionKO = new Option()
-        optionKO.setCorrect(false)
+        quizQuestion = new QuizQuestion(quiz, question, 1)
+        def optionDto = new OptionDto()
+        optionDto.setContent("CONTENT")
+        optionDto.setSequence(1)
+        optionDto.setCorrect(false)
+        optionKO = new Option(optionDto)
+        optionDto.setSequence(2)
+        optionDto.setCorrect(true)
+        optionOK = new Option(optionDto)
+        optionRepository.save(optionOK)
+        optionRepository.save(optionKO)
         question.addOption(optionKO)
-        optionOK = new Option()
-        optionOK.setCorrect(true)
         question.addOption(optionOK)
+        quizQuestionRepository.save(quizQuestion)
 
         date = LocalDateTime.now()
 
         quizAnswer = new QuizAnswer(userStudent, quiz)
         quizAnswer2 = new QuizAnswer(userStudent2, quiz)
 
-        questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
-        questionAnswer2 = new QuestionAnswer(quizAnswer, quizQuestion, 0)
+        questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 1)
+        questionAnswer2 = new QuestionAnswer(quizAnswer, quizQuestion, 1)
 
         userRepository.save(userStudent)
         userRepository.save(userTeacher)
@@ -156,14 +164,9 @@ class getClarificationAnswerSpockTest extends Specification {
         quizRepository.save(quiz)
 
         questionRepository.save(question)
-
-        quizQuestionRepository.save(quizQuestion)
-
+        
         quizAnswerRepository.save(quizAnswer)
         quizAnswerRepository.save(quizAnswer2)
-
-        optionRepository.save(optionOK)
-        optionRepository.save(optionKO)
 
         questionAnswerRepository.save(questionAnswer)
         questionAnswerRepository.save(questionAnswer2)
@@ -236,7 +239,7 @@ class getClarificationAnswerSpockTest extends Specification {
         }
 
         @Bean
-        AnswersXmlImport aswersXmlImport() {
+        AnswersXmlImport answersXmlImport() {
             return new AnswersXmlImport()
         }
     }
