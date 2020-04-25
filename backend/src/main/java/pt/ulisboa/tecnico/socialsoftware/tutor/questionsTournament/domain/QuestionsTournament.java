@@ -1,20 +1,16 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -144,6 +140,39 @@ public class QuestionsTournament {
     public boolean isOpen(){
         LocalDateTime currentTime = LocalDateTime.now();
         return currentTime.isBefore(this.startingDate);
+    }
+
+    public void generateQuizQuestions(Quiz quiz) {
+        List<Question> validQuestions = getValidQuestions();
+        addQuestionsToQuiz(quiz, validQuestions);
+    }
+
+    private void addQuestionsToQuiz(Quiz quiz, List<Question> validQuestions) {
+        Collections.shuffle(validQuestions);
+        int numberOfInsertions = 0;
+        for(Question question : validQuestions) {
+            if(numberOfInsertions >= this.getNumberOfQuestions())
+                break;
+            QuizQuestion quizQuestion = new QuizQuestion();
+            quizQuestion.setQuestion(question);
+            quizQuestion.setQuiz(quiz);
+            quiz.addQuizQuestion(quizQuestion);
+            numberOfInsertions++;
+        }
+    }
+
+    private List<Question> getValidQuestions() {
+        Set<Question> courseQuestions = this.getCourseExecution().getCourse().getQuestions();
+        List<Question> validQuestions = new ArrayList<>();
+        for(Question question : courseQuestions) {
+            for (Topic topic : question.getTopics()) {
+                if (this.getTopics().contains(topic)) {
+                    validQuestions.add(question);
+                    break;
+                }
+            }
+        }
+        return validQuestions;
     }
 
     private void checkStartingDate(LocalDateTime startingDate) {

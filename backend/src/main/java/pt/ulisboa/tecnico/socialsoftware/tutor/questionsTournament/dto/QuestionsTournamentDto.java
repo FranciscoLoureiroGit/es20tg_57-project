@@ -7,6 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.GeneratedValue;
@@ -27,6 +28,7 @@ public class QuestionsTournamentDto {
     private int numberOfQuestions;
     private List<TopicDto> topics = new ArrayList<>();
     private UserDto studentTournamentCreator;
+    private QuizDto quiz = null;
     private CourseDto course;
     private List<StudentTournamentRegistrationDto> studentTournamentRegistrations = new ArrayList<>();
 
@@ -43,6 +45,9 @@ public class QuestionsTournamentDto {
         this.numberOfQuestions = questionsTournament.getNumberOfQuestions();
         this.topics = questionsTournament.getTopics().stream().map(TopicDto::new).collect(Collectors.toList());
         this.studentTournamentCreator = new UserDto(questionsTournament.getStudentTournamentCreator());
+        if(questionsTournament.getQuiz() != null){
+            this.quiz = new QuizDto(questionsTournament.getQuiz(), false);
+        }
         this.course = new CourseDto(questionsTournament.getCourseExecution());
         this.studentTournamentRegistrations = questionsTournament.getStudentTournamentRegistrations().stream().map(StudentTournamentRegistrationDto::new).collect(Collectors.toList());
     }
@@ -123,5 +128,13 @@ public class QuestionsTournamentDto {
 
     public void setStudentTournamentRegistrations(List<StudentTournamentRegistrationDto> studentTournamentRegistrations) {
         this.studentTournamentRegistrations = studentTournamentRegistrations;
+    }
+
+    public QuizDto getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(QuizDto quiz) {
+        this.quiz = quiz;
     }
 }

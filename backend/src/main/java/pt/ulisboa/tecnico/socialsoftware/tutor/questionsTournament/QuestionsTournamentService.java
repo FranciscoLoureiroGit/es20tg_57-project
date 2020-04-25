@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
@@ -18,6 +19,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.Questions
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.StudentTournamentRegistrationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.QuestionsTournamentRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.StudentTournamentRegistrationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
@@ -25,11 +29,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class QuestionsTournamentService {
-
 
     @Autowired
     private CourseExecutionRepository courseExecutionRepository;
@@ -45,6 +50,15 @@ public class QuestionsTournamentService {
 
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
+
+    @Autowired
+    QuestionRepository questionRepository;
+
+    @Autowired
+    QuizRepository quizRepository;
+
+    @Autowired
+    QuizService quizService;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public CourseDto findTournamentCourseExecution(int tournamentId) {
@@ -83,6 +97,8 @@ public class QuestionsTournamentService {
         User user = getUserFromRepository(userId);
         QuestionsTournament questionsTournament = getTournamentFromRepository(questionsTournamentId);
         StudentTournamentRegistration registration = createStudentTournamentRegistration(user, questionsTournament);
+        if(tournamentNotHaveQuiz(questionsTournament) && userIsNotTheCreator(user, questionsTournament))
+            createAndGenerateQuiz(questionsTournament);
         return new StudentTournamentRegistrationDto(registration);
     }
 
@@ -136,6 +152,24 @@ public class QuestionsTournamentService {
         addRegistrationToTournament(questionsTournament, registration);
         registrationRepository.save(registration);
         return registration;
+    }
+
+    private boolean tournamentNotHaveQuiz(QuestionsTournament questionsTournament) {
+        return questionsTournament.getQuiz() == null;
+    }
+
+    private boolean userIsNotTheCreator(User user, QuestionsTournament questionsTournament) {
+        return !questionsTournament.getStudentTournamentCreator().equals(user);
+    }
+
+    private void createAndGenerateQuiz(QuestionsTournament questionsTournament) {
+        Quiz quiz = new Quiz();
+        quiz.setKey(quizService.getMaxQuizKey() + 1);
+        quiz.setType(Quiz.QuizType.GENERATED.toString());
+        quiz.setCreationDate(LocalDateTime.now());
+        questionsTournament.generateQuizQuestions(quiz);
+        quizRepository.save(quiz);
+        questionsTournament.setQuiz(quiz);
     }
 
     private void addRegistrationToUser(User user, StudentTournamentRegistration registration) {
