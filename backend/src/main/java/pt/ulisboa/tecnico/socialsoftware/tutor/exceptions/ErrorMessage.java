@@ -90,6 +90,7 @@ public enum ErrorMessage {
 
     USER_NOT_STUDENT("User is not a student"),
     STUDENT_NOT_ON_COURSE_EXECUTION("Student is not on the course execution"),
+    USER_NOT_TOURNAMENT_CREATOR("User can't delete tournament which didn't create"),
     TOURNAMENT_ENDED("Tournament already ended"),
     TOURNAMENT_ALREADY_STARTED("Tournament already started"),
     TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),

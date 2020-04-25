@@ -106,6 +106,23 @@ public class QuestionsTournamentService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void cancelTournament(int executionId, int userId, Integer tournamentId){
+        CourseExecution courseExecution = getCourseExecution(executionId);
+        User user = getUserFromRepository(userId);
+        QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
+
+        if(!userIsNotTheCreator(user,tournament)){
+            tournamentRepository.deleteById(tournamentId);
+            courseExecution.deleteTournament(tournament);
+        } else{
+          throw new TutorException(USER_NOT_TOURNAMENT_CREATOR);
+        }
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<QuestionsTournamentDto> getOpenTournamentsByCourse(int executionId){
         CourseExecution courseExecution = getCourseExecution(executionId);
         return courseExecution.getOpenQuestionsTournamentsDto();

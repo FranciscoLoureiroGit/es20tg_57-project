@@ -159,6 +159,10 @@ public class CourseExecution implements DomainEntity {
         questionsTournaments.add(tournament);
     }
 
+    public void deleteTournament(QuestionsTournament tournament){
+        this.questionsTournaments.remove(tournament);
+    }
+
     public Set<Assessment> getAssessments() {
         return assessments;
     }
