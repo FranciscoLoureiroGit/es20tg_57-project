@@ -190,7 +190,7 @@ VALUES (${t_id}, NOW()+interval &apos;12hour&apos;, NOW()+interval &apos;24hour&
             <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Data to register student" enabled="true">
               <stringProp name="delimiter">,</stringProp>
               <stringProp name="fileEncoding"></stringProp>
-              <stringProp name="filename">/home/joaoduarte/Documentos/ES/es20tg_57-project/backend/jmeter/questionsTournament/RegistrationData_1.csv</stringProp>
+              <stringProp name="filename">RegistrationData_1.csv</stringProp>
               <boolProp name="ignoreFirstLine">false</boolProp>
               <boolProp name="quotedData">false</boolProp>
               <boolProp name="recycle">true</boolProp>

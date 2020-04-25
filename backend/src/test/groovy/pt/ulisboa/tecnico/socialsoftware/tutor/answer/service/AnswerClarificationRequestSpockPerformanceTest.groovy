@@ -21,6 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
@@ -102,7 +103,7 @@ class AnswerClarificationRequestSpockPerformanceTest extends Specification {
 
         quiz = new Quiz()
         quiz.setTitle("QUIZ TITLE")
-        quiz.setType(Quiz.QuizType.GENERATED)
+        quiz.setType("GENERATED")
         quiz.setKey(1)
         quiz.setCourseExecution(courseExec)
         courseExec.addQuiz(quiz)
@@ -113,23 +114,25 @@ class AnswerClarificationRequestSpockPerformanceTest extends Specification {
         question.setKey(1)
         course.addQuestion(question)
 
-        quizQuestion = new QuizQuestion(quiz, question, 0)
-        optionKO = new Option()
-        optionKO.setCorrect(false)
-        optionKO.setSequence(1)
+        quizQuestion = new QuizQuestion(quiz, question, 1)
+        def optionDto = new OptionDto()
+        optionDto.setContent("CONTENT")
+        optionDto.setSequence(1)
+        optionDto.setCorrect(false)
+        optionKO = new Option(optionDto)
+        optionDto.setSequence(2)
+        optionDto.setCorrect(true)
+        optionOK = new Option(optionDto)
+        optionRepository.save(optionOK)
+        optionRepository.save(optionKO)
         question.addOption(optionKO)
-        optionOK = new Option()
-        optionOK.setCorrect(true)
-        optionOK.setSequence(2)
         question.addOption(optionOK)
+        quizQuestionRepository.save(quizQuestion)
 
         userRepository.save(userStudent)
         userRepository.save(userTeacher)
         quizRepository.save(quiz)
         questionRepository.save(question)
-        optionRepository.save(optionOK)
-        optionRepository.save(optionKO)
-        quizQuestionRepository.save(quizQuestion)
     }
 
     def"performance test for answering 1000 clarifications"(){

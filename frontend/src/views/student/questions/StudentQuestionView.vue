@@ -1,82 +1,81 @@
 <template>
+  <v-card class="table">
+    <div class="container">
+      <h2>Questions</h2>
+    </div>
 
+    <v-data-table
+      :headers="headers"
+      :custom-filter="customFilter"
+      :items="questions"
+      :search="search"
+      multi-sort
+      :mobile-breakpoint="0"
+      :items-per-page="15"
+      :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
+    >
+      <template v-slot:top>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search"
+            class="mx-2"
+            data-cy="search-question"
+          />
+          <v-spacer />
 
-    <v-card class="table">
-        <div class="container">
-            <h2>Questions</h2>
-        </div>
+          <v-btn color="primary" dark @click="newQuestion">New Question</v-btn>
+        </v-card-title>
+      </template>
 
-        <v-data-table
-            :headers="headers"
-            :custom-filter="customFilter"
-            :items="questions"
-            :search="search"
-            multi-sort
-            :mobile-breakpoint="0"
-            :items-per-page="15"
-            :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
-        >
-            <template v-slot:top>
-                <v-card-title>
-                    <v-text-field
-                        v-model="search"
-                        append-icon="search"
-                        label="Search"
-                        class="mx-2"
-                        data-cy="search-question"
-                    />
-                    <v-spacer />
+      <template v-slot:item.content="{ item }">
+        <p
+          v-html="convertMarkDown(item.content, null)"
+          @click="showQuestionDialog(item)"
+        />
+      </template>
 
-                    <v-btn color="primary" dark @click="newQuestion">New Question</v-btn>
+      <template v-slot:item.topics="{ item }">
+        <edit-question-topics
+          :question="item"
+          :topics="topics"
+          v-on:question-changed-topics="onQuestionChangedTopics"
+        />
+      </template>
 
-                </v-card-title>
-            </template>
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="getStatusColor(item.status)" small>
+          <span>{{ item.status }}</span>
+        </v-chip>
+      </template>
 
-            <template v-slot:item.content="{ item }">
-                <p
-                        v-html="convertMarkDownNoFigure(item.content, null)"
-                        @click="showQuestionDialog(item)"/>
-            </template>
+      <template v-slot:item.image="{ item }">
+        <v-file-input
+          show-size
+          dense
+          small-chips
+          @change="handleFileUpload($event, item)"
+          accept="image/*"
+        />
+      </template>
 
-            <template v-slot:item.topics="{ item }">
-                <edit-question-topics
-                        :question="item"
-                        :topics="topics"
-                        v-on:question-changed-topics="onQuestionChangedTopics"
-                />
-            </template>
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="showQuestionDialog(item)"
+              data-cy="show-question"
+              >visibility</v-icon
+            >
+          </template>
+          <span>Show Question</span>
+        </v-tooltip>
 
-            <template v-slot:item.status="{ item }">
-                <v-chip :color="getStatusColor(item.status)" small>
-                    <span>{{ item.status }}</span>
-                </v-chip>
-            </template>
-
-            <template v-slot:item.image="{ item }">
-                <v-file-input
-                        show-size
-                        dense
-                        small-chips
-                        @change="handleFileUpload($event, item)"
-                        accept="image/*"
-                />
-            </template>
-
-            <template v-slot:item.action="{ item }">
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                        <v-icon
-                                small
-                                class="mr-2"
-                                v-on="on"
-                                @click="showQuestionDialog(item)" data-cy="show-question"
-                        >visibility</v-icon
-                        >
-                    </template>
-                    <span>Show Question</span>
-                </v-tooltip>
-
-                <!-- <v-tooltip bottom v-if="item.numberOfAnswers === 0">
+        <!-- <v-tooltip bottom v-if="item.numberOfAnswers === 0">
                     <template v-slot:activator="{ on }">
                         <v-icon small class="mr-2" v-on="on" @click="editQuestion(item)"
                         >edit</v-icon
@@ -85,7 +84,7 @@
                     <span>Edit Question</span>
                 </v-tooltip> -->
 
-                <!-- <v-tooltip bottom>
+        <!-- <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-icon
                                 small
@@ -98,7 +97,7 @@
                     <span>Duplicate Question</span>
                 </v-tooltip> -->
 
-                <!-- <v-tooltip bottom>
+        <!-- <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-icon
                                 small
@@ -111,31 +110,28 @@
                     </template>
                     <span>Delete Question</span>
                 </v-tooltip> -->
+      </template>
+    </v-data-table>
 
-
-            </template>
-        </v-data-table>
-
-        <edit-question-dialog
-                v-if="currentQuestion"
-                v-model="editQuestionDialog"
-                :question="currentQuestion"
-                v-on:save-question="onSaveQuestion"
-        />
-        <show-question-dialog
-                v-if="currentQuestion"
-                v-model="questionDialog"
-                :question="currentQuestion"
-                v-on:close-show-question-dialog="onCloseShowQuestionDialog"
-        />
-    </v-card>
-
+    <edit-question-dialog
+      v-if="currentQuestion"
+      v-model="editQuestionDialog"
+      :question="currentQuestion"
+      v-on:save-question="onSaveQuestion"
+    />
+    <show-question-dialog
+      v-if="currentQuestion"
+      v-model="questionDialog"
+      :question="currentQuestion"
+      v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+    />
+  </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
+import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
@@ -150,7 +146,7 @@ import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue
     'edit-question-topics': EditQuestionTopics
   }
 })
-export default class StudentQuestionView extends Vue{
+export default class StudentQuestionView extends Vue {
   questions: Question[] = [];
   topics: Topic[] = [];
   currentQuestion: Question | null = null;
@@ -219,8 +215,8 @@ export default class StudentQuestionView extends Vue{
     );
   }
 
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
+  convertMarkDown(text: string, image: Image | null = null): string {
+    return convertMarkDown(text, image);
   }
 
   onQuestionChangedTopics(questionId: Number, changedTopics: Topic[]) {
@@ -320,61 +316,58 @@ export default class StudentQuestionView extends Vue{
       }
     }
   }
-
-
 }
-
 </script>
 
 <style lang="scss" scoped>
 .container {
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 10px;
-    padding-right: 10px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 10px;
+  padding-right: 10px;
 
-    h2 {
-        font-size: 26px;
-        margin: 20px 0;
-        text-align: center;
-        small {
-            font-size: 0.5em;
-        }
+  h2 {
+    font-size: 26px;
+    margin: 20px 0;
+    text-align: center;
+    small {
+      font-size: 0.5em;
+    }
+  }
+
+  ul {
+    overflow: hidden;
+    padding: 0 5px;
+
+    li {
+      border-radius: 3px;
+      padding: 15px 10px;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
     }
 
-    ul{
-        overflow: hidden;
-        padding: 0 5px;
-
-        li {
-            border-radius: 3px;
-            padding: 15px 10px;
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .list-header {
-            background-color: #1976d2;
-            color: white;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            text-align: center;
-        }
-
-        .col {
-            flex-basis: 25% !important;
-            margin: auto; /* Important */
-            text-align: center;
-        }
-
-        .list-row {
-            background-color: #ffffff;
-            box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.1);
-            display: flex;
-        }
+    .list-header {
+      background-color: #1976d2;
+      color: white;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      text-align: center;
     }
+
+    .col {
+      flex-basis: 25% !important;
+      margin: auto; /* Important */
+      text-align: center;
+    }
+
+    .list-row {
+      background-color: #ffffff;
+      box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.1);
+      display: flex;
+    }
+  }
 }
 </style>

@@ -23,18 +23,19 @@
       </template>
 
       <template v-slot:item.question="{ item }">
-        <p data-cy="showQuestion"
+        <p
+          data-cy="showQuestion"
           v-html="
-            convertMarkDownNoFigure(
-              item.questionAnswerDto.question.content,
-              null
-            )
+            convertMarkDown(item.questionAnswerDto.question.content, null)
           "
           @click="showQuestionDialog(item.questionAnswerDto.question)"
       /></template>
 
       <template v-slot:item.description="{ item }">
-        <p data-cy="showClarification" v-html="item.description" @click="showClarificationDialog(item)"
+        <p
+          data-cy="showClarification"
+          v-html="item.description"
+          @click="showClarificationDialog(item)"
       /></template>
 
       <template v-slot:item.status="{ item }">
@@ -93,7 +94,7 @@ import Question from '@/models/management/Question';
 import ShowClarificationDialog from '@/views/student/clarifications/ShowClarificationDialog.vue';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import Image from '@/models/management/Image';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
+import { convertMarkDown } from '@/services/ConvertMarkdownService';
 
 @Component({
   components: {
@@ -180,8 +181,8 @@ export default class ClarificationsView extends Vue {
     this.questionDialog = false;
   }
 
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
+  convertMarkDown(text: string, image: Image | null = null): string {
+    return convertMarkDown(text, image);
   }
 
   customFilter(value: string, search: string) {
