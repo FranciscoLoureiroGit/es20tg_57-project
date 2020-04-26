@@ -32,6 +32,7 @@ import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 import ClarificationsManagementView from '@/views/teacher/clarifications/ClarificationsManagementView.vue';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
+import ClarificationDialogue from '@/views/student/clarifications/ClarificationDialogue.vue';
 
 Vue.use(Router);
 
@@ -82,8 +83,8 @@ let router = new Router({
           name: 'submittedQuestion-management',
           component: QuestionsSubmittedView,
           meta: {
-              title: process.env.VUE_APP_NAME + '- StudentSubmittedQuestions',
-              requiredAuth: 'Teacher'
+            title: process.env.VUE_APP_NAME + '- StudentSubmittedQuestions',
+            requiredAuth: 'Teacher'
           }
         },
         {
@@ -129,29 +130,29 @@ let router = new Router({
           meta: {
             title: process.env.VUE_APP_NAME + ' - ImpExp',
             requiredAuth: 'Teacher'
-            }
-          },
+          }
+        },
         {
-            path: 'clarifications',
-            name: 'clarifications-management',
-            component: ClarificationsManagementView,
-            children: [
-              {
-                path: 'answer',
-                name: 'clarification-answer',
-                component: ClarificationAnswerView,
-                meta: {
-                  title: process.env.VUE_APP_NAME + ' - Clarification Answer',
-                  requiredAuth: 'Teacher'
-                }
-              },
-            ],
-            meta: {
-              title: process.env.VUE_APP_NAME + ' - Clarifications',
-              requiredAuth: 'Teacher'
+          path: 'clarifications',
+          name: 'clarifications-management',
+          component: ClarificationsManagementView,
+          children: [
+            {
+              path: 'answer',
+              name: 'clarification-answer',
+              component: ClarificationAnswerView,
+              meta: {
+                title: process.env.VUE_APP_NAME + ' - Clarification Answer',
+                requiredAuth: 'Teacher'
+              }
             }
+          ],
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Clarifications',
+            requiredAuth: 'Teacher'
+          }
         }
-        ]
+      ]
     },
     {
       path: '/student',
@@ -228,7 +229,18 @@ let router = new Router({
           meta: {
             title: process.env.VUE_APP_NAME + ' - Clarifications',
             requiredAuth: 'Student'
-          }
+          },
+          children: [
+            {
+              path: 'dialogue',
+              name: 'clarification-dialogue',
+              component: ClarificationDialogue,
+              meta: {
+                title: process.env.VUE_APP_NAME + ' - Clarification Dialogue',
+                requiredAuth: 'Student'
+              }
+            }
+          ]
         },
         {
           path: 'stats',

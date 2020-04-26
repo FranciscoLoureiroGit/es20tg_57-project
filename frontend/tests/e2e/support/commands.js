@@ -197,7 +197,7 @@ Cypress.Commands.add('answerClarification', (answer, variation) => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 8)
     .find('[data-cy="answerClarification"]')
     .click();
 
@@ -212,7 +212,7 @@ Cypress.Commands.add('listClarificationWithAnswer', title => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 8)
     .find('[data-cy="requestStatus"]')
     .should('contain.text', 'CLOSED');
 
@@ -295,4 +295,17 @@ Cypress.Commands.add('removeQuestionTest', title => {
     .should('have.length', 7)
     .find('[data-cy="deleteQuestionButton"]')
     .click({ force: true });
+});
+
+Cypress.Commands.add('changeClarificationPrivacy', (title, privacy) => {
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .contains('[data-cy="set-' + privacy + '"]')
+    .click({ force: true })
+    .contains('[data-cy="requestPrivacy"]')
 });

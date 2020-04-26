@@ -65,7 +65,7 @@
           <span>Show Answer</span>
         </v-tooltip>
 
-        <v-tooltip bottom v-if="getAnswer(item) == 'None'">
+        <v-tooltip bottom v-if="getAnswer(item) === 'None'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
@@ -79,29 +79,29 @@
           <span>Answer</span>
         </v-tooltip>
 
-        <v-tooltip bottom v-if="getPrivacy(item) == 'false'">
+        <v-tooltip bottom v-if="getPrivacy(item) === 'false'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
               class="mr-2"
               v-on="on"
               @click="changePrivacy(item)"
-              data-cy="setPublic"
-              >edit</v-icon
+              data-cy="set-public"
+              >mdi-lock</v-icon
             >
           </template>
           <span>Set Public</span>
         </v-tooltip>
 
-        <v-tooltip bottom v-if="getPrivacy(item) == 'true'">
+        <v-tooltip bottom v-if="getPrivacy(item) === 'true'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
               class="mr-2"
               v-on="on"
               @click="changePrivacy(item)"
-              data-cy="setPrivate"
-              >visibility</v-icon
+              data-cy="set-private"
+              >mdi-lock-open-variant</v-icon
             >
           </template>
           <span>Set Private</span>
@@ -281,15 +281,20 @@ export default class ClarificationsManagementView extends Vue {
 
   async changePrivacy(clarification: Clarification) {
     try {
-      if (clarification.public) clarification.public = false;
-      else clarification.public = true;
+      if (confirm('Are you sure you want to change the privacy?')) {
+        if (clarification.public) clarification.public = false;
+        else clarification.public = true;
 
-      let newClarification = await RemoteServices.setClarificationPrivacy(clarification);
-      let clarification_helper = this.clarifications.find(
-        clarification_helper => clarification_helper.id === newClarification.id
-      );
-      if (clarification_helper) {
-        clarification_helper.public = newClarification.public;
+        let newClarification = await RemoteServices.setClarificationPrivacy(
+          clarification
+        );
+        let clarification_helper = this.clarifications.find(
+          clarification_helper =>
+            clarification_helper.id === newClarification.id
+        );
+        if (clarification_helper) {
+          clarification_helper.public = newClarification.public;
+        }
       }
     } catch (error) {
       await this.$store.dispatch('error', error);

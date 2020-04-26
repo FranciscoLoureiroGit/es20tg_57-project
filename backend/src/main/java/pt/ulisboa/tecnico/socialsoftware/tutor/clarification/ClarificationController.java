@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -9,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.api.QuestionController;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.validation.Valid;
@@ -19,8 +16,6 @@ import java.util.List;
 
 @RestController
 public class ClarificationController {
-    private static Logger logger = LoggerFactory.getLogger(QuestionController.class);
-
     @Autowired
     private AnswerService answerService;
 
