@@ -7,7 +7,7 @@ describe('Teacher clarifications walkthrough', () => {
 
   afterEach(() => {
     cy.wait(1000)
-    cy.get('[data-cy="logoutButton"]').click()
+    cy.get('[data-cy="LogoutButton"]').click()
   })
 
   it('login answers existing clarification request', () => {

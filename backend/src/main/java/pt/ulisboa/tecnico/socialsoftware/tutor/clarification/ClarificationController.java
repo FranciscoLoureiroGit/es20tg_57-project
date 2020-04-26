@@ -19,8 +19,6 @@ import java.util.List;
 
 @RestController
 public class ClarificationController {
-    private static Logger logger = LoggerFactory.getLogger(QuestionController.class);
-
     @Autowired
     private AnswerService answerService;
 
