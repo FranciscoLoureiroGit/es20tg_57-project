@@ -11,6 +11,7 @@ export default class Clarification {
   questionAnswerDto: QuestionAnswer | null = null;
   clarificationAnswerDto: ClarificationAnswer | null = null;
   image: Image | null = null;
+  public: boolean | false = false;
 
   constructor(jsonObj?: Clarification) {
     if (jsonObj) {
@@ -19,6 +20,7 @@ export default class Clarification {
       this.description = jsonObj.description;
       this.creationDate = jsonObj.creationDate;
       this.status = jsonObj.status;
+      this.public = jsonObj.public;
 
       if(jsonObj.questionAnswerDto)
         this.questionAnswerDto = new QuestionAnswer(jsonObj.questionAnswerDto);

@@ -40,12 +40,18 @@
         </v-chip>
       </template>
 
+      <template v-slot:item.privacy="{ item }">
+        <v-chip :color="getPrivacyColor(item.public)" small>
+          <span data-cy="requestPrivacy">{{ item.public }}</span>
+        </v-chip>
+      </template>
+
       <template v-slot:item.answers="{ item }">
         <span v-html="getAnswer(item)" />
       </template>
 
       <template v-slot:item.action="{ item }">
-        <v-tooltip bottom v-if="getAnswer(item) != 'None'">
+        <v-tooltip bottom v-if="getAnswer(item) !== 'None'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
@@ -71,6 +77,34 @@
             >
           </template>
           <span>Answer</span>
+        </v-tooltip>
+
+        <v-tooltip bottom v-if="getPrivacy(item) == 'false'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="changePrivacy(item)"
+              data-cy="setPublic"
+              >edit</v-icon
+            >
+          </template>
+          <span>Set Public</span>
+        </v-tooltip>
+
+        <v-tooltip bottom v-if="getPrivacy(item) == 'true'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="changePrivacy(item)"
+              data-cy="setPrivate"
+              >visibility</v-icon
+            >
+          </template>
+          <span>Set Private</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -147,6 +181,7 @@ export default class ClarificationsManagementView extends Vue {
       align: 'left'
     },
     { text: 'Status', value: 'status', align: 'center' },
+    { text: 'Privacy', value: 'privacy', align: 'center' },
     { text: 'Teacher Response', value: 'answers', align: 'left' },
     {
       text: 'Creation Date',
@@ -166,10 +201,20 @@ export default class ClarificationsManagementView extends Vue {
     else return 'green';
   }
 
+  getPrivacyColor(isPublic: boolean) {
+    if (isPublic) return 'green';
+    else return 'red';
+  }
+
   getAnswer(clarification: Clarification) {
     if (clarification.clarificationAnswerDto)
       return clarification.clarificationAnswerDto.answer;
     else return 'None';
+  }
+
+  getPrivacy(clarification: Clarification) {
+    if (clarification.public) return 'true';
+    else return 'false';
   }
 
   async created() {
@@ -234,6 +279,22 @@ export default class ClarificationsManagementView extends Vue {
     this.closeCreateClarificationAnswerDialog();
   }
 
+  async changePrivacy(clarification: Clarification) {
+    try {
+      if (clarification.public) clarification.public = false;
+      else clarification.public = true;
+
+      let newClarification = await RemoteServices.setClarificationPrivacy(clarification);
+      let clarification_helper = this.clarifications.find(
+        clarification_helper => clarification_helper.id === newClarification.id
+      );
+      if (clarification_helper) {
+        clarification_helper.public = newClarification.public;
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+  }
   convertMarkDown(text: string, image: Image | null = null): string {
     return convertMarkDown(text, image);
   }

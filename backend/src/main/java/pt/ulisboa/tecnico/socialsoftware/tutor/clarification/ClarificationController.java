@@ -50,7 +50,7 @@ public class ClarificationController {
         return clarificationService.getClarificationsByStudent(((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @GetMapping("/question/{questionId}/clarifications/public")
+    @GetMapping("/questions/{questionId}/clarifications/public")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public List<ClarificationDto> getPublicQuestionClarifications(@PathVariable int questionId) {
         return clarificationService.getPublicQuestionClarifications(questionId);
