@@ -2,19 +2,19 @@
   <nav>
     <v-app-bar color="primary" clipped-left>
       <v-app-bar-nav-icon
-        @click.stop="drawer = !drawer"
-        class="hidden-md-and-up"
-        aria-label="Menu"
+              @click.stop="drawer = !drawer"
+              class="hidden-md-and-up"
+              aria-label="Menu"
       />
 
       <v-toolbar-title>
         <v-btn
-          dark
-          active-class="no-active"
-          text
-          tile
-          to="/"
-          v-if="currentCourse"
+                dark
+                active-class="no-active"
+                text
+                tile
+                to="/"
+                v-if="currentCourse"
         >
           {{ currentCourse.name }}
         </v-btn>
@@ -209,28 +209,65 @@
           </v-list>
         </v-menu>
 
-        <v-btn to="/student/stats" v-if="isStudent && currentCourse" text dark>
-          Stats
-          <v-icon>fas fa-user</v-icon>
-        </v-btn>
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn data-cy="userButton" v-on="on" text dark>
+              User
+              <v-icon>fas fa-user</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title > <span style="font-size: 1.5vh;">Signed in as <b>{{this.currentUsername}}</b></span> </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item to="/student/profile">
+              <v-list-item-action>
+                <v-icon>mdi-account-box</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left">Your Profile</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/student/stats">
+              <v-list-item-action>
+                <v-icon>mdi-chart-areaspline</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left">Your Stats</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/student/dashboard">
+              <v-list-item-action>
+                <v-icon>create</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left">Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
         <v-btn
-          v-if="isLoggedIn && moreThanOneCourse"
-          to="/courses"
-          active-class="no-active"
-          text
-          dark
+                v-if="isLoggedIn && moreThanOneCourse"
+                to="/courses"
+                active-class="no-active"
+                text
+                dark
         >
           Change course
           <v-icon>fa fa-book</v-icon>
         </v-btn>
 
         <v-btn
-          v-if="isLoggedIn"
-          @click="logout"
-          data-cy="LogoutButton"
-          text
-          dark
+                v-if="isLoggedIn"
+                @click="logout"
+                data-cy="LogoutButton"
+                text
+                dark
         >
           Logout
           <v-icon>fas fa-sign-out-alt</v-icon>
@@ -255,13 +292,13 @@
       <v-list class="pt-0" dense>
         <!-- Administration Group-->
         <v-list-group
-          prepend-icon="fas fa-file-alt"
-          :value="false"
-          v-if="isAdmin"
+                prepend-icon="fas fa-file-alt"
+                :value="false"
+                v-if="isAdmin"
         >
           <template v-slot:activator>
             <v-list-item-title data-cy="Administration"
-              >Administration</v-list-item-title
+            >Administration</v-list-item-title
             >
           </template>
           <v-list-item to="/admin/courses">
@@ -276,9 +313,9 @@
 
         <!-- Management Group-->
         <v-list-group
-          prepend-icon="fas fa-file-alt"
-          :value="false"
-          v-if="isTeacher && currentCourse"
+                prepend-icon="fas fa-file-alt"
+                :value="false"
+                v-if="isTeacher && currentCourse"
         >
           <template v-slot:activator>
             <v-list-item-title>Management</v-list-item-title>
@@ -343,17 +380,17 @@
 
         <!-- Student Group-->
         <v-list-group
-          prepend-icon="account_circle"
-          :value="false"
-          v-if="isStudent && currentCourse"
+                prepend-icon="account_circle"
+                :value="false"
+                v-if="isStudent && currentCourse"
         >
           <template v-slot:activator>
             <v-list-item-title>Student</v-list-item-title>
           </template>
 
           <v-list-item
-            to="/student/openTournaments"
-            v-if="isStudent && currentCourse"
+                  to="/student/openTournaments"
+                  v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>assignment</v-icon>
@@ -362,8 +399,8 @@
           </v-list-item>
 
           <v-list-item
-            to="/student/available"
-            v-if="isStudent && currentCourse"
+                  to="/student/available"
+                  v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>assignment</v-icon>
@@ -374,8 +411,8 @@
           <!-- Implementation for a student submit a question and check then STARTS HERE -->
 
           <v-list-item
-            to="/student/submitQuestion"
-            v-if="isStudent && currentCourse"
+                  to="/student/submitQuestion"
+                  v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>create</v-icon>
@@ -446,54 +483,59 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue } from 'vue-property-decorator';
 
-@Component
-export default class TopBar extends Vue {
-  fenixUrl: string = process.env.VUE_APP_FENIX_URL;
-  appName: string = process.env.VUE_APP_NAME;
-  drawer: boolean = false;
+  @Component
+  export default class TopBar extends Vue {
+    fenixUrl: string = process.env.VUE_APP_FENIX_URL;
+    appName: string = process.env.VUE_APP_NAME;
+    drawer: boolean = false;
 
-  get currentCourse() {
-    return this.$store.getters.getCurrentCourse;
+    get currentCourse() {
+      return this.$store.getters.getCurrentCourse;
+    }
+
+    get currentUsername() {
+      let nameParts = this.$store.getters.getUser.name.split(' ');
+      return nameParts[0] + ' ' + nameParts[nameParts.length-1];
+    }
+
+    get moreThanOneCourse() {
+      return (
+              this.$store.getters.getUser.coursesNumber > 1 &&
+              this.$store.getters.getCurrentCourse
+      );
+    }
+
+    get isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    }
+
+    get isTeacher() {
+      return this.$store.getters.isTeacher;
+    }
+
+    get isAdmin() {
+      return this.$store.getters.isAdmin;
+    }
+
+    get isStudent() {
+      return this.$store.getters.isStudent;
+    }
+
+    async logout() {
+      await this.$store.dispatch('logout');
+      await this.$router.push({ name: 'home' }).catch(() => {});
+    }
   }
-
-  get moreThanOneCourse() {
-    return (
-      this.$store.getters.getUser.coursesNumber > 1 &&
-      this.$store.getters.getCurrentCourse
-    );
-  }
-
-  get isLoggedIn() {
-    return this.$store.getters.isLoggedIn;
-  }
-
-  get isTeacher() {
-    return this.$store.getters.isTeacher;
-  }
-
-  get isAdmin() {
-    return this.$store.getters.isAdmin;
-  }
-
-  get isStudent() {
-    return this.$store.getters.isStudent;
-  }
-
-  async logout() {
-    await this.$store.dispatch('logout');
-    await this.$router.push({ name: 'home' }).catch(() => {});
-  }
-}
 </script>
 
 <style lang="scss" scoped>
-.no-active::before {
-  opacity: 0 !important;
-}
+  .no-active::before {
+    opacity: 0 !important;
+  }
 
-nav {
-  z-index: 300;
-}
+  nav {
+    z-index: 300;
+  }
 </style>
