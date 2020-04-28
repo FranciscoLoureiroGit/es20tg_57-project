@@ -45,6 +45,13 @@ public class QuestionsTournamentController {
         return this.questionsTournamentService.getOpenTournamentsByCourse(executionId);
     }
 
+    @PostMapping("/executions/{executionId}/questionsTournament/{questionsTournamentId}/cancelTournament")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public void cancelTournament(Principal principal, @PathVariable Integer questionsTournamentId, @PathVariable int executionId) {
+        User user = getAuthenticationUser(principal);
+        this.questionsTournamentService.cancelTournament(executionId, user.getId(), questionsTournamentId);
+    }
+
     private void formatDates(QuestionsTournamentDto tournament) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 

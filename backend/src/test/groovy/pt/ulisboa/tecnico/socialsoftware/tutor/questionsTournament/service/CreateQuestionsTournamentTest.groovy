@@ -215,7 +215,7 @@ class CreateQuestionsTournamentTest extends Specification{
         questionsTournament.getTopics().add(topic2)
 
         when:
-        def result = questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament)
+        questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament)
         then:
         def exception = thrown(TutorException)
         exception.errorMessage == QUESTIONSTOURNAMENT_NOT_CONSISTENT
