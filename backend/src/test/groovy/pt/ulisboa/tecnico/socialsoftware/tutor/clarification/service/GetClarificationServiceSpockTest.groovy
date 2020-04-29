@@ -228,7 +228,7 @@ class GetClarificationServiceSpockTest extends Specification {
         result1.studentId == student.getId()
     }
 
-    def "get all clarifications of a question answer"() {
+    def "get all clarifications of a question"() {
         given: 'a new clarification request of student 2'
         def newClarification = new Clarification()
         newClarification.setTitle(TITLE2)
@@ -241,7 +241,7 @@ class GetClarificationServiceSpockTest extends Specification {
 
 
         when:
-        def result = clarificationService.getPublicQuestionClarifications(questAnswer.getQuizQuestion().getQuestion().getId())
+        def result = clarificationService.getPublicQuestionClarifications(questAnswer.getId())
 
         then:
         result.size() == 1

@@ -47,10 +47,10 @@ public class ClarificationController {
         return clarificationService.getClarificationsByStudent(((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @GetMapping("/questions/{questionId}/clarifications/public")
+    @GetMapping("/question-answer/{questionAnswerId}/clarifications/public")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public List<ClarificationDto> getPublicQuestionClarifications(@PathVariable int questionId) {
-        return clarificationService.getPublicQuestionClarifications(questionId);
+    public List<ClarificationDto> getPublicQuestionClarifications(@PathVariable int questionAnswerId) {
+        return clarificationService.getPublicQuestionClarifications(questionAnswerId);
     }
 
     // === HTTP POST REQUESTS ===

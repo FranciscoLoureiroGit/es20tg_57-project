@@ -181,12 +181,12 @@ Cypress.Commands.add('openClarificationQuestion', title => {
 });
 
 Cypress.Commands.add('addClarificationQA', variation => {
-  cy.get('[data-cy="logoutButton"]').click();
+  cy.get('[data-cy="LogoutButton"]').click();
   cy.demoStudentLogin();
   cy.get('[data-cy="quizzesButton"]').click();
   cy.createAndAnswerQuiz();
   cy.createClarificationRequestFromQuiz('TITLE_' + String(variation), 'DESC');
-  cy.get('[data-cy="logoutButton"]').click();
+  cy.get('[data-cy="LogoutButton"]').click();
   cy.demoTeacherLogin();
 });
 

@@ -1,158 +1,186 @@
-<template v-if="clarifications">
-  <div class="container">
-    <v-toolbar tabs>
-      <v-text-field
-              v-model="search"
-              label="Search for clarifications"
-              prepend-inner-icon="search"
-              single-line
-              hide-details
-              class="mx-3"
-      />
-      <v-spacer />
-      <template v-slot:extension>
-        <v-tabs
-                centered
-                color="dark grey"
-                slider-color="dark-grey"
+<template v-if="clarification">
+  <div>
+    <div class="question-container">
+      <li style="padding: 1vh 5vh;">
+        <v-btn
+          data-cy="backButton"
+          dark
+          color="grey darken-1"
+          v-if="dialog"
+          @click="$emit('dialog')"
+          >Back</v-btn
         >
-          <v-tab v-for="text in allTabs" :key="text" @click="fetchClarifications(text)">
-            <span  >{{ text }}</span>
-          </v-tab>
-          <v-tab-item v-for="text in allTabs" :key="text" >
-            <div class="container">
-              <v-card class="table">
-                <v-data-table
-                        :headers="headers"
-                        :custom-filter="customFilter"
-                        :items="clarifications"
-                        :search="search"
-                        :mobile-breakpoint="0"
-                        :items-per-page="50"
-                        :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
-                >
-                  <template v-slot:item.title="{ item }">
-                    <p
-                            data-cy="showClarification"
-                            v-html="item.title"
-                            @click="showClarificationDialog(item)"
-                    /></template>
+        <v-btn
+                data-cy="backButton"
+                dark
+                color="grey darken-1"
+                v-if="!clarification.public"
+        >Comment</v-btn
+        >
+      </li>
+      <v-divider></v-divider>
+      <div>
+        <li class="list-row" style="padding-left: 5vh; padding-top: 2vh">
+          <span style="font-size: 4vh; color: #5b5b5b">{{
+            clarification.title
+          }}</span>
+        </li>
+        <li class="list-row" style="padding-left: 5vh; padding-bottom: 2vh">
+          <span><b>Created on</b> {{ clarification.creationDate }}</span>
+        </li>
+      </div>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <div>
+        <template>
+          <div class="container">
+            <v-card-title style="padding-left: 4vh">Question</v-card-title>
+            <li style="padding-left: 4vh; padding-bottom: 1.5vh">
+              <i>{{ clarification.questionAnswerDto.question.content }}</i>
+            </li>
+            <v-divider></v-divider>
+            <li style="padding-top: 3vh"></li>
+            <li
+              v-for="option in clarification.questionAnswerDto.question.options"
+              :key="option.number"
+              style="padding-left: 10vh"
+            >
+              <span
+                v-if="option.correct"
+                v-html="convertMarkDown('**[★]** ' + option.content)"
+                v-bind:class="[option.correct ? 'font-weight-bold' : '']"
+              />
+              <span v-else v-html="convertMarkDown(option.content)" />
+            </li>
+            <br />
+          </div>
+        </template>
+      </div>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      <div style="background-color: #d6d6d6">
+        <template>
+          <div class="container">
+            <v-card-title style="padding-left: 4vh">{{
+              clarification.title
+            }}</v-card-title>
+            <li style="padding-left: 4vh">
+              <i>{{ clarification.description }}</i>
+            </li>
+            <br />
+            <v-divider style="padding-bottom: 1vh"></v-divider>
+            <li class="list-row" style="padding-left: 4vh;font-size: 1.3vh">
+              <span></span>
+              <span><b>Status: </b> {{ clarification.status }}</span>
+            </li>
+            <li class="list-row" style="padding-left: 4vh; font-size: 1.3vh">
+              <span></span>
+              <span><b>Asked on </b> {{ clarification.creationDate }}</span>
+            </li>
+          </div>
+        </template>
+      </div>
 
-                  <template v-slot:item.status="{ item }">
-                    <h4>{{ item.status }}</h4>
-                  </template>
+      <div v-if="clarification.clarificationAnswerDto">
+        <template>
+          <div class="container">
+            <v-card-title style="padding-left: 4vh"
+              >Teacher Answer</v-card-title
+            >
+            <li style="padding-left: 4vh; padding-bottom: 1.5vh">
+              <i>{{ clarification.clarificationAnswerDto.answer }}</i>
+            </li>
+            <li
+              class="list-row"
+              style="padding-left: 3vh; padding-bottom: 2vh; font-size: 1.3vh"
+            >
+              <!-- BUTTON FOR ADDING COMMENTS (future functionality)
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-icon
+                    medium
+                    class="mr-2"
+                    v-on="on"
+                    @click="closeClarification(item)"
+                    >mdi-forum</v-icon
+                  >
+                </template>
+                <span>Add Comment</span>
+              </v-tooltip>
+              -->
+            </li>
+            <br />
+          </div>
+        </template>
+      </div>
 
-                  <template v-slot:item.action="{ item }">
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon
-                                medium
-                                class="mr-2"
-                                v-on="on"
-                                @click="openClarificationDialogue(item)"
-                        >fas fa-chevron-circle-right</v-icon
-                        >
-                      </template>
-                      <span>Open</span>
-                    </v-tooltip>
-                  </template>
-                </v-data-table>
-
-                <show-clarification-dialog
-                        v-if="currentClarification"
-                        v-model="clarificationDialog"
-                        :clarification="currentClarification"
-                        v-on:close-show-clarification-dialog="
-                    onCloseShowClarificationDialog
-                  "
-                />
-              </v-card>
-            </div>
-          </v-tab-item>
-        </v-tabs>
-      </template>
-    </v-toolbar>
+      <!-- INSERT COMMENTS PORTION HERE -->
+      <div>
+        <template> </template>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import RemoteServices from '@/services/RemoteServices';
-  import Clarification from '@/models/management/Clarification';
-  import ShowClarificationDialog from '@/views/student/clarifications/ShowClarificationDialog.vue';
-  import Image from '@/models/management/Image';
-  import { convertMarkDown } from '@/services/ConvertMarkdownService';
+import { Component, Model, Prop, Vue } from 'vue-property-decorator';
+import Clarification from '@/models/management/Clarification';
+import Image from '@/models/management/Image';
+import { convertMarkDown } from '@/services/ConvertMarkdownService';
 
-  @Component({
-    components: {
-      'show-clarification-dialog': ShowClarificationDialog
-    }
-  })
-  export default class ClarificationDialogue extends Vue {
-    clarifications: Clarification[] = [];
-    currentClarification: Clarification | null = null;
-    clarificationDialog: boolean = false;
-    allTabs: String[] = ['My Clarifications', 'Public Clarifications'];
+@Component({
+  components: {}
+})
+export default class ClarificationDialogue extends Vue {
+  @Model('dialog', Boolean) dialog!: boolean;
+  @Prop({ type: Clarification, required: true })
+  readonly clarification!: Clarification;
 
-    search: string = '';
-    headers: object = [
-      { text: 'Clarification Title', value: 'title', align: 'center' },
-      {
-        text: 'Creation Date',
-        value: 'creationDate',
-        align: 'center'
-      },
-      { text: 'Status', value: 'status', align: 'center' },
-      { text: '', value: 'action', align: 'center' }
-    ];
-
-
-    async fetchClarifications(type: String) {
-      try {
-        if (type === 'My Clarifications') {
-          this.clarifications = await RemoteServices.getStudentClarifications();
-        }
-        if (type === 'Public Clarifications') {
-          this.clarifications = await RemoteServices.getPublicClarifications();
-        }
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
-
-    async created() {
-      await this.$store.dispatch('loading');
-      try {
-        this.clarifications = await RemoteServices.getStudentClarifications();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-      await this.$store.dispatch('clearLoading');
-    }
-
-    showClarificationDialog(clarification: Clarification) {
-      this.currentClarification = clarification;
-      this.clarificationDialog = true;
-    }
-
-
-    onCloseShowClarificationDialog() {
-      this.clarificationDialog = false;
-    }
-
-    convertMarkDown(text: string, image: Image | null = null): string {
-      return convertMarkDown(text, image);
-    }
-
-    customFilter(value: string, search: string) {
-      // noinspection SuspiciousTypeOfGuard,SuspiciousTypeOfGuard
-      return (
-              search != null &&
-              typeof value === 'string' &&
-              value.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1
-      );
-    }
+  convertMarkDown(text: string, image: Image | null = null): string {
+    return convertMarkDown(text, image);
   }
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  h2 {
+    font-size: 26px;
+    margin: 20px 0;
+    text-align: center;
+    small {
+      font-size: 0.5em;
+    }
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    overflow: hidden;
+  }
+
+  ul {
+    text-align: left;
+    horiz-align: left;
+    padding-left: 7.5vh;
+  }
+
+  .col {
+    flex-basis: 25% !important;
+    margin: auto; /* Important */
+    text-align: center;
+  }
+}
+</style>
