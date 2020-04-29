@@ -14,7 +14,7 @@
                 data-cy="backButton"
                 dark
                 color="grey darken-1"
-                v-if="dialog"
+                v-if="!clarification.public"
         >Comment</v-btn
         >
       </li>
