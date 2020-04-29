@@ -77,7 +77,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
-  cy.contains('Questions Tournaments').click();
+  cy.contains('Tournaments').click();
   cy.contains('Open').click();
 });
 
@@ -163,7 +163,7 @@ Cypress.Commands.add('openClarificationDescription', title => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 4)
     .find('[data-cy="showClarification"]')
     .click();
   cy.get('[data-cy="closeButton"]').click();
@@ -174,7 +174,7 @@ Cypress.Commands.add('openClarificationQuestion', title => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 4)
     .find('[data-cy="showQuestion"]')
     .click();
   cy.get('[data-cy="closeButton"]').click();

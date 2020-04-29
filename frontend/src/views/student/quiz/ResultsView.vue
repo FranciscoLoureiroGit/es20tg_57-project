@@ -54,7 +54,7 @@
             >I have a doubt <v-icon>mdi-comment-question</v-icon>
           </v-btn>
           <v-btn
-            data-cy="createClarificationButton"
+            data-cy="questionClarificationsButton"
             color="primary"
             dark
             @click="showQuestionClarifications"

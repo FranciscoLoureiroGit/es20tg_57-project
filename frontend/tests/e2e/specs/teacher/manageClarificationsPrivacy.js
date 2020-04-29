@@ -22,6 +22,13 @@ describe('Teacher clarifications walkthrough', () => {
     cy.changeClarificationPrivacy('TITLE_' + String(variation), 'private')
   })
 
+  it('user checks for all public clarifications', () => {
+    cy.changeClarificationPrivacy('TITLE_' + String(variation), 'private')
+  })
+
+  it('user checks for a specific question public clarifications', () => {
+    cy.changeClarificationPrivacy('TITLE_' + String(variation), 'private')
+  })
 
 
 

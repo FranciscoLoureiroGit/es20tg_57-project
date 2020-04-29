@@ -122,8 +122,8 @@
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark>
-              Questions Tournaments
-              <v-icon>fas fa-file-alt</v-icon>
+              Tournaments
+              <v-icon>mdi-podium-gold</v-icon>
             </v-btn>
           </template>
           <v-list dense>
@@ -140,15 +140,15 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark data-cy="questions">
+            <v-btn data-cy="questions" v-on="on" text dark>
               Questions
-              <v-icon>fas fa-file-alt</v-icon>
+              <v-icon>mdi-head-question</v-icon>
             </v-btn>
           </template>
           <v-list dense>
             <v-list-item to="/student/submitQuestion">
               <v-list-item-action>
-                <v-icon>create</v-icon>
+                <v-icon>assignment</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title data-cy="my-questions-button">My Questions</v-list-item-title>
@@ -220,34 +220,42 @@
 
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title > <span style="font-size: 1.5vh;">Signed in as <b>{{this.currentUsername}}</b></span> </v-list-item-title>
+                <v-list-item-title> <span style="font-size: 1.2vh;">Signed in as <b>{{this.currentUsername}}</b></span> </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
-            <v-list-item to="/student/profile">
-              <v-list-item-action>
+          <!--  <v-list-item to="/student/profile">
+              <v-list-item-action data-cy="userProfile">
                 <v-icon>mdi-account-box</v-icon>
-              </v-list-item-action>
+              </v-list-item-action >
               <v-list-item-content>
-                <v-list-item-title align="left">Your Profile</v-list-item-title>
+                <v-list-item-title align="left" >Your Profile</v-list-item-title>
               </v-list-item-content>
-            </v-list-item>
+            </v-list-item>  -->
             <v-list-item to="/student/stats">
-              <v-list-item-action>
+              <v-list-item-action data-cy="userStats">
                 <v-icon>mdi-chart-areaspline</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title align="left">Your Stats</v-list-item-title>
+                <v-list-item-title align="left" >Your Stats</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/student/dashboard">
-              <v-list-item-action>
+          <!--  <v-list-item to="/student/dashboard">
+              <v-list-item-action data-cy="userDashboard">
                 <v-icon>create</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title align="left">Dashboard</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/dashboard">
+              <v-list-item-action data-cy="userFeeedback">
+                <v-icon>mdi-message-alert</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left">Feedback</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item> -->
           </v-list>
         </v-menu>
 
@@ -273,7 +281,7 @@
           <v-icon>fas fa-sign-out-alt</v-icon>
         </v-btn>
 
-        <v-btn v-else :href="fenixUrl" text dark>
+        <v-btn v-if="!isLoggedIn" :href="fenixUrl" text dark>
           Login <v-icon>fas fa-sign-in-alt</v-icon>
         </v-btn>
       </v-toolbar-items>
