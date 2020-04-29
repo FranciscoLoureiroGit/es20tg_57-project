@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -9,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.api.QuestionController;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.validation.Valid;
@@ -50,10 +47,10 @@ public class ClarificationController {
         return clarificationService.getClarificationsByStudent(((User)((Authentication) principal).getPrincipal()).getId());
     }
 
-    @GetMapping("/questions/{questionId}/clarifications/public")
+    @GetMapping("/question-answer/{questionAnswerId}/clarifications/public")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public List<ClarificationDto> getPublicQuestionClarifications(@PathVariable int questionId) {
-        return clarificationService.getPublicQuestionClarifications(questionId);
+    public List<ClarificationDto> getPublicQuestionClarifications(@PathVariable int questionAnswerId) {
+        return clarificationService.getPublicQuestionClarifications(questionAnswerId);
     }
 
     // === HTTP POST REQUESTS ===

@@ -225,9 +225,9 @@ export default class RemoteServices {
       });
   }
 
-  static async getPublicQuestionClarifications(questionId: number): Promise<Clarification[]> {
+  static async getPublicQuestionClarifications(questionAnswerId: number): Promise<Clarification[]> {
     return httpClient
-      .get(`/questions/${questionId}/clarifications/public`)
+      .get(`/question-answer/${questionAnswerId}/clarifications/public`)
       .then(response => {
         return response.data.map((clarification: any) => {
           return new Clarification(clarification);

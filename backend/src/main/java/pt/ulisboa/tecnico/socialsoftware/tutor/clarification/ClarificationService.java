@@ -85,8 +85,11 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getPublicQuestionClarifications(int questionId) {
-        return clarificationRepository.findByQuestion(questionId).stream().map(ClarificationDto::new)
+    public List<ClarificationDto> getPublicQuestionClarifications(int questionAnswerId) {
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() ->
+                new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
+        return clarificationRepository.findByQuestion(questionAnswer.getQuizQuestion().getQuestion().getId())
+                .stream().map(ClarificationDto::new)
                 .sorted(Comparator.comparing(ClarificationDto::getTitle))
                 .collect(Collectors.toList());
     }
