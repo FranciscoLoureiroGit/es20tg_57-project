@@ -95,23 +95,15 @@ Cypress.Commands.add(
   'createQuestionsTournament',
   (numberOfQuestions, topicId) => {
     cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
-    cy.contains('*Ending Date')
-      .parent()
-      .find('input')
-      .click();
-    cy.contains('30').click();
-    cy.contains('OK').click();
-    cy.clearLocalStorage();
-    cy.contains('*Starting Date')
-      .parent()
-      .find('input')
-      .click();
-    cy.get('.v-dialog__content--active')
-      .contains('.v-btn__content', '25')
-      .click();
-    cy.get('.v-dialog__content--active')
-      .contains('OK')
-      .click();
+    cy.get('[data-cy=startingDate]').click()
+    cy.contains('30').click()
+    cy.get(
+      '#startingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
+    cy.get('[data-cy=endingDate]').click()
+    cy.get(
+      '#undefined-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .now > .datepicker-button-content'
+    ).click();
     cy.contains(topicId)
       .parent()
       .should('have.length', 1)

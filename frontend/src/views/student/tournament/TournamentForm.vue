@@ -24,31 +24,27 @@
         label="*Number of questions"
         data-cy="numberOfQuestions"
       />
-      <v-row>
-        <v-col cols="12" sm="6">
-          <v-datetime-picker
-            label="*Starting Date"
-            format="yyyy-MM-dd HH:mm"
-            v-model="questionsTournament.startingDate"
-            date-format="yyyy-MM-dd"
-            time-format="HH:mm"
-            data-cy="startingDate"
-            >startingDate
-          </v-datetime-picker>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="12" sm="6">
-          <v-datetime-picker
-            label="*Ending Date"
-            format="yyyy-MM-dd HH:mm"
-            v-model="questionsTournament.endingDate"
-            date-format="yyyy-MM-dd"
-            time-format="HH:mm"
-            data-cy="endingDate"
-            >endingDate
-          </v-datetime-picker>
-        </v-col>
-      </v-row>
+      <v-container fluid>
+        <v-row>
+          <v-col>
+            <VueCtkDateTimePicker
+              label="*Starting Date"
+              id="startingDateInput"
+              format="YYYY-MM-DD hh:mm"
+              v-model="questionsTournament.startingDate"
+              data-cy="startingDate"
+            ></VueCtkDateTimePicker>
+          </v-col>
+          <v-col>
+            <VueCtkDateTimePicker
+              label="*Ending Date"
+              format="YYYY-MM-DD hh:mm"
+              v-model="questionsTournament.endingDate"
+              data-cy="endingDate"
+            ></VueCtkDateTimePicker>
+          </v-col>
+        </v-row>
+      </v-container>
 
       <v-data-table
         :headers="headers"
@@ -178,6 +174,10 @@ import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import Topic from '@/models/management/Topic';
 import ShowTournamentDialog from './ShowTournamentDialog.vue';
 import ShowTopicDialog from '../topics/ShowTopicDialog.vue';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+
+Vue.component('VueCtkDateTimePicker', VueCtkDateTimePicker);
 
 @Component({
   components: {
