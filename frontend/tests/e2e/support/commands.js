@@ -96,14 +96,17 @@ Cypress.Commands.add(
   (numberOfQuestions, topicId) => {
     cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
     cy.get('[data-cy=startingDate]').click()
-    cy.contains('30').click()
+    cy.contains('10').click()
     cy.get(
       '#startingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
     ).click()
     cy.get('[data-cy=endingDate]').click()
     cy.get(
-      '#undefined-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .now > .datepicker-button-content'
-    ).click();
+      '#endingDateInput-picker-container-DatePicker > .calendar > .month-container > :nth-child(1) > .datepicker-days > :nth-child(34) > .datepicker-day-text'
+    ).click()
+    cy.get(
+      '#endingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
     cy.contains(topicId)
       .parent()
       .should('have.length', 1)
@@ -112,6 +115,7 @@ Cypress.Commands.add(
       .find('[data-cy="addTopic"]')
       .click();
     cy.contains('Show Tournament').click();
+    cy.contains('close').click();
     cy.get('[data-cy="saveButton"]').click({ force: true });
   }
 );

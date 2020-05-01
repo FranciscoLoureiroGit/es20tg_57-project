@@ -30,7 +30,7 @@
             <VueCtkDateTimePicker
               label="*Starting Date"
               id="startingDateInput"
-              format="YYYY-MM-DD hh:mm"
+              format="YYYY-MM-DDTHH:mm:ssZ"
               v-model="questionsTournament.startingDate"
               data-cy="startingDate"
             ></VueCtkDateTimePicker>
@@ -38,7 +38,8 @@
           <v-col>
             <VueCtkDateTimePicker
               label="*Ending Date"
-              format="YYYY-MM-DD hh:mm"
+              id="endingDateInput"
+              format="YYYY-MM-DDTHH:mm:ssZ"
               v-model="questionsTournament.endingDate"
               data-cy="endingDate"
             ></VueCtkDateTimePicker>
