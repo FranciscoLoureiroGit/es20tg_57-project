@@ -17,4 +17,9 @@ describe('Tournament walkthrough', () => {
     cy.goToOpenQuestionsTournaments();
     cy.registerStudentInTournament('1');
   });
+
+  it('cancels a tournament', () => {
+    cy.goToOpenQuestionsTournaments();
+    cy.cancelTournament();
+  })
 });

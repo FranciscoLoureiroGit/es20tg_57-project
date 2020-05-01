@@ -120,6 +120,11 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add('cancelTournament', () => {
+  cy.get(':nth-child(1) > :nth-child(9) > [data-cy=cancelTournament]')
+    .click();
+});
+
 Cypress.Commands.add('createAndAnswerQuiz', () => {
   cy.contains('Create').click();
   cy.get('[data-cy="createButton"]').click();

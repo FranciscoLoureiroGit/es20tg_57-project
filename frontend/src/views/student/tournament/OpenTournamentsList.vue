@@ -25,7 +25,7 @@
       </template>
 
       <template v-slot:item.topics="{ item }">
-        <span> {{getTournamentTopics(item)}} </span>
+        <span> {{ getTournamentTopics(item) }} </span>
       </template>
 
       <template v-slot:item.numberOfRegistrations="{ item }">
@@ -50,6 +50,20 @@
             >
           </template>
           <span>Register Student</span>
+        </v-tooltip>
+        <v-tooltip bottom v-if="isTournamentCreator(item)">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="cancelTournament(item)"
+              color="red"
+              data-cy="cancelTournament"
+              >remove</v-icon
+            >
+          </template>
+          <span>Cancel tournament</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -113,7 +127,24 @@ export default class OpenTournamentsList extends Vue {
         let registration: QuestionsTournamentRegistration = await RemoteServices.registerStudentInTournament(
           questionsTournament.id
         );
-        questionsTournament.studentTournamentRegistrations.unshift(registration);
+        questionsTournament.studentTournamentRegistrations.unshift(
+          registration
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
+  async cancelTournament(questionsTournament: QuestionsTournament) {
+    await this.$store.dispatch('loading');
+    if (
+      questionsTournament.id &&
+      confirm('Are you sure you want to cancel this tournament?')
+    ) {
+      try {
+        await RemoteServices.cancelTournament(questionsTournament.id);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -131,6 +162,14 @@ export default class OpenTournamentsList extends Vue {
     return false;
   }
 
+  isTournamentCreator(questionsTournament: QuestionsTournament): boolean {
+    let username = this.$store.getters.getUser.username;
+    if (questionsTournament.studentTournamentCreator.username == username) {
+      return true;
+    }
+    return false;
+  }
+
   getRegisteredIcon(questionsTournament: QuestionsTournament): string {
     if (this.isStudentRegistered(questionsTournament))
       return 'mdi-checkbox-marked-circle';
@@ -138,7 +177,9 @@ export default class OpenTournamentsList extends Vue {
   }
 
   getTournamentTopics(questionsTournament: QuestionsTournament): string {
-    let topics = questionsTournament.topics.map((topic: Topic) => topic.name).sort();
+    let topics = questionsTournament.topics
+      .map((topic: Topic) => topic.name)
+      .sort();
     return topics.join(', ');
   }
 }
