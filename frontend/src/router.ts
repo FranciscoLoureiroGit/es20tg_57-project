@@ -78,12 +78,13 @@ let router = new Router({
           }
         },
         {
+          // submitted-questions (no camelCase)
           path: 'submittedQuestions',
           name: 'submittedQuestion-management',
           component: QuestionsSubmittedView,
           meta: {
-              title: process.env.VUE_APP_NAME + '- StudentSubmittedQuestions',
-              requiredAuth: 'Teacher'
+            title: process.env.VUE_APP_NAME + '- StudentSubmittedQuestions',
+            requiredAuth: 'Teacher'
           }
         },
         {
@@ -129,29 +130,29 @@ let router = new Router({
           meta: {
             title: process.env.VUE_APP_NAME + ' - ImpExp',
             requiredAuth: 'Teacher'
-            }
-          },
+          }
+        },
         {
-            path: 'clarifications',
-            name: 'clarifications-management',
-            component: ClarificationsManagementView,
-            children: [
-              {
-                path: 'answer',
-                name: 'clarification-answer',
-                component: ClarificationAnswerView,
-                meta: {
-                  title: process.env.VUE_APP_NAME + ' - Clarification Answer',
-                  requiredAuth: 'Teacher'
-                }
-              },
-            ],
-            meta: {
-              title: process.env.VUE_APP_NAME + ' - Clarifications',
-              requiredAuth: 'Teacher'
+          path: 'clarifications',
+          name: 'clarifications-management',
+          component: ClarificationsManagementView,
+          children: [
+            {
+              path: 'answer',
+              name: 'clarification-answer',
+              component: ClarificationAnswerView,
+              meta: {
+                title: process.env.VUE_APP_NAME + ' - Clarification Answer',
+                requiredAuth: 'Teacher'
+              }
             }
+          ],
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Clarifications',
+            requiredAuth: 'Teacher'
+          }
         }
-        ]
+      ]
     },
     {
       path: '/student',
@@ -159,6 +160,7 @@ let router = new Router({
       component: StudentView,
       children: [
         {
+          // why isn't the path also open-tournaments? (you shouldn't use camelCase)
           path: 'openTournaments',
           name: 'open-tournaments',
           component: OpenTournamentsView,
@@ -167,6 +169,7 @@ let router = new Router({
             requiredAuth: 'Student'
           }
         },
+        // submit-question
         {
           path: 'submitQuestion',
           name: 'submit-question',

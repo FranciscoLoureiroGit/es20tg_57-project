@@ -66,6 +66,7 @@
                 <v-icon>question_answer</v-icon>
               </v-list-item-action>
               <v-list-item-content>
+<!-- camelCase in a menu? this should be legible (aka for normal people, not programmers), why not simply 'Student Questions'? -->
                 <v-list-item-title>StudentSubmittedQuestions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>

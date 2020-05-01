@@ -228,6 +228,10 @@
       try {
         if (this.clarificationAnswer) {
           this.clarificationAnswer = await RemoteServices.createClarificationAnswer(this.currentClarification!.questionAnswerDto!.id ,this.clarificationAnswer);
+          // the teacher clarification does not appear if I don't refresh
+          // the lines below achieve this
+          this.currentClarification!.clarificationAnswerDto = this.clarificationAnswer;
+          this.currentClarification!.status = 'CLOSED';
         }
       } catch (error) {
         await this.$store.dispatch('error', error);

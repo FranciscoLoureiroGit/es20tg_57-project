@@ -71,6 +71,7 @@
           <span>Show Question</span>
         </v-tooltip>
         <!--NEW button to change Status and Justification-->
+<!--          change status and justification has the same icon as edit? how is the teacher supposed to distinguish them?-->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
@@ -94,6 +95,8 @@
           <span>Edit Question</span>
         </v-tooltip>
         <v-tooltip bottom>
+<!--            this doesn't even work, why is it here?
+ duplication? does it make sense for the teacher to duplicate a suggestions? this was simply copy-paste-->
           <template v-slot:activator="{ on }">
             <v-icon
               small

@@ -108,6 +108,8 @@ export default class RemoteServices {
       });
   }
 
+  // this is a terrible name, compare with the rest of the code
+  // you should have filtered the questions in the normal get, why change the name?
   static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<Question[]> {
     return httpClient
       .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`)
@@ -529,6 +531,8 @@ export default class RemoteServices {
     tournament: QuestionsTournament
   ): Promise<QuestionsTournament> {
     if (tournament.id) {
+      // what is this? Is this some sort of edit Tournament? The endpoint does not exist
+      // to do this correctly it should be another method (like a editTournament, not an if/else)
       return httpClient
         .put(`/tournaments/${tournament.id}`, tournament)
         .then(response => {
