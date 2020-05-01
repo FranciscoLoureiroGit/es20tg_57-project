@@ -98,7 +98,7 @@ class CancelTournamentTest extends Specification{
 
     def "student who created tournament deletes it"(){
         when:
-        questionsTournamentService.cancelTournament(courseExecution.getId(),user.getId(),tournament.getId());
+        questionsTournamentService.cancelTournament(user.getId(),tournament.getId());
 
         then: "tournament is deleted"
         def result = tournamentRepository.findByTournamentId(tournament.getId())
@@ -113,7 +113,7 @@ class CancelTournamentTest extends Specification{
         courseExecution.getUsers().add(user)
         userRepository.save(user)
         when:
-        questionsTournamentService.cancelTournament(courseExecution.getId(),user.getId(),tournament.getId());
+        questionsTournamentService.cancelTournament(user.getId(),tournament.getId());
 
         then: "tournament is deleted"
         def exception = thrown(TutorException)

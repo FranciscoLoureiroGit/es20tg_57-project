@@ -180,7 +180,7 @@ public class QuestionsTournament {
         if (startingDate == null) {
             throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT, "Starting date");
         }
-        if (this.startingDate != null && this.endingDate != null && startingDate.isBefore(startingDate)) {
+        if (this.startingDate != null && this.endingDate != null && this.endingDate.isBefore(startingDate)) {
             throw new TutorException(QUESTIONSTOURNAMENT_NOT_CONSISTENT, "Starting date");
         }
     }

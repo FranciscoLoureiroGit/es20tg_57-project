@@ -106,10 +106,10 @@ public class QuestionsTournamentService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void cancelTournament(int executionId, int userId, Integer tournamentId){
-        CourseExecution courseExecution = getCourseExecution(executionId);
+    public void cancelTournament(int userId, Integer tournamentId){
         User user = getUserFromRepository(userId);
         QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
+        CourseExecution courseExecution = tournament.getCourseExecution();
 
         if(!userIsNotTheCreator(user,tournament)){
             tournamentRepository.deleteById(tournamentId);

@@ -201,8 +201,8 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;startingDate&quot;: &quot;2020-03-03 14:30&quot;,&#xd;
-	&quot;endingDate&quot;: &quot;2020-05-03 14:30&quot;,&#xd;
+	&quot;startingDate&quot;: &quot;2020-05-10T14:29:00Z&quot;,&#xd;
+	&quot;endingDate&quot;: &quot;2020-08-10T14:29:00Z&quot;,&#xd;
 	&quot;numberOfQuestions&quot;: &quot;10&quot;,&#xd;
 	&quot;topics&quot;:[&#xd;
 		{&#xd;
@@ -268,7 +268,7 @@
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/executions/${executionId}/questionsTournament/${tournamentId}/cancelTournament</stringProp>
+            <stringProp name="HTTPSampler.path">/questionsTournament/${tournamentId}/cancelTournament</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
