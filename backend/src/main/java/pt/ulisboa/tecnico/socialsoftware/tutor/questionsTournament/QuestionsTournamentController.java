@@ -10,8 +10,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.StudentTo
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
@@ -27,8 +25,6 @@ public class QuestionsTournamentController {
     @PreAuthorize("hasRole('ROLE_DEMO_ADMIN') or (hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS'))")
     public QuestionsTournamentDto createQuestionsTournament(Principal principal, @PathVariable int executionId, @Valid @RequestBody QuestionsTournamentDto questionsTournament) {
         User user = getAuthenticationUser(principal);
-
-        formatDates(questionsTournament);
         return this.questionsTournamentService.createQuestionsTournament(executionId,user.getId(), questionsTournament);
     }
 
@@ -50,16 +46,6 @@ public class QuestionsTournamentController {
     public void cancelTournament(Principal principal, @PathVariable Integer questionsTournamentId, @PathVariable int executionId) {
         User user = getAuthenticationUser(principal);
         this.questionsTournamentService.cancelTournament(executionId, user.getId(), questionsTournamentId);
-    }
-
-    private void formatDates(QuestionsTournamentDto tournament) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        if (tournament.getStartingDate() != null && !tournament.getStartingDate().matches("(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2})")){
-            tournament.setStartingDate(LocalDateTime.parse(tournament.getStartingDate().replaceAll(".$", ""), DateTimeFormatter.ISO_DATE_TIME).format(formatter));
-        }
-        if (tournament.getEndingDate() !=null && !tournament.getEndingDate().matches("(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2})"))
-            tournament.setEndingDate(LocalDateTime.parse(tournament.getEndingDate().replaceAll(".$", ""), DateTimeFormatter.ISO_DATE_TIME).format(formatter));
     }
 
     private User getAuthenticationUser(Principal principal) {
