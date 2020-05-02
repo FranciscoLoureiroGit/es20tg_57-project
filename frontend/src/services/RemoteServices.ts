@@ -704,6 +704,21 @@ export default class RemoteServices {
       });
   }
 
+  static async getRegisteredTournaments(): Promise<QuestionsTournament[]> {
+    return httpClient
+      .get(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/questionsTournament/registered`
+      )
+      .then(response => {
+        return response.data.map((tournament: any) => {
+          return new QuestionsTournament(tournament);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async registerStudentInTournament(
     questionsTournamentId: number
   ): Promise<QuestionsTournamentRegistration> {
