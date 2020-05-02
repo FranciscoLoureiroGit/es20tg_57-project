@@ -168,6 +168,13 @@ public class QuestionController {
         //ResponseEntity.ok().build();
     }
 
+    @PostMapping("/questions/{questionId}/approve-question")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public QuestionDto approveQuestion(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
+
+        return questionService.questionSetApproved(questionId);
+    }
+
     @PutMapping("/questions/{questionId}/image")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public String uploadImage(@PathVariable Integer questionId, @RequestParam("file") MultipartFile file) throws IOException {

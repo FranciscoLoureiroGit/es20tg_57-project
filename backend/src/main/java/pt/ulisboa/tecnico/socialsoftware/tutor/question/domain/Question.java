@@ -78,6 +78,7 @@ public class Question implements DomainEntity {
     @Column(name = "role_author")
     private String roleAuthor="";
 
+    @Column(name = "approved")
     private boolean approved = false;
 
     public Question() {

@@ -125,7 +125,7 @@ public class QuestionService {
                 output.add(question);
             else if(question.getRoleAuthor().equals(User.Role.TEACHER.name()))
                 output.add(question);
-            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()) && question.getStatus().equals(Question.Status.AVAILABLE.name()))
+            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()) && question.getStatus().equals(Question.Status.AVAILABLE.name()) && question.getApproved())
                 output.add(question);
         }
 
