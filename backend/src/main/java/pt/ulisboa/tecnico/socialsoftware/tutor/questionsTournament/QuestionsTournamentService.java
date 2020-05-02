@@ -5,6 +5,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
@@ -32,6 +33,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionsTournamentService {
@@ -126,6 +128,14 @@ public class QuestionsTournamentService {
     public List<QuestionsTournamentDto> getOpenTournamentsByCourse(int executionId){
         CourseExecution courseExecution = getCourseExecution(executionId);
         return courseExecution.getOpenQuestionsTournamentsDto();
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<QuestionsTournamentDto> getRegisteredTournaments(int executionId, int userId){
+        return tournamentRepository.getRegisteredTournaments(executionId, userId).stream().map(QuestionsTournamentDto::new).collect(Collectors.toList());
     }
 
     private void addTopics(QuestionsTournamentDto questionsTournamentDto, QuestionsTournament questionsTournament) {
