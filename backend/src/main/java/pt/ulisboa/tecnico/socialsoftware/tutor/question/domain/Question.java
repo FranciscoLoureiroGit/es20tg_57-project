@@ -78,6 +78,8 @@ public class Question implements DomainEntity {
     @Column(name = "role_author")
     private String roleAuthor="";
 
+    private boolean approved = false;
+
     public Question() {
     }
 
@@ -262,6 +264,14 @@ public class Question implements DomainEntity {
     public void setUser(User user) { this.user = user; }
 
     public User getUser() { return this.user; }
+
+    public boolean getApproved(){
+        return this.approved;
+    }
+
+    public void setApproved(){
+        this.approved=true;
+    }
 
     @Override
     public String toString() {

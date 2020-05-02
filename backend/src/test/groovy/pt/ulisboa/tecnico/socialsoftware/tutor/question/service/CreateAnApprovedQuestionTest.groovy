@@ -176,6 +176,7 @@ class CreateAnApprovedQuestionTest extends Specification{
 
         and: "change the question state"
         questionService.questionChangeStatus(result.getId(), Question.Status.AVAILABLE, JUSTIFICATION)
+        questionService.questionSetApproved(result.getId())
         and: "check if question is in a list with all available questions"
         def questionsAvailable = questionService.findAvailableQuestions(course.getId())
         def q2 = null
@@ -188,6 +189,7 @@ class CreateAnApprovedQuestionTest extends Specification{
         q2.getTitle() == QUESTION_TITLE
         q2.getStatus() == Question.Status.AVAILABLE.name()
         q2.getJustification() == JUSTIFICATION
+        q2.getApproved() == true
     }
 
     @TestConfiguration
