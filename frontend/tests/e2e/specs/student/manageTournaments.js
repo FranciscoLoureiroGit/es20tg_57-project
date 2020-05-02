@@ -18,8 +18,13 @@ describe('Tournament walkthrough', () => {
     cy.registerStudentInTournament('1');
   });
 
+  it('login goes to registered tournaments', () => {
+    cy.goToRegisteredQuestionsTournaments();
+    cy.goToOpenQuestionsTournaments();
+  });
+
   it('cancels a tournament', () => {
     cy.goToOpenQuestionsTournaments();
     cy.cancelTournament();
-  })
+  });
 });

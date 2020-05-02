@@ -81,6 +81,12 @@ Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
   cy.contains('Open').click();
 });
 
+Cypress.Commands.add('goToRegisteredQuestionsTournaments', () => {
+  cy.contains('Questions Tournaments').click();
+  cy.contains('Registered').click();
+  cy.get('.list-row > :nth-child(5)').should('contain.text', 'Case Studies');
+});
+
 Cypress.Commands.add('registerStudentInTournament', tournamentId => {
   cy.get('tbody')
     .contains(tournamentId)
