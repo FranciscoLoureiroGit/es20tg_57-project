@@ -82,8 +82,8 @@ let router = new Router({
           name: 'submittedQuestion-management',
           component: QuestionsSubmittedView,
           meta: {
-              title: process.env.VUE_APP_NAME + '- StudentSubmittedQuestions',
-              requiredAuth: 'Teacher'
+            title: process.env.VUE_APP_NAME + '- StudentSubmittedQuestions',
+            requiredAuth: 'Teacher'
           }
         },
         {

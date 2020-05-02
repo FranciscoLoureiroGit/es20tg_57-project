@@ -99,19 +99,6 @@
               small
               class="mr-2"
               v-on="on"
-              @click="duplicateQuestion(item)"
-              data-cy="duplicateQuestionButton"
-              >cached</v-icon
-            >
-          </template>
-          <span>Duplicate Question</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              small
-              class="mr-2"
-              v-on="on"
               @click="deleteQuestion(item)"
               data-cy="deleteQuestionButton"
               color="red"
@@ -289,12 +276,6 @@ export default class QuestionsSubmittedView extends Vue {
 
   editQuestion(question: Question) {
     this.currentQuestion = question;
-    this.editQuestionDialog = true;
-  }
-
-  duplicateQuestion(question: Question) {
-    this.currentQuestion = new Question(question);
-    this.currentQuestion.id = null;
     this.editQuestionDialog = true;
   }
 

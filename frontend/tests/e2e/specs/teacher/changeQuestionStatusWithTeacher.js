@@ -13,7 +13,7 @@ describe('Administration walkthrough', () => {
   beforeEach(() => {
     cy.demoTeacherLogin()
     cy.contains('Management').click()
-    cy.contains('StudentSubmittedQuestions').click()
+    cy.contains('Student Questions').click()
   })
 
   afterEach(() => {
