@@ -41,6 +41,12 @@ public class QuestionsTournamentController {
         return this.questionsTournamentService.getOpenTournamentsByCourse(executionId);
     }
 
+    @GetMapping("/executions/{executionId}/questionsTournament/registered")
+    @PreAuthorize("(hasRole('ROLE_STUDENT')) and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public List<QuestionsTournamentDto> getRegisteredTournaments(Principal principal, @PathVariable int executionId) {
+        User user = getAuthenticationUser(principal);
+        return this.questionsTournamentService.getRegisteredTournaments(executionId, user.getId());
+    }
     @PostMapping("/questionsTournament/{questionsTournamentId}/cancelTournament")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS')")
     public void cancelTournament(Principal principal, @PathVariable Integer questionsTournamentId) {
