@@ -10,6 +10,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -57,6 +60,9 @@ public class Clarification {
     private User user;
 
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clarification", fetch = FetchType.EAGER, orphanRemoval=true)
+    private List<ExtraClarification> extraClarificationList = new ArrayList<>();
+
     public Clarification() {}
 
     public Clarification(ClarificationDto clarificationDto) {
@@ -84,6 +90,12 @@ public class Clarification {
 
         if(clarificationDto.getClarificationAnswerDto() != null) {
             this.clarificationAnswer = new ClarificationAnswer(clarificationDto.getClarificationAnswerDto());
+        }
+
+        if(clarificationDto.getExtraClarificationDtos() != null && clarificationDto.getExtraClarificationDtos().size() != 0) {
+            this.extraClarificationList = clarificationDto.getExtraClarificationDtos().stream()
+                    .map(extraClarificationDto -> new ExtraClarification(extraClarificationDto))
+                    .collect(Collectors.toList());
         }
     }
 
@@ -148,6 +160,18 @@ public class Clarification {
     public LocalDateTime getCreationDate() { return creationDate; }
 
     public void setCreationDate(LocalDateTime creationDate1) { this.creationDate = creationDate1; }
+
+    public List<ExtraClarification> getExtraClarificationList() {
+        return extraClarificationList;
+    }
+
+    public void setExtraClarificationList(List<ExtraClarification> extraClarificationList) {
+        this.extraClarificationList = extraClarificationList;
+    }
+
+    public void addExtraClarification(ExtraClarification extraClarification){
+        this.extraClarificationList.add(extraClarification);
+    }
 
     @Override
     public String toString() {

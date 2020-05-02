@@ -8,6 +8,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ImageDto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClarificationDto implements Serializable {
     private Integer id;
@@ -20,6 +23,10 @@ public class ClarificationDto implements Serializable {
     private String status;
     private Boolean isPublic = false;
     private ClarificationAnswerDto clarificationAnswerDto;
+
+
+
+    private List<ExtraClarificationDto> extraClarificationDtos = new ArrayList<>();
 
     public ClarificationDto() {}
 
@@ -42,6 +49,13 @@ public class ClarificationDto implements Serializable {
             this.clarificationAnswerDto = new ClarificationAnswerDto(clarification.getClarificationAnswer());
         if (clarification.getQuestionAnswer() != null)
             this.questionAnswerDto = new QuestionAnswerDto(clarification.getQuestionAnswer());
+
+        this.extraClarificationDtos = clarification.getExtraClarificationList().stream()
+                .map(extraClarification -> {
+                    ExtraClarificationDto e = new ExtraClarificationDto(extraClarification);
+                    return e;
+                })
+                .collect(Collectors.toList());
     }
 
 
@@ -96,6 +110,8 @@ public class ClarificationDto implements Serializable {
     public QuestionAnswerDto getQuestionAnswerDto() { return questionAnswerDto; }
 
     public void setQuestionAnswerDto(QuestionAnswerDto questionAnswerDto) {this.questionAnswerDto = questionAnswerDto; }
+
+    public List<ExtraClarificationDto> getExtraClarificationDtos() { return extraClarificationDtos; }
 
     @Override
     public String toString() {

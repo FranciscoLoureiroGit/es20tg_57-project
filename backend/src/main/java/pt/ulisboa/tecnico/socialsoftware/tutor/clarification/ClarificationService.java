@@ -9,8 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ExtraClarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ExtraClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ExtraClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.TutorPermissionEvaluator;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
@@ -35,6 +39,9 @@ public class ClarificationService {
 
     @Autowired
     private ClarificationRepository clarificationRepository;
+
+    @Autowired
+    private ExtraClarificationRepository extraClarificationRepository;
 
     // ---- GET Services ----
 
@@ -127,6 +134,41 @@ public class ClarificationService {
             return new ClarificationDto(clarification);
         }
         throw new TutorException(CLARIFICATION_MISSING_DATA);
+    }
+
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation =  Isolation.REPEATABLE_READ)
+    public ExtraClarificationDto createExtraClarification(ExtraClarificationDto extraClarificationDto, Integer userId){
+
+        if(extraClarificationDto.getComment().equals("")){
+            throw new TutorException(EMPTY_EXTRA_CLARIFICATION_COMMENT);
+        }
+        if(extraClarificationDto.getCommentType() == null || extraClarificationDto.getCommentType().equals("")){
+            throw new TutorException(NO_EXTRA_CLARIFICATION_TYPE);
+        }
+        if(extraClarificationDto.getParentClarification() == null){
+            throw new TutorException(NO_EXTRA_CLARIFICATION_PARENT);
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        if( !(user.getRole() == User.Role.STUDENT && extraClarificationDto.getCommentType().equals("QUESTION"))
+                || !(user.getRole() == User.Role.TEACHER && extraClarificationDto.getCommentType().equals("ANSWER"))){
+            throw new TutorException(EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION);
+        }
+
+        ExtraClarification extraClarification = new ExtraClarification(extraClarificationDto);
+        extraClarification.setCreationDate(LocalDateTime.now());
+
+        Clarification clarification = clarificationRepository.findById(extraClarification.getParentClarification().getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, extraClarification.getParentClarification().getId()));
+        clarification.addExtraClarification(extraClarification);
+
+        extraClarificationRepository.save(extraClarification);
+
+        return new ExtraClarificationDto(extraClarification);
+
     }
 
     private QuestionAnswer getQuestionAnswer(int questionAnswerId) {
