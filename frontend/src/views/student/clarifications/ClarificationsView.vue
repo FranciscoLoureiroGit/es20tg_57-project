@@ -175,13 +175,14 @@
                   :items-per-page="50"
                   :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
                 >
-                  <template v-slot:item.title="{ item }">
-                    <div align="left">
-                      <span
+                  <template v-slot:item.title="{ item }" style="width: 10vh">
+                    <div align="left" >
+                      <v-card-title
+                              style="overflow-wrap: break-word"
                         data-cy="showClarification"
                         v-html="item.title"
                         @click="showClarificationDialog(item)"
-                      ></span>
+                      ></v-card-title>
                     </div>
                   </template>
 

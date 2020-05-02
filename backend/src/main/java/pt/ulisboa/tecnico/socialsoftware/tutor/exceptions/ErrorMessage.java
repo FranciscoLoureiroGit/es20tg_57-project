@@ -38,12 +38,12 @@ public enum ErrorMessage {
     CANNOT_DELETE_COURSE_EXECUTION("The course execution cannot be deleted %s"),
     USERNAME_NOT_FOUND("Username %d not found"),
 
-    CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty %d"),
-    CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty %d"),
-    CLARIFICATION_MISSING_DATA("Clarification data not consistent %d"),
-    CLARIFICATION_NOT_FOUND("Clarification id was not found %d"),
-    CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed %d"),
-    CLARIFICATION_EXISTS("User has already created a clarification for this question answer"),
+    CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty"),
+    CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty"),
+    CLARIFICATION_MISSING_DATA("Clarification data is empty"),
+    CLARIFICATION_NOT_FOUND("Clarification %d was not found"),
+    CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed"),
+    CLARIFICATION_EXISTS("You have already created a clarification for this question"),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),

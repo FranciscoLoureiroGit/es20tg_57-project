@@ -1,6 +1,6 @@
 <template v-if="clarification">
   <div>
-    <div class="question-container">
+    <div class="question-container" style="text-align: left">
       <li style="padding: 1vh 5vh;">
         <v-btn
           data-cy="backButton"
@@ -10,6 +10,7 @@
           @click="$emit('dialog')"
           >Back</v-btn
         >
+        <!--
         <v-btn
                 data-cy="backButton"
                 dark
@@ -17,14 +18,14 @@
                 v-if="!clarification.public"
         >Comment</v-btn
         >
+        -->
       </li>
       <v-divider></v-divider>
       <div>
-        <li class="list-row" style="padding-left: 5vh; padding-top: 2vh">
-          <span style="font-size: 4vh; color: #5b5b5b">{{
-            clarification.title
-          }}</span>
-        </li>
+        <v-card-title style="font-size: 3vh ;padding-left: 4vh">{{
+          clarification.title
+          }}</v-card-title>
+
         <li class="list-row" style="padding-left: 5vh; padding-bottom: 2vh">
           <span><b>Created on</b> {{ clarification.creationDate }}</span>
         </li>
@@ -46,7 +47,7 @@
             <li
               v-for="option in clarification.questionAnswerDto.question.options"
               :key="option.number"
-              style="padding-left: 10vh"
+              style="padding-left: 6vh"
             >
               <span
                 v-if="option.correct"
@@ -63,15 +64,15 @@
       <v-divider></v-divider>
       <v-divider></v-divider>
       <v-divider></v-divider>
-      <div style="background-color: #d6d6d6">
+      <div style="background-color: #d6d6d6" >
         <template>
           <div class="container">
             <v-card-title style="padding-left: 4vh">{{
               clarification.title
             }}</v-card-title>
-            <li style="padding-left: 4vh">
-              <i>{{ clarification.description }}</i>
-            </li>
+            <v-card-title style="font-weight: normal; font-size: 1.3vh; padding-left: 4vh">{{
+              clarification.description
+              }}</v-card-title>
             <br />
             <v-divider style="padding-bottom: 1vh"></v-divider>
             <li class="list-row" style="padding-left: 4vh;font-size: 1.3vh">
@@ -92,9 +93,9 @@
             <v-card-title style="padding-left: 4vh"
               >Teacher Answer</v-card-title
             >
-            <li style="padding-left: 4vh; padding-bottom: 1.5vh">
-              <i>{{ clarification.clarificationAnswerDto.answer }}</i>
-            </li>
+            <v-card-title style="font-weight: normal; font-size: 1.3vh; padding-left: 4vh">{{
+              clarification.clarificationAnswerDto.answer
+              }}</v-card-title>
             <li
               class="list-row"
               style="padding-left: 3vh; padding-bottom: 2vh; font-size: 1.3vh"
@@ -155,32 +156,14 @@ export default class ClarificationDialogue extends Vue {
   padding-left: 10px;
   padding-right: 10px;
 
-  h2 {
-    font-size: 26px;
-    margin: 20px 0;
-    text-align: center;
-    small {
-      font-size: 0.5em;
-    }
-  }
 
   li {
     display: flex;
     justify-content: space-between;
-    align-content: center;
-    overflow: hidden;
+    overflow-wrap: break-word;
+    padding-left: 4vh;
+    padding-right: 4vh;
   }
 
-  ul {
-    text-align: left;
-    horiz-align: left;
-    padding-left: 7.5vh;
-  }
-
-  .col {
-    flex-basis: 25% !important;
-    margin: auto; /* Important */
-    text-align: center;
-  }
 }
 </style>

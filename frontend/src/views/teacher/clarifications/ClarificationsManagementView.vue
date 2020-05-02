@@ -31,7 +31,7 @@
       /></template>
 
       <template v-slot:item.description="{ item }">
-        <p v-html="item.description" @click="showClarificationDialog(item)"
+        <p v-html="convertMarkDown(item.description, null)" @click="showClarificationDialog(item)"
       /></template>
 
       <template v-slot:item.status="{ item }">
@@ -42,7 +42,7 @@
 
       <template v-slot:item.privacy="{ item }">
         <v-chip :color="getPrivacyColor(item.public)" small>
-          <span data-cy="requestPrivacy">{{ item.public }}</span>
+          <span data-cy="requestPrivacy">{{ getPrivacy(item) }}</span>
         </v-chip>
       </template>
 
@@ -79,7 +79,7 @@
           <span>Answer</span>
         </v-tooltip>
 
-        <v-tooltip bottom v-if="getPrivacy(item) === 'false'">
+        <v-tooltip bottom v-if="getPrivacy(item) === 'Private'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
@@ -93,7 +93,7 @@
           <span>Set Public</span>
         </v-tooltip>
 
-        <v-tooltip bottom v-if="getPrivacy(item) === 'true'">
+        <v-tooltip bottom v-if="getPrivacy(item) === 'Public'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
@@ -213,8 +213,8 @@ export default class ClarificationsManagementView extends Vue {
   }
 
   getPrivacy(clarification: Clarification) {
-    if (clarification.public) return 'true';
-    else return 'false';
+    if (clarification.public) return 'Public';
+    else return 'Private';
   }
 
   async created() {
@@ -272,6 +272,8 @@ export default class ClarificationsManagementView extends Vue {
           this.currentClarification!.questionAnswerDto!.id,
           this.clarificationAnswer
         );
+        this.currentClarification!.clarificationAnswerDto = this.clarificationAnswer;
+        this.currentClarification!.status = 'CLOSED';
       }
     } catch (error) {
       await this.$store.dispatch('error', error);

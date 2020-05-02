@@ -2,7 +2,7 @@
   <div>
     <div
       class="quiz-container"
-      v-if="statementManager.correctAnswers.length > 0 && !clarificationView "
+      v-if="statementManager.correctAnswers.length > 0 && !clarificationView"
     >
       <div class="question-navigation">
         <div class="navigation-buttons">
@@ -73,51 +73,66 @@
         @decrease-order="decreaseOrder"
       />
 
-      <v-dialog v-model="clarificationDialog" max-width="75%">
-        <v-card>
-          <v-card-title>
-            <span class="headline">{{ formTitle() }}</span>
-          </v-card-title>
-          <v-card-subtitle
-            style="position: absolute; padding-top: 10px; padding-bottom: 20px;"
-          >
-            <span class="subtitle-1">{{ formSubTitle() }}</span>
-          </v-card-subtitle>
-
+      <v-dialog v-model="clarificationDialog" max-width="60%">
+        <v-card ref="form">
           <v-card-text v-if="editClarification" style="padding-top: 20px;">
-            <v-container grid-list-md fluid>
-              <v-layout column wrap>
-                <v-flex xs24 sm12 md8>
-                  <v-text-field
-                    data-cy="title"
-                    v-model="clarification.title"
-                    label="Title"
-                  />
-                  <v-text-field
-                    data-cy="description"
-                    v-model="clarification.description"
-                    label="Description"
-                  />
-                </v-flex>
-              </v-layout>
-            </v-container>
+            <v-card-title>
+              <span class="headline">{{ formTitle() }}</span>
+            </v-card-title>
+            <v-card-subtitle
+              style="position: absolute; padding-top: 10px; padding-bottom: 20px;"
+            >
+              <span class="subtitle-1">{{ formSubTitle() }}</span>
+            </v-card-subtitle>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <v-card-text>
+              <v-text-field
+                ref="title"
+                data-cy="title"
+                v-model="clarification.title"
+                label="Title"
+                :rules="[
+                  () => !!clarification.title || 'This field is required'
+                ]"
+                counter="70"
+                required
+              />
+              <v-spacer></v-spacer>
+              <v-flex xs24 sm12 md12>
+                <v-textarea
+                  ref="description"
+                  rows="3"
+                  v-model="clarification.description"
+                  label="Description"
+                  data-cy="description"
+                  :rules="[
+                    () =>
+                      !!clarification.description || 'This field is required'
+                  ]"
+                  counter="250"
+                  required
+                ></v-textarea>
+              </v-flex>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn data-cy="cancelButton" @click="closeDialogue"
+                >Cancel</v-btn
+              >
+              <v-spacer></v-spacer>
+              <v-slide-x-reverse-transition>
+                <v-tooltip v-if="formHasErrors" left>
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon class="my-0" @click="resetForm" v-on="on">
+                      <v-icon>refresh</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Refresh form</span>
+                </v-tooltip>
+              </v-slide-x-reverse-transition>
+              <v-btn color="primary" flat @click="submit">Submit</v-btn>
+            </v-card-actions>
           </v-card-text>
-
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              data-cy="cancelButton"
-              color="blue darken-1"
-              @click="closeDialogue"
-              >Cancel</v-btn
-            >
-            <v-btn
-              data-cy="saveButton"
-              color="blue darken-1"
-              @click="saveClarification"
-              >Save</v-btn
-            >
-          </v-card-actions>
         </v-card>
       </v-dialog>
     </div>
@@ -152,6 +167,10 @@ export default class ResultsView extends Vue {
   clarificationDialog: boolean = false;
   clarification = new Clarification();
   clarificationView: boolean = false;
+  errorMessages: String = '';
+  title: String = '';
+  description: String = '';
+  formHasErrors: boolean = false;
 
   async created() {
     if (this.statementManager.isEmpty()) {
@@ -199,6 +218,15 @@ export default class ResultsView extends Vue {
     return '* Please insert here your doubt about the selected question starting with a title and then a straightforward description';
   }
 
+  checkForm() {
+    return (
+      this.clarification.title.length > 0 &&
+      this.clarification.title.length < 71 &&
+      this.clarification.description.length > 0 &&
+      this.clarification.description.length < 251
+    );
+  }
+
   newClarification() {
     this.clarification = new Clarification();
     this.clarificationDialog = true;
@@ -221,18 +249,20 @@ export default class ResultsView extends Vue {
     this.clarificationView = false;
   }
 
-  async saveClarification() {
-    try {
-      if (this.clarification) {
-        this.clarification = await RemoteServices.createClarification(
-          this.getQuestionAnswerId(),
-          this.clarification
-        );
+  async submit() {
+    if (this.checkForm()) {
+      try {
+        if (this.clarification) {
+          this.clarification = await RemoteServices.createClarification(
+                  this.getQuestionAnswerId(),
+                  this.clarification
+          );
+        }
+      } catch (error) {
+        await this.$store.dispatch('error', error);
       }
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+      this.closeDialogue();
     }
-    this.closeDialogue();
   }
 }
 </script>
