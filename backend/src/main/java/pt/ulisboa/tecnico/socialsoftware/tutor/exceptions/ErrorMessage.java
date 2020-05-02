@@ -106,7 +106,8 @@ public enum ErrorMessage {
     EMPTY_EXTRA_CLARIFICATION_COMMENT("Extra clarification comment is empty"),
     NO_EXTRA_CLARIFICATION_TYPE("Extra clarification type is undefined"),
     NO_EXTRA_CLARIFICATION_PARENT("Extra clarification parent is undefined"),
-    EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION("User is not allowed to perform this action")
+    EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION("User is not allowed to perform this action"),
+    EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE("Next comment cannot be of type %s")
     ;
 
     public final String label;

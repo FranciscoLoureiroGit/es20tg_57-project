@@ -52,10 +52,13 @@ public class ClarificationDto implements Serializable {
 
         this.extraClarificationDtos = clarification.getExtraClarificationList().stream()
                 .map(extraClarification -> {
-                    ExtraClarificationDto e = new ExtraClarificationDto(extraClarification);
+                    ExtraClarificationDto e = new ExtraClarificationDto(extraClarification, false);
                     return e;
                 })
                 .collect(Collectors.toList());
+
+         this.extraClarificationDtos.forEach(extraClarificationDto -> {extraClarificationDto.setParentClarification(this);});
+
     }
 
 

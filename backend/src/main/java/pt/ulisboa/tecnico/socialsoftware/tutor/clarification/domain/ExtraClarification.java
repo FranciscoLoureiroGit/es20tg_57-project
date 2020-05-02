@@ -25,7 +25,7 @@ public class ExtraClarification {
     @Column(name = "comment")
     private String comment;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "clarification_id")
     private Clarification parentClarification;
 

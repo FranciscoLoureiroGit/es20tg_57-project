@@ -14,11 +14,11 @@ public class ExtraClarificationDto implements Serializable {
 
     public ExtraClarificationDto(){};
 
-    public ExtraClarificationDto(ExtraClarification extraClarification){
+    public ExtraClarificationDto(ExtraClarification extraClarification, boolean deepCopy){
         this.id = extraClarification.getId();
         this.comment = extraClarification.getComment();
         this.commentType = extraClarification.getCommentType().name();
-        this.parentClarification = new ClarificationDto(extraClarification.getParentClarification());
+        if(deepCopy) this.parentClarification = new ClarificationDto(extraClarification.getParentClarification());
         this.creationDate = extraClarification.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     };
 

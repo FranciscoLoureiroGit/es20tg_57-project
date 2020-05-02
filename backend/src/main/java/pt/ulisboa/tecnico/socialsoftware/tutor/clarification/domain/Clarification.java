@@ -60,7 +60,7 @@ public class Clarification {
     private User user;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clarification", fetch = FetchType.EAGER, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentClarification", fetch = FetchType.LAZY, orphanRemoval=true)
     private List<ExtraClarification> extraClarificationList = new ArrayList<>();
 
     public Clarification() {}
@@ -171,6 +171,9 @@ public class Clarification {
 
     public void addExtraClarification(ExtraClarification extraClarification){
         this.extraClarificationList.add(extraClarification);
+        if(this.extraClarificationList.size()%2 == 0){
+            this.status = Status.CLOSED;
+        } else {this.status = Status.OPEN; }
     }
 
     @Override

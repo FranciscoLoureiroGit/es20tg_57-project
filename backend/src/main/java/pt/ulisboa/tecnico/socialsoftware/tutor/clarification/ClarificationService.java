@@ -142,7 +142,7 @@ public class ClarificationService {
     @Transactional(isolation =  Isolation.REPEATABLE_READ)
     public ExtraClarificationDto createExtraClarification(ExtraClarificationDto extraClarificationDto, Integer userId){
 
-        if(extraClarificationDto.getComment().equals("")){
+        if(extraClarificationDto.getComment() == null || extraClarificationDto.getComment().equals("")){
             throw new TutorException(EMPTY_EXTRA_CLARIFICATION_COMMENT);
         }
         if(extraClarificationDto.getCommentType() == null || extraClarificationDto.getCommentType().equals("")){
@@ -155,19 +155,27 @@ public class ClarificationService {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
 
         if( !(user.getRole() == User.Role.STUDENT && extraClarificationDto.getCommentType().equals("QUESTION"))
-                || !(user.getRole() == User.Role.TEACHER && extraClarificationDto.getCommentType().equals("ANSWER"))){
+                && !(user.getRole() == User.Role.TEACHER && extraClarificationDto.getCommentType().equals("ANSWER"))){
             throw new TutorException(EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION);
         }
 
+        Clarification clarification = clarificationRepository.findById(extraClarificationDto.getParentClarification().getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, extraClarificationDto.getParentClarification().getId()));
+
+        if( (extraClarificationDto.getCommentType().equals("QUESTION") && clarification.getExtraClarificationList().size()%2 != 0)
+                || (extraClarificationDto.getCommentType().equals("ANSWER") && clarification.getExtraClarificationList().size()%2 != 1)){
+            throw new TutorException(EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE, extraClarificationDto.getCommentType());
+        }
+
         ExtraClarification extraClarification = new ExtraClarification(extraClarificationDto);
+        extraClarification.setParentClarification(clarification);
         extraClarification.setCreationDate(LocalDateTime.now());
 
-        Clarification clarification = clarificationRepository.findById(extraClarification.getParentClarification().getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, extraClarification.getParentClarification().getId()));
+
         clarification.addExtraClarification(extraClarification);
 
         extraClarificationRepository.save(extraClarification);
 
-        return new ExtraClarificationDto(extraClarification);
+        return new ExtraClarificationDto(extraClarification, true);
 
     }
 
