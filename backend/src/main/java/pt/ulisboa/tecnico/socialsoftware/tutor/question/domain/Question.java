@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
+import com.google.common.math.Stats;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
@@ -22,7 +23,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Table(name = "questions")
 public class Question implements DomainEntity {
     public enum Status {
-        DISABLED, REMOVED, AVAILABLE, PENDING
+        DISABLED, REMOVED, AVAILABLE, PENDING, APPROVED, DISAPPROVED
     }
 
     @Id
@@ -78,8 +79,8 @@ public class Question implements DomainEntity {
     @Column(name = "role_author")
     private String roleAuthor="";
 
-    @Column(name = "approved")
-    private boolean approved = false;
+    @Column(name = "status_approved")
+    private String approved = Status.DISAPPROVED.name();
 
     public Question() {
     }
@@ -94,7 +95,8 @@ public class Question implements DomainEntity {
         setOptions(questionDto.getOptions());
         this.roleAuthor = questionDto.getRoleAuthor();
         this.student_id = questionDto.getUser_id();
-
+        if(questionDto.getApproved() != null && questionDto.getApproved().equals(Status.APPROVED.name()))
+            setApproved();
         if (questionDto.getImage() != null)
             setImage(new Image(questionDto.getImage()));
     }
@@ -266,12 +268,12 @@ public class Question implements DomainEntity {
 
     public User getUser() { return this.user; }
 
-    public boolean getApproved(){
+    public String getApproved(){
         return this.approved;
     }
 
     public void setApproved(){
-        this.approved=true;
+        this.approved=Status.APPROVED.name();
     }
 
     @Override

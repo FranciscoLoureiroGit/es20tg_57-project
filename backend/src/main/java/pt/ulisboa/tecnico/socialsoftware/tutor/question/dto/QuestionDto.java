@@ -34,7 +34,7 @@ public class QuestionDto implements Serializable {
     private String justification;
     private Integer user_id;
     private String roleAuthor = "";
-    private boolean approved;
+    private String approved = Question.Status.DISAPPROVED.name();
 
     public QuestionDto() {
     }
@@ -136,10 +136,10 @@ public class QuestionDto implements Serializable {
     }
 
     public void setApproved(){
-        this.approved = true;
+        this.approved = Question.Status.APPROVED.name();
     }
 
-    public boolean getApproved(){
+    public String getApproved(){
         return this.approved;
     }
 
