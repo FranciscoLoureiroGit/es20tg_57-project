@@ -31,8 +31,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
-import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -213,7 +211,7 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
             def extraClarificationDto = new ExtraClarificationDto();
             extraClarificationDto.setComment(extraClarificationComment1)
             extraClarificationDto.setCommentType("QUESTION")
-            extraClarificationDto.setParentClarification(clarificationDto)
+            extraClarificationDto.setParentClarificationId(clarificationDto.getId())
 
         when:
             def result = clarificationService.createExtraClarification(extraClarificationDto, userStudent.getId())
@@ -221,12 +219,12 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
         then: "the returned data is correct"
             result.comment == extraClarificationDto.comment
             result.commentType == extraClarificationDto.commentType
-            result.parentClarification.id == clarificationDto.id
+            result.parentClarificationId == clarificationDto.id
         and: "existing data is updated"
             clarificationRequest.extraClarificationList.size() == 1
             result.comment == clarificationRequest.getExtraClarificationList().get(0).getComment()
             result.commentType == clarificationRequest.getExtraClarificationList().get(0).getCommentType().name()
-            result.parentClarification.id == clarificationRequest.getExtraClarificationList().get(0).getParentClarification().id
+            result.parentClarificationId == clarificationRequest.getExtraClarificationList().get(0).getParentClarification().id
         and: "clarification status has changed"
             clarificationRequest.status == Clarification.Status.OPEN
     }
@@ -238,14 +236,14 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
         def extraClarificationDto1 = new ExtraClarificationDto();
         extraClarificationDto1.setComment(extraClarificationComment1)
         extraClarificationDto1.setCommentType("QUESTION")
-        extraClarificationDto1.setParentClarification(clarificationDto)
+        extraClarificationDto1.setParentClarificationId(clarificationDto.id)
         clarificationService.createExtraClarification(extraClarificationDto1, userStudent.getId())
 
         and: "an extraClarificationDto"
         def extraClarificationDto2 = new ExtraClarificationDto();
         extraClarificationDto2.setComment(extraClarificationComment2)
         extraClarificationDto2.setCommentType("ANSWER")
-        extraClarificationDto2.setParentClarification(clarificationDto)
+        extraClarificationDto2.setParentClarificationId(clarificationDto.id)
 
         when:
         def result = clarificationService.createExtraClarification(extraClarificationDto2, userTeacher.getId())
@@ -253,12 +251,12 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
         then: "the returned data is correct"
         result.comment == extraClarificationDto2.comment
         result.commentType == extraClarificationDto2.commentType
-        result.parentClarification.id == clarificationDto.id
+        result.parentClarificationId == clarificationDto.id
         and: "existing data is updated"
         clarificationRequest.extraClarificationList.size() == 2
         result.comment == clarificationRequest.getExtraClarificationList().get(1).getComment()
         result.commentType == clarificationRequest.getExtraClarificationList().get(1).getCommentType().name()
-        result.parentClarification.id == clarificationRequest.getExtraClarificationList().get(1).getParentClarification().id
+        result.parentClarificationId == clarificationRequest.getExtraClarificationList().get(1).getParentClarification().id
         and: "clarification status has changed"
         clarificationRequest.status == Clarification.Status.CLOSED
     }
@@ -271,7 +269,7 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
             def extraClarificationDto = new ExtraClarificationDto()
             extraClarificationDto.setComment(comment)
             extraClarificationDto.setCommentType(commentType)
-            extraClarificationDto.setParentClarification(new ClarificationDto(clarificationRequest))
+            extraClarificationDto.setParentClarificationId(new ClarificationDto(clarificationRequest).id)
 
         when:
             clarificationService.createExtraClarification(extraClarificationDto, userStudent.getId())
@@ -298,7 +296,7 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
         def extraClarificationDto = new ExtraClarificationDto()
         extraClarificationDto.setComment(extraClarificationComment1)
         extraClarificationDto.setCommentType("QUESTION")
-        extraClarificationDto.setParentClarification(new ClarificationDto(clarificationRequest))
+        extraClarificationDto.setParentClarificationId(clarificationRequest.getId())
 
         when:
         clarificationService.createExtraClarification(extraClarificationDto, userTeacher.getId())
@@ -314,7 +312,7 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
         def extraClarificationDto = new ExtraClarificationDto()
         extraClarificationDto.setComment(extraClarificationComment1)
         extraClarificationDto.setCommentType("QUESTION")
-        extraClarificationDto.setParentClarification(null)
+        extraClarificationDto.setParentClarificationId(null)
 
         when:
         clarificationService.createExtraClarification(extraClarificationDto, userStudent.getId())

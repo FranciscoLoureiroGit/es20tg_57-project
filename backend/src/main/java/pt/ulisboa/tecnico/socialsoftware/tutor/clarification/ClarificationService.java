@@ -14,7 +14,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDt
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ExtraClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ExtraClarificationRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.config.TutorPermissionEvaluator;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
@@ -148,7 +147,7 @@ public class ClarificationService {
         if(extraClarificationDto.getCommentType() == null || extraClarificationDto.getCommentType().equals("")){
             throw new TutorException(NO_EXTRA_CLARIFICATION_TYPE);
         }
-        if(extraClarificationDto.getParentClarification() == null){
+        if(extraClarificationDto.getParentClarificationId() == null){
             throw new TutorException(NO_EXTRA_CLARIFICATION_PARENT);
         }
 
@@ -159,7 +158,7 @@ public class ClarificationService {
             throw new TutorException(EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION);
         }
 
-        Clarification clarification = clarificationRepository.findById(extraClarificationDto.getParentClarification().getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, extraClarificationDto.getParentClarification().getId()));
+        Clarification clarification = clarificationRepository.findById(extraClarificationDto.getParentClarificationId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, extraClarificationDto.getParentClarificationId()));
 
         if( (extraClarificationDto.getCommentType().equals("QUESTION") && clarification.getExtraClarificationList().size()%2 != 0)
                 || (extraClarificationDto.getCommentType().equals("ANSWER") && clarification.getExtraClarificationList().size()%2 != 1)){
@@ -175,7 +174,7 @@ public class ClarificationService {
 
         extraClarificationRepository.save(extraClarification);
 
-        return new ExtraClarificationDto(extraClarification, true);
+        return new ExtraClarificationDto(extraClarification);
 
     }
 

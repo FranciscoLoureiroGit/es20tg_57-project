@@ -9,16 +9,16 @@ public class ExtraClarificationDto implements Serializable {
     private Integer id;
     private String commentType;
     private String comment;
-    private ClarificationDto parentClarification;
+    private Integer parentClarificationId;
     private String creationDate;
 
     public ExtraClarificationDto(){};
 
-    public ExtraClarificationDto(ExtraClarification extraClarification, boolean deepCopy){
+    public ExtraClarificationDto(ExtraClarification extraClarification){
         this.id = extraClarification.getId();
         this.comment = extraClarification.getComment();
         this.commentType = extraClarification.getCommentType().name();
-        if(deepCopy) this.parentClarification = new ClarificationDto(extraClarification.getParentClarification());
+        this.parentClarificationId = extraClarification.getParentClarification().getId();
         this.creationDate = extraClarification.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     };
 
@@ -47,12 +47,12 @@ public class ExtraClarificationDto implements Serializable {
         this.comment = comment;
     }
 
-    public ClarificationDto getParentClarification() {
-        return parentClarification;
+    public Integer getParentClarificationId() {
+        return parentClarificationId;
     }
 
-    public void setParentClarification(ClarificationDto parentClarification) {
-        this.parentClarification = parentClarification;
+    public void setParentClarificationId(Integer parentClarificationId) {
+        this.parentClarificationId = parentClarificationId;
     }
 
     public String getCreationDate() {
@@ -69,7 +69,7 @@ public class ExtraClarificationDto implements Serializable {
                 "id=" + id +
                 ", type=" + commentType +
                 ", comment=" + comment +
-                ", clarificationId=" + parentClarification.getId() +
+                ", clarificationId=" + parentClarificationId +
                 ", date=" + creationDate +
                 '}';
     }

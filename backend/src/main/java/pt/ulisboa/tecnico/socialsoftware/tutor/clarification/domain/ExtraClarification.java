@@ -41,10 +41,6 @@ public class ExtraClarification {
         if(extraClarificationDto.getCommentType() != null) {
             this.commentType = ExtraClarification.CommentType.valueOf(extraClarificationDto.getCommentType());
         } else { this.commentType = null;}
-
-        if(extraClarificationDto.getParentClarification() != null) {
-            this.parentClarification = new Clarification(extraClarificationDto.getParentClarification());
-        }
     }
 
     public Integer getId() {

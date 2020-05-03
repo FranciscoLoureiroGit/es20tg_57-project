@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.ClarificationAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ExtraClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.validation.Valid;
@@ -68,6 +69,14 @@ public class ClarificationController {
                                                 @Valid @RequestBody ClarificationDto clarificationDto,
                                                 Principal principal){
         return clarificationService.createClarification(questionAnswerId, clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
+    }
+
+    @PostMapping("/question-answer/{questionAnswerId}/clarifications/extra")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER') and hasPermission(#questionAnswerId, 'QUESTION_ANSWER.ACCESS')")
+    public ExtraClarificationDto createExtraClarification(@PathVariable int questionAnswerId,
+                                                          @Valid @RequestBody ExtraClarificationDto extraClarificationDto,
+                                                          Principal principal){
+        return clarificationService.createExtraClarification(extraClarificationDto, ((User)((Authentication) principal).getPrincipal()).getId());
     }
 
     // === HTTP PUT REQUESTS ===
