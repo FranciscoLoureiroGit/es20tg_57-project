@@ -15,6 +15,7 @@
         class="list-row"
         v-for="tournament in questionsTournaments"
         :key="tournament.id"
+        @click="goToTournamentDialog(tournament)"
       >
         <div class="col">
           {{ tournament.id }}
@@ -34,33 +35,25 @@
         <div class="col">
           {{ tournament.numberOfQuestions }}
         </div>
-        <div class="col last-col">
-          <i class="fas fa-chevron-circle-right"></i>
-        </div>
+        <div class="col last-col"></div>
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import Topic from '@/models/management/Topic';
+import { milisecondsToHHMMSS } from '@/services/ConvertDateService';
 
 @Component
-export default class RegisteredTournamentsView extends Vue {
-  questionsTournaments: QuestionsTournament[] = [];
-
-  async created() {
-    await this.$store.dispatch('loading');
-    try {
-      this.questionsTournaments = (await RemoteServices.getRegisteredTournaments()).reverse();
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
-  }
+export default class RegisteredTournamentsList extends Vue {
+  @Prop({ type: Array, required: true })
+  readonly questionsTournaments!: QuestionsTournament[];
+  openDialog: boolean = false;
+  startedDialog: boolean = false;
 
   getState(tournament: QuestionsTournament): string {
     let currentTime = Date.now();
@@ -76,6 +69,20 @@ export default class RegisteredTournamentsView extends Vue {
       .map((topic: Topic) => topic.name)
       .sort();
     return topics.join(', ');
+  }
+
+  goToTournamentDialog(tournament: QuestionsTournament) {
+    let state = this.getState(tournament);
+    switch (state) {
+      case 'Open': {
+        this.$emit('showOpenTournamentMode', tournament);
+        break;
+      }
+      case 'Started': {
+        this.$emit('showStartedTournament', tournament);
+        break;
+      }
+    }
   }
 }
 </script>
