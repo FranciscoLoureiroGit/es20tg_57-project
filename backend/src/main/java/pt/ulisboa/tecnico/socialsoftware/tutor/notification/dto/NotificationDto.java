@@ -2,19 +2,32 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.notification.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain.Notification;
 
+import java.time.format.DateTimeFormatter;
+
 public class NotificationDto {
     private Integer id;
     private String status;
     private String title;
     private String description;
-    private String userId;
+    private Integer userId;
     private String creationDate;
     private String timeToDeliver;
 
     public NotificationDto() {}
 
     public NotificationDto(Notification notification) {
-        this.id = notification.getId()
+        this.id = notification.getId();
+        this.title = notification.getTitle();
+        this.description = notification.getDescription();
+        this.userId = notification.getUser().getId();
+
+        if (notification.getStatus() != null)
+            this.status = notification.getStatus().name();
+        if (notification.getCreationDate() != null)
+            this.creationDate = notification.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        if (notification.getTimeToDeliver() != null)
+            this.timeToDeliver = notification.getTimeToDeliver().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
     }
 
     public Integer getId() {
@@ -49,11 +62,11 @@ public class NotificationDto {
         this.description = description;
     }
 
-    public String getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

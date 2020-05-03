@@ -1,9 +1,18 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.*;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Entity
@@ -108,5 +117,6 @@ public class Notification {
     }
 
     // LOGIC METHODS
+
 
 }

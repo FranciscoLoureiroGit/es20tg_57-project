@@ -53,6 +53,20 @@ public class UserService {
         return user;
     }
 
+    public User createUserWithEmail(String name, String username, User.Role role, String email) {
+        if (findByUsername(username) != null) {
+            throw new TutorException(DUPLICATE_USER, username);
+        }
+
+        User user = new User(name, username, getMaxUserNumber() + 1, role);
+
+        if (email != null) {
+            user.setEmail(email);
+        }
+        userRepository.save(user);
+        return user;
+    }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public String getEnrolledCoursesAcronyms(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
