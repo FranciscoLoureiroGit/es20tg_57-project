@@ -79,6 +79,22 @@
           <span>Answer</span>
         </v-tooltip>
 
+        <v-tooltip bottom v-if="getAnswer(item) !== 'None' && getStatus(item) === 'OPEN'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+                    small
+                    class="mr-2"
+                    v-on="on"
+                    @click="showCreateExtraClarificationDialog(item)"
+                    data-cy="answerExtraClarification"
+            >edit</v-icon
+            >
+          </template>
+          <span>Answer</span>
+        </v-tooltip>
+
+
+
         <v-tooltip bottom v-if="getPrivacy(item) === 'Private'">
           <template v-slot:activator="{ on }">
             <v-icon
@@ -134,6 +150,16 @@
       v-on:close-dialog="closeCreateClarificationAnswerDialog"
       v-on:save-answer="saveCreateClarificationAnswerDialog"
     />
+
+    <create-extra-clarification-answer-dialog
+      v-if="extraClarification"
+      v-model="createExtraClarificationDialog"
+      :extra-clarification="extraClarification"
+      :parent-extra-clarification="currentExtraClarification"
+      v-on:close-dialog="closeCreateExtraClarificationDialog"
+      v-on:submit-comment="saveCreateExtraClarificationDialog"
+    />
+
   </v-card>
 </template>
 
@@ -149,13 +175,16 @@ import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue
 import Image from '@/models/management/Image';
 import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
+import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
+import ExtraClarification from '@/models/management/ExtraClarification';
 
 @Component({
   components: {
     'show-clarification-answer-dialog': ShowClarificationAnswerDialog,
     'show-clarification-dialog': ShowClarificationDialog,
     'show-question-dialog': ShowQuestionDialog,
-    'create-clarification-answer-dialog': ClarificationAnswerView
+    'create-clarification-answer-dialog': ClarificationAnswerView,
+    'create-extra-clarification-answer-dialog': ExtraClariifcationDialog
   }
 })
 export default class ClarificationsManagementView extends Vue {
@@ -167,6 +196,10 @@ export default class ClarificationsManagementView extends Vue {
   clarificationAnswerDialog: boolean = false;
   clarificationDialog: boolean = false;
   questionDialog: boolean = false;
+
+  createExtraClarificationDialog: boolean = false;
+  extraClarification: ExtraClarification | null = null;
+  currentExtraClarification: ExtraClarification | null = null;
 
   createClarificationAnswerDialog: boolean = false;
   clarificationAnswer: ClarificationAnswer | null = null;
@@ -210,6 +243,10 @@ export default class ClarificationsManagementView extends Vue {
     if (clarification.clarificationAnswerDto)
       return clarification.clarificationAnswerDto.answer;
     else return 'None';
+  }
+
+  getStatus(clarification: Clarification) {
+    return clarification.status == 'OPEN' ? 'OPEN' : 'CLOSED';
   }
 
   getPrivacy(clarification: Clarification) {
@@ -279,6 +316,36 @@ export default class ClarificationsManagementView extends Vue {
       await this.$store.dispatch('error', error);
     }
     this.closeCreateClarificationAnswerDialog();
+  }
+
+  showCreateExtraClarificationDialog(clarification : Clarification) {
+    this.currentClarification = clarification;
+    this.extraClarification = new ExtraClarification();
+    this.extraClarification.commentType = 'ANSWER';
+    this.extraClarification.parentClarificationId = clarification!.id;
+    this.currentExtraClarification = clarification.extraClarificationDtos[clarification.extraClarificationDtos.length - 1];
+
+    this.createExtraClarificationDialog = true;
+  }
+
+  closeCreateExtraClarificationDialog(){
+    this.createExtraClarificationDialog = false;
+  }
+
+  async saveCreateExtraClarificationDialog(){
+    try{
+      if(this.extraClarification) {
+        this.extraClarification = await RemoteServices.createExtraClarification(
+                this.currentClarification!.questionAnswerDto!.id,
+                this.extraClarification
+        );
+
+      }
+
+    }catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    this.closeCreateExtraClarificationDialog();
   }
 
   async changePrivacy(clarification: Clarification) {

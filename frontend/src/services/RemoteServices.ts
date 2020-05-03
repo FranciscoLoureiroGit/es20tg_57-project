@@ -17,6 +17,7 @@ import Clarification from '@/models/management/Clarification';
 import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
+import ExtraClarification from '@/models/management/ExtraClarification';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -294,6 +295,23 @@ export default class RemoteServices {
       )
       .then(response => {
         return new ClarificationAnswer(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createExtraClarification(
+    questionAnswerId: number,
+    extraClarification: ExtraClarification
+  ): Promise<ExtraClarification> {
+    return httpClient
+      .post(
+        `/question-answer/${questionAnswerId}/clarifications/extra`,
+        extraClarification
+      )
+      .then(response => {
+        return new ExtraClarification(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));

@@ -33,6 +33,7 @@ import ClarificationsManagementView from '@/views/teacher/clarifications/Clarifi
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
 import ClarificationDialogue from '@/views/student/clarifications/ClarificationDialogue.vue';
+import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
 
 Vue.use(Router);
 
@@ -145,6 +146,15 @@ let router = new Router({
                 title: process.env.VUE_APP_NAME + ' - Clarification Answer',
                 requiredAuth: 'Teacher'
               }
+            },
+            {
+              path: 'extra-answer',
+              name: 'extra-clarification-answer',
+              component: ExtraClariifcationDialog,
+              meta: {
+                title: process.env.VUE_APP_NAME + ' - Extra Clarification Answer',
+                requiredAuth: 'Teacher'
+              }
             }
           ],
           meta: {
@@ -238,7 +248,18 @@ let router = new Router({
               meta: {
                 title: process.env.VUE_APP_NAME + ' - Clarification Dialogue',
                 requiredAuth: 'Student'
-              }
+              },
+              children: [
+                {
+                  path: 'extra',
+                  name: 'extra-clarification-dialog',
+                  component: ExtraClariifcationDialog,
+                  meta: {
+                    title: process.env.VUE_APP_NAME + ' - Extra Clarification',
+                    requiredAuth: 'Student'
+                  }
+                }
+              ]
             }
           ]
         },

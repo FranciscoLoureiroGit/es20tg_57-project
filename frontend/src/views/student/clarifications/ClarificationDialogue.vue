@@ -96,31 +96,58 @@
             <v-card-title style="font-weight: normal; font-size: 1.3vh; padding-left: 4vh">{{
               clarification.clarificationAnswerDto.answer
               }}</v-card-title>
+
+            <v-list
+                    :three-line=true
+                    :shaped=true
+            >
+              <v-subheader>Additional Discussion </v-subheader>
+              <v-list-item-group color="primary">
+                <v-list-item
+                        v-for="(item, i) in this.clarification.extraClarificationDtos"
+                        :key="i"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title v-html="item.commentType"></v-list-item-title>
+                    <v-list-item-subtitle v-html="item.comment"></v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+
             <li
               class="list-row"
               style="padding-left: 3vh; padding-bottom: 2vh; font-size: 1.3vh"
             >
-              <!-- BUTTON FOR ADDING COMMENTS (future functionality)
+
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-icon
                     medium
                     class="mr-2"
                     v-on="on"
-                    @click="closeClarification(item)"
+                    @click="showExtraClarificationCreateDialog"
                     >mdi-forum</v-icon
                   >
                 </template>
                 <span>Add Comment</span>
               </v-tooltip>
-              -->
+
             </li>
             <br />
           </div>
         </template>
       </div>
 
-      <!-- INSERT COMMENTS PORTION HERE -->
+
+
+
+      <create-extra-clarification-dialog
+              v-model="extraClarificationCreateDialog"
+              :extra-clarification="newExtraClarification"
+              v-on:close-dialog="closeExtraClarificationCreateDialog"
+              v-on:submit-comment="saveExtraClarificationCreateDialog"
+      />
       <div>
         <template> </template>
       </div>
@@ -133,14 +160,58 @@ import { Component, Model, Prop, Vue } from 'vue-property-decorator';
 import Clarification from '@/models/management/Clarification';
 import Image from '@/models/management/Image';
 import { convertMarkDown } from '@/services/ConvertMarkdownService';
+import ExtraClarification from '@/models/management/ExtraClarification';
+import ExtraClarificationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
+import RemoteServices from '@/services/RemoteServices';
 
 @Component({
-  components: {}
+  components: {'create-extra-clarification-dialog' : ExtraClarificationDialog}
 })
 export default class ClarificationDialogue extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: Clarification, required: true })
   readonly clarification!: Clarification;
+
+
+
+
+  extraClarificationCreateDialog: boolean = false;
+  newExtraClarification : ExtraClarification | null = null;
+
+
+  extraClarification : ExtraClarification | null = null;
+
+
+
+
+  showExtraClarificationCreateDialog() {
+    this.newExtraClarification = new ExtraClarification();
+    this.newExtraClarification.commentType = 'QUESTION';
+    this.newExtraClarification.parentClarificationId = this.clarification.id;
+
+
+
+    this.extraClarificationCreateDialog = true;
+  }
+
+  closeExtraClarificationCreateDialog() {
+    this.extraClarificationCreateDialog = false;
+  }
+
+  async saveExtraClarificationCreateDialog() {
+    try {
+      if (this.newExtraClarification) {
+        this.extraClarification = await RemoteServices.createExtraClarification(
+                this.clarification!.questionAnswerDto!.id,
+                this.newExtraClarification!
+        );
+
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    this.closeExtraClarificationCreateDialog();
+  }
 
   convertMarkDown(text: string, image: Image | null = null): string {
     return convertMarkDown(text, image);
