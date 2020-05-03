@@ -170,7 +170,7 @@ public class QuestionController {
 
     @PostMapping("/questions/{questionId}/approve-question")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public QuestionDto approveQuestion(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
+    public QuestionDto approveQuestion(@PathVariable Integer questionId) {
 
         return questionService.questionSetApproved(questionId);
     }

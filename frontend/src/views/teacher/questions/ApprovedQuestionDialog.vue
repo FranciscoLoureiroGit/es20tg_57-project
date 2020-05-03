@@ -12,7 +12,7 @@
           {{
             editApprovedQuestion && editApprovedQuestion.id === null
               ? 'New Question'
-              : 'Edit Question'
+              : 'Edit Question and Approve Question'
           }}
         </span>
       </v-card-title>
@@ -50,8 +50,9 @@
           >Cancel</v-btn
         >
         <v-btn color="blue darken-1" @click="saveQuestion">Save Changes</v-btn>
-        <v-btn color="green darken-1" @click="approveStudentQuestion">Approve</v-btn>
-        <!--NOVO-->
+        <v-btn color="green darken-1" @click="approveStudentQuestion"
+          >Approve</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>

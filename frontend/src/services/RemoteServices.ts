@@ -279,7 +279,7 @@ export default class RemoteServices {
       });
   }
 
-  //NOVO metodo para alterar estado e justificacao
+  //NEW method to change status and justification
   static async changeQuestionStatus(question: Question): Promise<Question> {
     return httpClient
       .post(`/questions/${question.id}/change-status`, question)
@@ -291,7 +291,7 @@ export default class RemoteServices {
       });
   }
 
-  //NOVO metodo
+  //NEW method to approve a Question
   static async approveQuestion(questionId: number): Promise<Question> {
     return httpClient
       .post(`/questions/${questionId}/approve-question`)
