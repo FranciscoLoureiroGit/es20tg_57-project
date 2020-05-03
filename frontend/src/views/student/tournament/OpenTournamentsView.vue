@@ -2,7 +2,7 @@
   <div>
     <tournament-form
       @switchMode="changeMode"
-      @updateQuiz="updateTournament"
+      @updateTournament="updateTournament"
       :edit-mode="editMode"
       :questionsTournament="questionsTournament"
     />
@@ -57,11 +57,22 @@ export default class OpenTournamentsView extends Vue {
     this.questionsTournament = new QuestionsTournament();
   }
 
-  updateTournament(){}
+  updateTournament(updatedTournament: QuestionsTournament){
+    this.questionsTournaments = this.questionsTournaments.filter(
+      tournament => tournament.id !== updatedTournament.id
+    );
+    this.questionsTournaments.unshift(updatedTournament);
+    this.editMode = false;
+    this.questionsTournament = null;
+  }
+
+  deleteTournament(tournamentId: number) {
+    this.questionsTournaments = this.questionsTournaments.filter(
+      tournament => tournament.id !== tournamentId
+    );
+  }
 
   editTournament(){}
-
-  deleteTournament(){}
 }
 </script>
 

@@ -126,6 +126,35 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add(
+  'createQuestionsTournamentWithIllegalDates',
+  (numberOfQuestions, topicId) => {
+    cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
+    cy.get('[data-cy=endingDate]').click()
+    cy.get(
+      '#endingDateInput-picker-container-DatePicker > .calendar > .month-container > :nth-child(1) > .datepicker-days > :nth-child(14) > .datepicker-day-text'
+    ).click()
+    cy.get(
+      '#endingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
+    cy.get('[data-cy=startingDate]').click()
+    cy.contains('19').click()
+    cy.get(
+      '#startingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
+    cy.contains(topicId)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 4)
+      .find('[data-cy="addTopic"]')
+      .click();
+    cy.contains('Show Tournament').click();
+    cy.contains('close').click();
+    cy.get('[data-cy="saveButton"]').click({ force: true });
+  }
+);
+
 Cypress.Commands.add('cancelTournament', () => {
   cy.get(':nth-child(1) > :nth-child(9) > [data-cy=cancelTournament]')
     .click();

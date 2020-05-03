@@ -60,7 +60,7 @@
               @click="cancelTournament(item)"
               color="red"
               data-cy="cancelTournament"
-              >remove</v-icon
+              >delete</v-icon
             >
           </template>
           <span>Cancel tournament</span>
@@ -145,6 +145,7 @@ export default class OpenTournamentsList extends Vue {
     ) {
       try {
         await RemoteServices.cancelTournament(questionsTournament.id);
+        this.$emit('deleteTournament', questionsTournament.id);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

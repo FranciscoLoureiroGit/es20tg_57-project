@@ -278,7 +278,6 @@ export default class TournamentForm extends Vue {
 
   async save() {
     try {
-      this.questionsTournament.topics = this.tournamentTopics;
       let updatedTournament = await RemoteServices.saveTournament(
         this.questionsTournament
       );
@@ -346,15 +345,18 @@ export default class TournamentForm extends Vue {
 
   addToTournament(topic: Topic) {
     this.tournamentTopics.push(topic);
+    this.questionsTournament.topics.push(topic)
   }
 
   removeFromTournament(topic: Topic) {
     let index: number = this.tournamentTopics.indexOf(topic);
     this.tournamentTopics.splice(index, 1);
+    this.questionsTournament.topics.splice(index,1)
   }
 
   cleanTournamentTopics() {
     this.tournamentTopics = [];
+    this.questionsTournament.topics = [];
   }
 
   openShowTournament() {
