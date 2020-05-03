@@ -79,21 +79,36 @@
               v-on="on"
               @click="changeQuestionStateDialog(item)"
               data-cy="changeQuestionStateDialog"
-              >edit</v-icon
+              >find_replace</v-icon
             >
           </template>
           <span>Change QuestionState</span>
         </v-tooltip>
-        <!--NEW button to change Status and Justification-->
-        <v-tooltip bottom v-if="item.numberOfAnswers === 0">
+        <!--Ends here-->
+        <!--NEW button to Approve and Edit a Question-->
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="approveQuestionDialog(item)"
+              data-cy="approveQuestionDialog"
+              >done</v-icon
+            >
+          </template>
+          <span>Approve Question</span>
+        </v-tooltip>
+        <!--Ends here-->
+        <!-- <v-tooltip bottom v-if="item.numberOfAnswers === 0">
           <template v-slot:activator="{ on }">
             <v-icon small class="mr-2" v-on="on" @click="editQuestion(item)"
               >edit</v-icon
             >
           </template>
           <span>Edit Question</span>
-        </v-tooltip>
-        <v-tooltip bottom>
+        </v-tooltip>-->
+        <!-- <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
               small
@@ -106,18 +121,18 @@
             >
           </template>
           <span>Delete Question</span>
-        </v-tooltip>
+        </v-tooltip>-->
       </template>
     </v-data-table>
-    <edit-question-dialog
-      v-if="currentQuestion"
-      v-model="editQuestionDialog"
-      :question="currentQuestion"
-      v-on:save-question="onSaveQuestion"
-    />
     <change-question-state-dialog
       v-if="currentQuestion"
       v-model="changedQuestionDialog"
+      :question="currentQuestion"
+      v-on:save-question="onSaveQuestion"
+    />
+    <approved-question-dialog
+      v-if="currentQuestion"
+      v-model="approvedQuestionDialog"
       :question="currentQuestion"
       v-on:save-question="onSaveQuestion"
     />
@@ -139,15 +154,15 @@ import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
-import EditQuestionDialog from '@/views/teacher/questions/EditQuestionDialog.vue';
 import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue';
 import ChangeQuestionStateDialog from '@/views/teacher/questions/ChangeQuestionStateDialog.vue';
+import ApprovedQuestionDialog from '@/views/teacher/questions/ApprovedQuestionDialog.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
     'change-question-state-dialog': ChangeQuestionStateDialog,
-    'edit-question-dialog': EditQuestionDialog,
+    'approved-question-dialog': ApprovedQuestionDialog,
     'edit-question-topics': EditQuestionTopics
   }
 })
@@ -158,6 +173,7 @@ export default class QuestionsSubmittedView extends Vue {
   editQuestionDialog: boolean = false;
   questionDialog: boolean = false;
   changedQuestionDialog: boolean = false;
+  approvedQuestionDialog: boolean = false;
   search: string = '';
 
   headers: object = [
@@ -274,9 +290,9 @@ export default class QuestionsSubmittedView extends Vue {
     this.changedQuestionDialog = true;
   }
 
-  editQuestion(question: Question) {
+  approveQuestionDialog(question: Question) {
     this.currentQuestion = question;
-    this.editQuestionDialog = true;
+    this.approvedQuestionDialog = true;
   }
 
   async onSaveQuestion(question: Question) {
@@ -302,7 +318,7 @@ export default class QuestionsSubmittedView extends Vue {
     }
   }
 
-  async deleteQuestion(toDeletequestion: Question) {
+  /*  async deleteQuestion(toDeletequestion: Question) {
     if (
       toDeletequestion.id &&
       confirm('Are you sure you want to delete this question?')
@@ -316,7 +332,7 @@ export default class QuestionsSubmittedView extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
-  }
+  }*/
 }
 </script>
 

@@ -13,6 +13,7 @@ export const questionWithFigure = new Question({
   creationDate: null,
   status: 'AVAILABLE',
   justification: 'PENDING',
+  approved: false,
   options: [
     {
       id: 1578,
@@ -74,6 +75,7 @@ export const questionWithoutFigure = new Question({
   creationDate: null,
   status: 'AVAILABLE',
   justification: 'PENDING',
+  approved: false,
   options: [
     {
       id: 1578,

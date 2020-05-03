@@ -201,6 +201,9 @@ public class QuestionService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public QuestionDto questionSetApproved(Integer questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        //NOVO
+        if ( question.getStatus() != Question.Status.AVAILABLE)
+            throw new TutorException(QUESTION_APPROVED_WHILE_NOT_AVAILABLE, questionId);
 
         question.setApproved();
         return new QuestionDto(question);

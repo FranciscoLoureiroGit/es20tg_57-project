@@ -291,6 +291,18 @@ export default class RemoteServices {
       });
   }
 
+  //NOVO metodo
+  static async approveQuestion(questionId: number): Promise<Question> {
+    return httpClient
+      .post(`/questions/${questionId}/approve-question`)
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async uploadImage(file: File, questionId: number): Promise<string> {
     let formData = new FormData();
     formData.append('file', file);
