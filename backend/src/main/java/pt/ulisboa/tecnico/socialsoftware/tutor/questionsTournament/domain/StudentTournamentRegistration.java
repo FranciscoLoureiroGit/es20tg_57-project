@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain;
 
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -27,11 +28,11 @@ public class StudentTournamentRegistration {
     private QuestionsTournament questionsTournament;
 
     public StudentTournamentRegistration() {
-        registrationDate = LocalDateTime.now();
+        registrationDate = DateHandler.now();
     }
 
     public StudentTournamentRegistration(User user, QuestionsTournament questionsTournament) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateHandler.now();
         checkStartedOrEndedTournament(questionsTournament, now);
         setupRegistration(user, questionsTournament, now);
     }

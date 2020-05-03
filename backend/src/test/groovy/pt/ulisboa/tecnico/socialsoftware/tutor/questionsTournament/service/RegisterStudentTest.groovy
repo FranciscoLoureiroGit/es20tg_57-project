@@ -184,6 +184,9 @@ class RegisterStudentTest extends Specification {
         for(question in tournament.quiz.getQuizQuestions()){
             question.id == question1.id || question2.id
         }
+        tournament.quiz.availableDate == tournament.startingDate
+        tournament.quiz.conclusionDate == tournament.endingDate
+        tournament.quiz.resultsDate == tournament.endingDate
 
         where:
         maxQuestions    ||  numberOfQuestions

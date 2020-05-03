@@ -51,8 +51,10 @@ public class QuestionsTournament {
     }
 
     public QuestionsTournament(QuestionsTournamentDto questionsTournamentDto){
-        setStartingDate(DateHandler.toLocalDateTime(questionsTournamentDto.getStartingDate()));
-        setEndingDate(DateHandler.toLocalDateTime(questionsTournamentDto.getEndingDate()));
+        if(DateHandler.isValidDateFormat(questionsTournamentDto.getStartingDate()))
+            setStartingDate(DateHandler.toLocalDateTime(questionsTournamentDto.getStartingDate()));
+        if(DateHandler.isValidDateFormat(questionsTournamentDto.getEndingDate()))
+            setEndingDate(DateHandler.toLocalDateTime(questionsTournamentDto.getEndingDate()));
         setNumberOfQuestions(questionsTournamentDto.getNumberOfQuestions());
     }
 
@@ -139,7 +141,7 @@ public class QuestionsTournament {
     }
 
     public boolean isOpen(){
-        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime currentTime = DateHandler.now();
         return currentTime.isBefore(this.startingDate);
     }
 
