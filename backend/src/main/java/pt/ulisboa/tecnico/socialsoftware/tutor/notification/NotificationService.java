@@ -1,9 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.notification;
 
-import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -17,13 +16,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.notification.repository.Notificat
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +36,7 @@ public class NotificationService {
     private UserRepository userRepository;
 
     @Autowired
-    private static JavaMailSender sender;
+    private JavaMailSender mailSender;
 
     @Retryable(
             value = { SQLException.class },
@@ -51,23 +46,22 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(notificationDto.getId()).orElseThrow(() ->
                 new TutorException(NOTIFICATION_NOT_FOUND, notificationDto.getId()));
 
-        MimeMessage message = sender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+        SimpleMailMessage message = new SimpleMailMessage();
 
         try {
-            helper.setTo(notification.getUser().getEmail());
-            helper.setText(EMAIL_HEADER + notification.getDescription());
-            helper.setSubject(SUBJECT_HEADER + notification.getTitle());
-        } catch (MessagingException e) {
+            message.setTo(notification.getUser().getEmail());
+            message.setText(EMAIL_HEADER + notification.getDescription());
+            message.setSubject(SUBJECT_HEADER + notification.getTitle());
+            mailSender.send(message);
+        } catch (NullPointerException e) {
             throw new TutorException(MAIL_ERROR);
         }
-        sender.send(message);
     }
 
     /**
      * Method is used for checking pending notifications and sending them to the user if the time is right,
      * it can also call other services by itself
-     * @apiNote  This is a highly cpu-bound process and should be done every 10min
+     * @apiNote  This is a highly cpu-bound process and should be done every 5min
      * @see pt.ulisboa.tecnico.socialsoftware.tutor.config.ScheduledTasks
      * */
     @Retryable(
@@ -79,7 +73,7 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findPending();
 
         for (Notification notification: notifications) {
-            if (notification.getTimeToDeliver().isBefore(LocalDateTime.now())) {
+            if (notification.getTimeToDeliver() != null && notification.getTimeToDeliver().isBefore(LocalDateTime.now())) {
                 // then the user can be notified
                 sendNotification(notification);
             }
@@ -95,8 +89,10 @@ public class NotificationService {
         // adds notification to user and sends email
         User user = notification.getUser();
         user.addNotification(notification);
-        sendEmail(new NotificationDto(notification));
         notification.setStatus(Notification.Status.DELIVERED);
+
+        if (notification.getUser().getEmail() != null)
+            sendEmail(new NotificationDto(notification));
     }
 
     @Retryable(
@@ -109,7 +105,7 @@ public class NotificationService {
             checkInput(notificationDto);
             Notification notification = setNotificationValues(notificationDto, user);
             notificationRepository.save(notification);
-            if (!notificationDto.getStatus().equals(Notification.Status.PENDING.name())) {
+            if (!notificationDto.getStatus().equals(Notification.Status.PENDING.name()) && notificationDto.getTimeToDeliver() == null) {
                 // SendNotification if not pending
                 sendNotification(notification);
             }
@@ -123,9 +119,12 @@ public class NotificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void deleteNotification(NotificationDto notificationDto, Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new TutorException(USER_NOT_FOUND, userId));
+    public void deleteNotification(NotificationDto notificationDto) {
+        if (notificationDto.getUserId() == null)
+            throw new TutorException(NOTIFICATION_MISSING_DATA);
+
+        User user = userRepository.findById(notificationDto.getUserId()).orElseThrow(() ->
+                new TutorException(USER_NOT_FOUND, notificationDto.getUserId()));
 
         Notification notification = notificationRepository.findById(notificationDto.getId()).orElseThrow(() ->
                 new TutorException(NOTIFICATION_NOT_FOUND, notificationDto.getId()));
@@ -142,14 +141,9 @@ public class NotificationService {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new TutorException(USER_NOT_FOUND, userId));
 
-        // Converts set to list
-        List<Notification> notifications = new ArrayList<>(user.getNotifications());
-
         // Removes all active user notifications (non-pending)
         user.removeAllNotifications();
-        for (Notification notification : notifications) {
-            notificationRepository.delete(notification);
-        }
+        notificationRepository.removeUserNotifications(userId);
     }
 
     @Retryable(
@@ -172,12 +166,14 @@ public class NotificationService {
     }
 
     private void checkInput(NotificationDto notificationDto) {
-        if(notificationDto.getTitle().equals("") || notificationDto.getDescription().equals("") ||
-                notificationDto.getTimeToDeliver().equals("")){
+        if(notificationDto.getTitle().equals("") || notificationDto.getDescription().equals("")){
             throw new TutorException(NOTIFICATION_MISSING_DATA);
-        } else if (LocalDateTime.parse(notificationDto.getTimeToDeliver(),
+        } else if (notificationDto.getTimeToDeliver() != null && LocalDateTime.parse(notificationDto.getTimeToDeliver(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).isBefore(LocalDateTime.now())) {
             throw new TutorException(NOTIFICATION_DELIVER_DATE_INVALID);
+        } else if (!(notificationDto.getStatus().equals(Notification.Status.PENDING.name()) ||
+                notificationDto.getStatus().equals(Notification.Status.DELIVERED.name()))) {
+            throw new TutorException(NOTIFICATION_STATUS_NOT_ALLOWED);
         }
     }
 

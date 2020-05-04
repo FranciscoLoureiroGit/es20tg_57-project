@@ -44,13 +44,15 @@ public class Notification {
         this.title = notificationDto.getTitle();
         this.description = notificationDto.getDescription();
 
-        if (notificationDto.getStatus() != null)
+        if (notificationDto.getStatus() != null) {
             this.status = Notification.Status.valueOf(notificationDto.getStatus());
-        else
+            if (Notification.Status.valueOf(notificationDto.getStatus()) == Status.PENDING && notificationDto.getTimeToDeliver() != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                this.timeToDeliver = LocalDateTime.parse(notificationDto.getTimeToDeliver(), formatter);
+            }
+        }
+        else {
             this.status = Status.PENDING;
-        if(notificationDto.getTimeToDeliver() != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            this.timeToDeliver = LocalDateTime.parse(notificationDto.getTimeToDeliver(), formatter);
         }
     }
 

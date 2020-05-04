@@ -539,8 +539,6 @@ public class User implements UserDetails, DomainEntity {
     }
 
     public void removeAllNotifications() {
-        for (Notification not : notifications) {
-            this.notifications.remove(not);
-        }
+        this.notifications = new HashSet<>();
     }
 }

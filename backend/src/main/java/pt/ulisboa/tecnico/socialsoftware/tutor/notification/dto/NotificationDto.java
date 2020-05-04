@@ -15,7 +15,12 @@ public class NotificationDto {
 
     public NotificationDto() {}
 
-    public NotificationDto(String title, String description, String status, Integer userId, String timeToDeliver) {}
+    public NotificationDto(String title, String description, String status, Integer userId) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.userId = userId;
+    }
 
     public NotificationDto(Notification notification) {
         this.id = notification.getId();
