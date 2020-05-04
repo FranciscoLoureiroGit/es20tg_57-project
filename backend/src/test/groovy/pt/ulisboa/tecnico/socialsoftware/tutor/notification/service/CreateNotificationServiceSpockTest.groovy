@@ -60,6 +60,7 @@ class CreateNotificationServiceSpockTest extends Specification {
         def studentDto = new UserDto(student)
         and: "a notificationDto"
         NotificationDto notificationDto = new NotificationDto(TITLE, DESCRIPTION, "DELIVERED", student.getId())
+        notificationDto.setUrgent(true) // enables email sending service
 
         when:
         notificationService.createNotification(notificationDto, studentDto.getId())

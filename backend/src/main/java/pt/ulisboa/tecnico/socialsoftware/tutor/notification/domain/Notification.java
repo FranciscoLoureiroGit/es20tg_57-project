@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 @Table(name = "notifications")
 public class Notification {
     public enum Status {
-        PENDING, DELIVERED, READ, DELETED
+        PENDING, DELIVERED, READ
     }
 
     @Id
@@ -26,6 +26,9 @@ public class Notification {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "urgent")
+    private Boolean urgent = false;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -43,7 +46,7 @@ public class Notification {
         this.id = notificationDto.getId();
         this.title = notificationDto.getTitle();
         this.description = notificationDto.getDescription();
-
+        this.urgent = notificationDto.isUrgent();
         if (notificationDto.getStatus() != null) {
             this.status = Notification.Status.valueOf(notificationDto.getStatus());
             if (Notification.Status.valueOf(notificationDto.getStatus()) == Status.PENDING && notificationDto.getTimeToDeliver() != null) {
@@ -57,6 +60,15 @@ public class Notification {
     }
 
     // GETTERS AND SETTERS
+
+
+    public Boolean getUrgent() {
+        return urgent;
+    }
+
+    public void setUrgent(Boolean urgent) {
+        this.urgent = urgent;
+    }
 
     public Integer getId() {
         return id;

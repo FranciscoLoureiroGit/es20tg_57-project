@@ -19,6 +19,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +92,8 @@ public class NotificationService {
         user.addNotification(notification);
         notification.setStatus(Notification.Status.DELIVERED);
 
-        if (notification.getUser().getEmail() != null)
+        // If is urgent notification, sends email
+        if (notification.getUser().getEmail() != null && notification.getUrgent())
             sendEmail(new NotificationDto(notification));
     }
 
@@ -141,19 +143,21 @@ public class NotificationService {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new TutorException(USER_NOT_FOUND, userId));
 
-        // Removes all active user notifications (non-pending)
-        user.removeAllNotifications();
-        notificationRepository.removeUserNotifications(userId);
+        List<Notification> notifications = new ArrayList<>(user.getNotifications());
+
+        for (Notification notification : notifications) {
+            this.deleteNotification(new NotificationDto(notification));
+        }
     }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void changeNotificationStatus(Integer notificationId, Notification.Status status) {
-        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() ->
-                new TutorException(NOTIFICATION_NOT_FOUND, notificationId));
-        notification.setStatus(status);
+    public void changeNotificationStatus(NotificationDto notificationDto) {
+        Notification notification = notificationRepository.findById(notificationDto.getId()).orElseThrow(() ->
+                new TutorException(NOTIFICATION_NOT_FOUND, notificationDto.getId()));
+        notification.setStatus(Notification.Status.valueOf(notificationDto.getStatus()));
     }
 
     @Retryable(

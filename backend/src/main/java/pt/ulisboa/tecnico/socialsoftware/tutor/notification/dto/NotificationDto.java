@@ -12,6 +12,7 @@ public class NotificationDto {
     private Integer userId;
     private String creationDate;
     private String timeToDeliver;
+    private boolean urgent = false;
 
     public NotificationDto() {}
 
@@ -35,6 +36,14 @@ public class NotificationDto {
         if (notification.getTimeToDeliver() != null)
             this.timeToDeliver = notification.getTimeToDeliver().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
+    }
+
+    public boolean isUrgent() {
+        return urgent;
+    }
+
+    public void setUrgent(boolean urgent) {
+        this.urgent = urgent;
     }
 
     public Integer getId() {

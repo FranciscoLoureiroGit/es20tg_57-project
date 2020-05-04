@@ -50,9 +50,12 @@ class ChangeStatusNotificationServiceSpockTest extends Specification {
     def "get user notifications" () {
         given: "a studentDto"
         def studentDto = new UserDto(student)
+        and: "a notificationDto"
+        NotificationDto notificationDto = new NotificationDto(notification)
+        notificationDto.setStatus("DELIVERED")
 
         when:
-        notificationService.changeNotificationStatus(notification.getId(), Notification.Status.DELIVERED)
+        notificationService.changeNotificationStatus(notificationDto)
 
         then: "the correct notification is inside notificationRepository and user"
         notificationRepository.count() == 1L
