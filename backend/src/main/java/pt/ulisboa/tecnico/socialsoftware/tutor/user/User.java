@@ -13,8 +13,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain.Notification;
 
-import javax.management.Notification;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -534,11 +534,11 @@ public class User implements UserDetails, DomainEntity {
         this.notifications.add(notification);
     }
 
-    public void deleteNotification(Notification notification) {
+    public void removeNotification(Notification notification) {
         this.notifications.remove(notification);
     }
 
-    public void deleteAllNotifications() {
+    public void removeAllNotifications() {
         for (Notification not : notifications) {
             this.notifications.remove(not);
         }

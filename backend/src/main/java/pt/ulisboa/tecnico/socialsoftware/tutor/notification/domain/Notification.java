@@ -1,25 +1,17 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.MimeMessage;
 import javax.persistence.*;
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "notifications")
 public class Notification {
     public enum Status {
-        PENDING, DELIVERED, READ, UNREAD, DELETED
+        PENDING, DELIVERED, READ, DELETED
     }
 
     @Id
@@ -27,7 +19,7 @@ public class Notification {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    private Status status = Status.PENDING;
+    private Status status;
 
     @Column(name = "title")
     private String title;
@@ -56,6 +48,10 @@ public class Notification {
             this.status = Notification.Status.valueOf(notificationDto.getStatus());
         else
             this.status = Status.PENDING;
+        if(notificationDto.getTimeToDeliver() != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            this.timeToDeliver = LocalDateTime.parse(notificationDto.getTimeToDeliver(), formatter);
+        }
     }
 
     // GETTERS AND SETTERS
@@ -115,8 +111,4 @@ public class Notification {
     public void setUser(User user) {
         this.user = user;
     }
-
-    // LOGIC METHODS
-
-
 }

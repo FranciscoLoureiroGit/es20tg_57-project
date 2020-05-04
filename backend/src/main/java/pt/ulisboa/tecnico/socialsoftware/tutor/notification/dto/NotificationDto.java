@@ -15,6 +15,8 @@ public class NotificationDto {
 
     public NotificationDto() {}
 
+    public NotificationDto(String title, String description, String status, Integer userId, String timeToDeliver) {}
+
     public NotificationDto(Notification notification) {
         this.id = notification.getId();
         this.title = notification.getTitle();
