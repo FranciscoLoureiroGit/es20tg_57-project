@@ -26,6 +26,7 @@
         <v-textarea
           outline
           rows="10"
+          data-cy="QuestionContent"
           v-model="editApprovedQuestion.content"
           label="Question"
         ></v-textarea>
@@ -49,13 +50,13 @@
         <v-btn
           color="blue darken-1"
           @click="$emit('dialog', false)"
-          data-cy="Cancel"
+          data-cy="CancelButton"
           >Cancel</v-btn
         >
         <v-btn
           color="blue darken-1"
           @click="saveQuestion"
-          data-cy="saveQuestion"
+          data-cy="saveQuestionButton"
           >Save Changes</v-btn
         >
         <v-btn
@@ -106,7 +107,7 @@ export default class ApprovedQuestionDialog extends Vue {
       if (this.editApprovedQuestion.status != 'AVAILABLE') {
         await this.$store.dispatch(
           'error',
-          'Question must have AVAILABLE status to be edited'
+          'Error: Question must have AVAILABLE status to be edited'
         );
         return;
       }

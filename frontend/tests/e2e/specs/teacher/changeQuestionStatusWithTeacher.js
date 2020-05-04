@@ -1,4 +1,4 @@
-describe('Administration walkthrough', () => {
+describe('Changing status of questions with Teacher walkthrough', () => {
   let date = Date.now();
   before(() => {
     cy.demoStudentLogin();

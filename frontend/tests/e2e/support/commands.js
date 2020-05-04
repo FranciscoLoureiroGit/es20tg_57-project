@@ -301,7 +301,7 @@ Cypress.Commands.add('approveQuestionTest', (title) => {
     .click({ force: true });
   cy.get('[data-cy="Status"]').type('AVAILABLE{enter}', { force: true });
   cy.get('[data-cy="changeQuestionButton"]').click();
-  cy.wait(3);
+  cy.wait(10);
 
   cy.contains(title)
     .parent()
@@ -311,6 +311,45 @@ Cypress.Commands.add('approveQuestionTest', (title) => {
     .find('[data-cy="approveQuestionDialog"]')
     .click({ force: true });
   cy.get('[data-cy="approveQuestionButton"]').click({ force: true });
+});
+
+/*NEW TEST*/
+Cypress.Commands.add('editQuestionTeacherTest', (title, newTitle, content) => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="approveQuestionDialog"]')
+    .click({ force: true });
+  cy.get('[data-cy="QuestionTitle"]').clear({ force: true });
+  cy.get('[data-cy="QuestionTitle"]').type(newTitle);
+  cy.get('[data-cy="saveQuestionButton"]').click({ force: true });
+  cy.closeErrorMessage();
+
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="changeQuestionStateDialog"]')
+    .click({ force: true });
+  cy.get('[data-cy="Status"]').type('AVAILABLE{enter}', { force: true });
+  cy.get('[data-cy="changeQuestionButton"]').click();
+  cy.wait(10);
+
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="approveQuestionDialog"]')
+    .click({ force: true });
+  cy.get('[data-cy="QuestionTitle"]').clear({ force: true });
+  cy.get('[data-cy="QuestionTitle"]').type(newTitle);
+  cy.get('[data-cy="QuestionContent"]').clear({ force: true });
+  cy.get('[data-cy="QuestionContent"]').type(content);
+  cy.get('[data-cy="saveQuestionButton"]').click({ force: true });
 });
 
 Cypress.Commands.add('checkQuestionByStudent', title => {

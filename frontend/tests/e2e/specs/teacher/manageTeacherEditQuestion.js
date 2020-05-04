@@ -1,10 +1,10 @@
-describe('Approval of questions by Teacher walkthrough', () => {
+describe('Modifying questions with Teacher walkthrough', () => {
   before(() => {
     cy.demoStudentLogin();
     cy.get('[data-cy="questions"]').click();
     cy.get('[data-cy="my-questions-button"]').click();
 
-    cy.createQuestionByStudent('NewTestForApprove', 'Testing content', 'Answer 1', 'Answer 2', 'Answer 3', 'Answer 4');
+    cy.createQuestionByStudent('EditTeacherTest', 'Testing content', 'Answer 1', 'Answer 2', 'Answer 3', 'Answer 4');
     cy.contains('Logout').click();
   });
 
@@ -18,7 +18,7 @@ describe('Approval of questions by Teacher walkthrough', () => {
     cy.contains('Logout').click();
   });
 
-  it('login approves question without and with AVAILABLE status', () => {
-    cy.approveQuestionTest('NewTestForApprove');
+  it('login modifies the question without and with Available status', () => {
+    cy.editQuestionTeacherTest('EditTeacherTest', 'NewTitle', 'NewContent');
   });
 });
