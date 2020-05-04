@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.Questions
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.QuestionsTournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.StudentTournamentRegistrationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
@@ -54,6 +55,9 @@ class RegisterStudentTest extends Specification {
 
     @Autowired
     TopicRepository topicRepository
+
+    @Autowired
+    QuizRepository quizRepository
 
     @Autowired
     QuestionRepository questionRepository
@@ -179,11 +183,14 @@ class RegisterStudentTest extends Specification {
 
         then: "quiz is generated"
         tournament.quiz != null
+        def quiz = quizRepository.findById(tournament.quiz.id)
+        quiz != null
         tournament.quiz.getQuizQuestions().size() <= tournament.numberOfQuestions
         tournament.quiz.getQuizQuestions().size() == numberOfQuestions
         for(question in tournament.quiz.getQuizQuestions()){
             question.id == question1.id || question2.id
         }
+        tournament.quiz.questionsTournament == tournament
         tournament.quiz.availableDate == tournament.startingDate
         tournament.quiz.conclusionDate == tournament.endingDate
         tournament.quiz.resultsDate == tournament.endingDate

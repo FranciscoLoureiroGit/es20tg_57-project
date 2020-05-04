@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
                 @Index(name = "quizzes_indx_0", columnList = "key")
         })
 public class Quiz implements DomainEntity {
+
     public enum QuizType {
         EXAM, TEST, GENERATED, PROPOSED, IN_CLASS
     }
@@ -77,6 +79,10 @@ public class Quiz implements DomainEntity {
     @ManyToOne
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
+
+    @OneToOne
+    @JoinColumn(name="questions_tournament_id")
+    private QuestionsTournament questionsTournament = null;
 
     public Quiz() {}
 
@@ -254,6 +260,15 @@ public class Quiz implements DomainEntity {
     public void setCourseExecution(CourseExecution courseExecution) {
         this.courseExecution = courseExecution;
         courseExecution.addQuiz(this);
+    }
+
+    public QuestionsTournament getQuestionsTournament() {
+        return questionsTournament;
+    }
+
+    public void setQuestionsTournament(QuestionsTournament questionsTournament) {
+        if(courseExecution.equals(questionsTournament.getCourseExecution()))
+            this.questionsTournament = questionsTournament;
     }
 
     public void addQuizQuestion(QuizQuestion quizQuestion) {

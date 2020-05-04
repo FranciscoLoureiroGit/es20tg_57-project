@@ -28,7 +28,8 @@ public class QuestionsTournament {
     @Column(name = "ending_date")
     private LocalDateTime endingDate;
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "quiz_id")
     private Quiz quiz = null;
 
     @ManyToMany
@@ -156,9 +157,7 @@ public class QuestionsTournament {
         for(Question question : validQuestions) {
             if(numberOfInsertions >= this.getNumberOfQuestions())
                 break;
-            QuizQuestion quizQuestion = new QuizQuestion();
-            quizQuestion.setQuestion(question);
-            quizQuestion.setQuiz(quiz);
+            QuizQuestion quizQuestion = new QuizQuestion(quiz, question, quiz.getQuizQuestions().size());
             quiz.addQuizQuestion(quizQuestion);
             numberOfInsertions++;
         }

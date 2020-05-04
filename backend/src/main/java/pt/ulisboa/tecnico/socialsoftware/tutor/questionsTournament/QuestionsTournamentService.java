@@ -5,6 +5,8 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
@@ -24,6 +26,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.St
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
@@ -33,6 +36,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,16 +56,19 @@ public class QuestionsTournamentService {
     private UserRepository userRepository;
 
     @Autowired
-    QuestionsTournamentRepository tournamentRepository;
+    private QuestionsTournamentRepository tournamentRepository;
 
     @Autowired
-    QuestionRepository questionRepository;
+    private QuestionRepository questionRepository;
 
     @Autowired
-    QuizRepository quizRepository;
+    private QuizRepository quizRepository;
 
     @Autowired
-    QuizService quizService;
+    private QuizAnswerRepository quizAnswerRepository;
+
+    @Autowired
+    private QuizService quizService;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public CourseDto findTournamentCourseExecution(int tournamentId) {
@@ -109,6 +116,54 @@ public class QuestionsTournamentService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public StatementQuizDto getTournamentQuiz(int userId, int tournamentId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
+        Quiz quiz = tournament.getQuiz();
+        checkTournamentQuiz(quiz);
+        QuizAnswer quizAnswer;
+        if(!isUserInQuizAnswers(quiz, userId)){
+            quizAnswer = new QuizAnswer(user, quiz);
+            quizAnswerRepository.save(quizAnswer);
+        }
+        else{
+            quizAnswer = quizAnswerRepository.findQuizAnswer(quiz.getId(), userId).orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND));
+            if(quizAnswer.isCompleted())
+                return new StatementQuizDto();
+        }
+        return new StatementQuizDto(quizAnswer);
+
+
+    }
+
+    private void checkTournamentQuiz(Quiz quiz) {
+        if(quiz == null)
+            throw new TutorException(QUIZ_ALREADY_COMPLETED);
+        if(!isTournamentQuizAvailable(quiz))
+            throw new TutorException(TOURNAMENT_NOT_AVAILABLE);
+    }
+
+    private boolean isTournamentQuizAvailable(Quiz quiz) {
+        LocalDateTime now = DateHandler.now();
+        if(quiz.getAvailableDate() == null || quiz.getAvailableDate().isBefore(now)) {
+            return quiz.getConclusionDate() == null || quiz.getConclusionDate().isAfter(now);
+        }
+        return false;
+    }
+
+    private boolean isUserInQuizAnswers(Quiz quiz, int userId) {
+        Set<QuizAnswer> quizAnswers = quiz.getQuizAnswers();
+        for(QuizAnswer quizAnswer : quizAnswers) {
+            if(quizAnswer.getUser().getId() == userId)
+                return true;
+        }
+        return false;
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void cancelTournament(int userId, Integer tournamentId){
         User user = getUserFromRepository(userId);
         QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
@@ -118,7 +173,7 @@ public class QuestionsTournamentService {
             tournamentRepository.deleteById(tournamentId);
             courseExecution.deleteTournament(tournament);
         } else{
-          throw new TutorException(USER_NOT_TOURNAMENT_CREATOR);
+            throw new TutorException(USER_NOT_TOURNAMENT_CREATOR);
         }
     }
 
@@ -198,8 +253,11 @@ public class QuestionsTournamentService {
         quiz.setAvailableDate(questionsTournament.getStartingDate());
         quiz.setConclusionDate(questionsTournament.getEndingDate());
         quiz.setResultsDate(questionsTournament.getEndingDate());
+        quiz.setCourseExecution(questionsTournament.getCourseExecution());
+        questionsTournament.getCourseExecution().addQuiz(quiz);
         questionsTournament.generateQuizQuestions(quiz);
         quizRepository.save(quiz);
+        quiz.setQuestionsTournament(questionsTournament);
         questionsTournament.setQuiz(quiz);
     }
 

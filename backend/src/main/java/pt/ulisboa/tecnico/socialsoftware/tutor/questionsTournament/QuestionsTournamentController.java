@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.StudentTournamentRegistrationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.validation.Valid;
 import java.security.Principal;
@@ -47,6 +48,14 @@ public class QuestionsTournamentController {
         User user = getAuthenticationUser(principal);
         return this.questionsTournamentService.getRegisteredTournaments(executionId, user.getId());
     }
+
+    @GetMapping("/questionsTournament/{questionsTournamentId}/quiz")
+    @PreAuthorize("(hasRole('ROLE_STUDENT')) and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS')")
+    public StatementQuizDto getTournamentQuiz(Principal principal, @PathVariable Integer questionsTournamentId) {
+        User user = getAuthenticationUser(principal);
+        return this.questionsTournamentService.getTournamentQuiz(user.getId(), questionsTournamentId);
+    }
+
     @PostMapping("/questionsTournament/{questionsTournamentId}/cancelTournament")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS')")
     public void cancelTournament(Principal principal, @PathVariable Integer questionsTournamentId) {
