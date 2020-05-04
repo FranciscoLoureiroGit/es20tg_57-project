@@ -47,7 +47,7 @@
       </template>
 
       <template v-slot:item.answers="{ item }">
-        <span v-html="getAnswer(item)" />
+        <span v-html="getAnswer(item)" @click="showClarificationAnswerDialog(item)" />
       </template>
 
       <template v-slot:item.action="{ item }">
@@ -57,7 +57,7 @@
               small
               class="mr-2"
               v-on="on"
-              @click="showClarificationAnswerDialog(item)"
+              @click="showExtraClarificationDialog(item)"
               data-cy="showAnswer"
               >visibility</v-icon
             >
@@ -160,6 +160,30 @@
       v-on:submit-comment="saveCreateExtraClarificationDialog"
     />
 
+      <v-dialog
+          v-if="extraClarificationDialog"
+          v-model="extraClarificationDialog"
+
+          >
+          <list-extra-clarification-dialog
+              :clarification="currentClarification"/>
+          <v-card>
+
+              <v-card-actions>
+                  <v-spacer />
+                  <v-btn
+                          data-cy="closeButton"
+                          dark
+                          color="blue darken-1"
+                          @click="closeExtraClarificationDialog"
+                  >close</v-btn
+                  >
+              </v-card-actions></v-card>
+
+
+      </v-dialog>
+
+
   </v-card>
 </template>
 
@@ -177,6 +201,7 @@ import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
 import ExtraClarification from '@/models/management/ExtraClarification';
+import ExtraClarificationListDialog from '@/views/student/clarifications/ExtraClarificationListDialog.vue';
 
 @Component({
   components: {
@@ -184,7 +209,8 @@ import ExtraClarification from '@/models/management/ExtraClarification';
     'show-clarification-dialog': ShowClarificationDialog,
     'show-question-dialog': ShowQuestionDialog,
     'create-clarification-answer-dialog': ClarificationAnswerView,
-    'create-extra-clarification-answer-dialog': ExtraClariifcationDialog
+    'create-extra-clarification-answer-dialog': ExtraClariifcationDialog,
+    'list-extra-clarification-dialog': ExtraClarificationListDialog
   }
 })
 export default class ClarificationsManagementView extends Vue {
@@ -196,6 +222,7 @@ export default class ClarificationsManagementView extends Vue {
   clarificationAnswerDialog: boolean = false;
   clarificationDialog: boolean = false;
   questionDialog: boolean = false;
+  extraClarificationDialog: boolean = false;
 
   createExtraClarificationDialog: boolean = false;
   extraClarification: ExtraClarification | null = null;
@@ -339,13 +366,25 @@ export default class ClarificationsManagementView extends Vue {
                 this.currentClarification!.questionAnswerDto!.id,
                 this.extraClarification
         );
+        this.currentClarification!.extraClarificationDtos[this.currentClarification!.extraClarificationDtos!.length] = this.extraClarification;
+        this.currentClarification!.status = 'CLOSED';
 
       }
 
     }catch (error) {
       await this.$store.dispatch('error', error);
     }
+
     this.closeCreateExtraClarificationDialog();
+  }
+
+  showExtraClarificationDialog(clarification: Clarification) {
+    this.currentClarification = clarification;
+    this.extraClarificationDialog = true;
+  }
+
+  closeExtraClarificationDialog() {
+    this.extraClarificationDialog = false;
   }
 
   async changePrivacy(clarification: Clarification) {

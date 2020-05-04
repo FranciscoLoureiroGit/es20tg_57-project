@@ -3,6 +3,7 @@ export default class ExtraClarification {
   comment: string = '';
   commentType: string = '';
   parentClarificationId: number | null = null;
+  creationDate: string = '';
 
   constructor(jsonObj?: ExtraClarification) {
     if (jsonObj) {
@@ -10,6 +11,7 @@ export default class ExtraClarification {
       this.comment = jsonObj.comment;
       this.commentType= jsonObj.commentType;
       this.parentClarificationId = jsonObj.parentClarificationId;
+      this.creationDate = jsonObj.creationDate
     }
   }
 }

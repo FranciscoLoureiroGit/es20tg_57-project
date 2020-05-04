@@ -97,42 +97,28 @@
               clarification.clarificationAnswerDto.answer
               }}</v-card-title>
 
-            <v-list
-                    :three-line=true
-                    :shaped=true
-            >
-              <v-subheader>Additional Discussion </v-subheader>
-              <v-list-item-group color="primary">
-                <v-list-item
-                        v-for="(item, i) in this.clarification.extraClarificationDtos"
-                        :key="i"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title v-html="item.commentType"></v-list-item-title>
-                    <v-list-item-subtitle v-html="item.comment"></v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
 
-            <li
-              class="list-row"
-              style="padding-left: 3vh; padding-bottom: 2vh; font-size: 1.3vh"
-            >
+            <!-- ADD LIST HERE -->
+            <extra-clarification-list-dialog
+              :clarification="clarification"
+              />
 
+
+            <li class="list-row"
+              style="padding-left: 3vh; padding-bottom: 2vh; font-size: 1.3vh">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-icon
-                    medium
-                    class="mr-2"
-                    v-on="on"
-                    @click="showExtraClarificationCreateDialog"
-                    >mdi-forum</v-icon
-                  >
+                          medium
+                          class="mr-2"
+                          v-on="on"
+                          @click="showExtraClarificationCreateDialog"
+                          :disabled="extraCommentEnable">
+                    mdi-forum
+                  </v-icon>
                 </template>
                 <span>Add Comment</span>
               </v-tooltip>
-
             </li>
             <br />
           </div>
@@ -163,9 +149,14 @@ import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import ExtraClarification from '@/models/management/ExtraClarification';
 import ExtraClarificationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
 import RemoteServices from '@/services/RemoteServices';
+import ExtraClarificationListDialog from '@/views/student/clarifications/ExtraClarificationListDialog.vue';
 
 @Component({
-  components: {'create-extra-clarification-dialog' : ExtraClarificationDialog}
+  components: {
+    ExtraClarificationListDialog,
+    'create-extra-clarification-dialog' : ExtraClarificationDialog,
+    'list-extra-clarifications' : ExtraClarificationListDialog
+  }
 })
 export default class ClarificationDialogue extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
@@ -173,7 +164,7 @@ export default class ClarificationDialogue extends Vue {
   readonly clarification!: Clarification;
 
 
-
+  extraCommentEnable: boolean = true;
 
   extraClarificationCreateDialog: boolean = false;
   newExtraClarification : ExtraClarification | null = null;
@@ -182,6 +173,9 @@ export default class ClarificationDialogue extends Vue {
   extraClarification : ExtraClarification | null = null;
 
 
+  created(){
+    this.extraCommentButtonStatus();
+  }
 
 
   showExtraClarificationCreateDialog() {
@@ -205,12 +199,19 @@ export default class ClarificationDialogue extends Vue {
                 this.clarification!.questionAnswerDto!.id,
                 this.newExtraClarification!
         );
+        this.clarification.extraClarificationDtos[this.clarification.extraClarificationDtos.length] = this.extraClarification;
 
       }
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
+
+    this.extraCommentButtonStatus();
     this.closeExtraClarificationCreateDialog();
+  }
+
+  extraCommentButtonStatus() {
+    this.extraCommentEnable = this.clarification.extraClarificationDtos.length%2 !== 0;
   }
 
   convertMarkDown(text: string, image: Image | null = null): string {
