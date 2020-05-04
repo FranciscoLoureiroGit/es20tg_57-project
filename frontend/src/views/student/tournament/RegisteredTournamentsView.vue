@@ -6,14 +6,11 @@
       @showOpenTournamentMode="showOpenTournamentMode"
       @showStartedTournament="showStartedTournament"
     />
-    <open-tournament-dialog
-      :questions-tournament="questionsTournament"
-      :open-tournament-mode="openTournamentMode"
-      @closeOpenTournamentMode="closeOpenTournamentMode"
-    />
     <started-tournament-dialog
       :questions-tournament="questionsTournament"
       :started-tournament-mode="startedTournamentMode"
+      :quiz="quiz"
+      @closeStartedTournamentDialog="closeStartedTournamentDialog"
     />
   </div>
 </template>
@@ -23,18 +20,19 @@ import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import RegisteredTournamentsList from '@/views/student/tournament/RegisteredTournamentsList.vue';
-import OpenTournamentDialog from '@/views/student/tournament/OpenTournamentDialog.vue';
+
 import StartedTournamentDialog from '@/views/student/tournament/StartedTournamentDialog.vue';
+import StatementQuiz from '@/models/statement/StatementQuiz';
 @Component({
   components: {
     RegisteredTournamentsList,
-    OpenTournamentDialog,
     StartedTournamentDialog
   }
 })
 export default class RegisteredTournamentsView extends Vue {
   questionsTournaments: QuestionsTournament[] = [];
   questionsTournament: QuestionsTournament | null = null;
+  quiz: StatementQuiz | null = null;
   openTournamentMode: boolean = false;
   startedTournamentMode: boolean = false;
 
@@ -55,14 +53,18 @@ export default class RegisteredTournamentsView extends Vue {
     this.questionsTournament = tournament;
   }
 
-  closeOpenTournamentMode() {
-    this.openTournamentMode = false;
-
+  async showStartedTournament(tournament: QuestionsTournament) {
+    this.questionsTournament = tournament;
+    this.quiz = await RemoteServices.getTournamentQuiz(
+      this.questionsTournament
+    );
+    this.startedTournamentMode = true;
   }
 
-  showStartedTournament(tournament: QuestionsTournament) {
-    this.questionsTournament = tournament;
-    this.startedTournamentMode = true;
+  closeStartedTournamentDialog() {
+    this.questionsTournament = null;
+    this.quiz = null;
+    this.startedTournamentMode = false;
   }
 }
 </script>

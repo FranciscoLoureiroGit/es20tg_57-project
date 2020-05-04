@@ -3,6 +3,7 @@ import User from '@/models/user/User';
 import Course from '@/models/user/Course';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 import { ISOtoString } from '@/services/ConvertDateService';
+import { Quiz } from '@/models/management/Quiz';
 
 export class QuestionsTournament {
   id!: number;
@@ -11,6 +12,7 @@ export class QuestionsTournament {
   numberOfQuestions!: number;
   studentTournamentCreator!: User;
   course!: Course;
+  quiz!: Quiz;
 
   topics: Topic[] = [];
   studentTournamentRegistrations: QuestionsTournamentRegistration[] = [];
@@ -23,6 +25,7 @@ export class QuestionsTournament {
       this.numberOfQuestions = jsonObj.numberOfQuestions;
       this.studentTournamentCreator = jsonObj.studentTournamentCreator;
       this.course = jsonObj.course;
+      this.quiz = jsonObj.quiz;
 
       if (jsonObj.topics) {
         this.topics = jsonObj.topics.map((topic: Topic) => new Topic(topic));

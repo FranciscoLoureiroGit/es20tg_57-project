@@ -75,7 +75,7 @@ export default class RegisteredTournamentsList extends Vue {
     let state = this.getState(tournament);
     switch (state) {
       case 'Open': {
-        this.$emit('showOpenTournamentMode', tournament);
+        alert('Tournament not started yet\nTime Remaining: ' + this.timeToStart(tournament));
         break;
       }
       case 'Started': {
@@ -84,6 +84,12 @@ export default class RegisteredTournamentsList extends Vue {
       }
     }
   }
+
+  timeToStart(tournament: QuestionsTournament): string {
+    let date = Date.parse(tournament.startingDate) - Date.now();
+    return milisecondsToHHMMSS(date).toString();
+  }
+
 }
 </script>
 
