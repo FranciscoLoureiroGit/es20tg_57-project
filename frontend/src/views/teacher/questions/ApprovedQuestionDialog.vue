@@ -12,7 +12,7 @@
           {{
             editApprovedQuestion && editApprovedQuestion.id === null
               ? 'New Question'
-              : 'Edit Question and Approve Question'
+              : 'Edit Question'
           }}
         </span>
       </v-card-title>
@@ -46,11 +46,13 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn color="blue darken-1" @click="$emit('dialog', false)"
+        <v-btn color="blue darken-1" @click="$emit('dialog', false)" data-cy="Cancel"
           >Cancel</v-btn
         >
-        <v-btn color="blue darken-1" @click="saveQuestion">Save Changes</v-btn>
-        <v-btn color="green darken-1" @click="approveStudentQuestion"
+        <v-btn color="blue darken-1" @click="saveQuestion" data-cy="saveQuestion"
+          >Save Changes</v-btn
+        >
+        <v-btn color="green darken-1" @click="approveStudentQuestion" data-cy="approveQuestionButton"
           >Approve</v-btn
         >
       </v-card-actions>

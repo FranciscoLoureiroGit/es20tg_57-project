@@ -100,7 +100,7 @@
           <span>Approve Question</span>
         </v-tooltip>
         <!--Ends here-->
-        <!-- <v-tooltip bottom>
+        <!--  <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
               small
@@ -310,7 +310,7 @@ export default class QuestionsSubmittedView extends Vue {
     }
   }
 
-  /*  async deleteQuestion(toDeletequestion: Question) {
+  /*    async deleteQuestion(toDeletequestion: Question) {
     if (
       toDeletequestion.id &&
       confirm('Are you sure you want to delete this question?')

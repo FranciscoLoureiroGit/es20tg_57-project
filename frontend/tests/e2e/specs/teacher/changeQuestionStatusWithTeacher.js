@@ -26,7 +26,6 @@ describe('Administration walkthrough', () => {
   });
 
   it('login changes the state to REMOVED and puts a justification', () => {
-    /* falta o teste para criar a pergunta com o titulo 'RemoveTest' */
     cy.changeQuestionToRemovedTest('New Testing Questions '+String(date),'removejustification')
   });
 

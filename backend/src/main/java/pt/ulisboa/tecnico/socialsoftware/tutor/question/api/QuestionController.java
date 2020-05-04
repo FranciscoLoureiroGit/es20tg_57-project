@@ -67,7 +67,7 @@ public class QuestionController {
 
     @GetMapping("/courses/{courseId}/questions/availableFiltered")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
-    public List<QuestionDto> getAvailableQuestionsIncludesMadeByStudentsAccepted(@PathVariable int courseId){
+    public List<QuestionDto> getAllApprovedQuestions(@PathVariable int courseId){
         return questionService.findAvailableQuestionsWithStudentsIncluded(courseId);
     }
 

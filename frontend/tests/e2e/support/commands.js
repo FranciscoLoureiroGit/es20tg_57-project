@@ -281,6 +281,38 @@ Cypress.Commands.add('changeQuestionToDisabledTest', (title, justification) => {
   cy.get('[data-cy="changeQuestionButton"]').click();
 });
 
+Cypress.Commands.add('approveQuestionTest', (title) => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="approveQuestionDialog"]')
+    .click({ force: true });
+  cy.get('[data-cy="approveQuestionButton"]').click({ force: true });
+  cy.closeErrorMessage();
+
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="changeQuestionStateDialog"]')
+    .click({ force: true });
+  cy.get('[data-cy="Status"]').type('AVAILABLE{enter}', { force: true });
+  cy.get('[data-cy="changeQuestionButton"]').click();
+  cy.wait(3);
+
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="approveQuestionDialog"]')
+    .click({ force: true });
+  cy.get('[data-cy="approveQuestionButton"]').click({ force: true });
+});
+
 Cypress.Commands.add('checkQuestionByStudent', title => {
   cy.get('[data-cy="search-question"]').type(title, { force: true });
   cy.get('[data-cy="show-question"]').click();
