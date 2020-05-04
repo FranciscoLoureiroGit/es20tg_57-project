@@ -78,7 +78,7 @@
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">newReq</stringProp>
           <stringProp name="queryType">Callable Statement</stringProp>
-          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id, approved) VALUES (50500,&apos;Question_Content_Approved&apos;,100, 70, &apos;Question_Title_FOR_TEST_APPROVE_STATE&apos;, &apos;PENDING&apos;, 2, &apos;JUSTIFICATION&apos;, 3, false);</stringProp>
+          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id, approved, status_approved) VALUES (50500,&apos;Question_Content_Approved&apos;,100, 70, &apos;Question_Title_FOR_TEST_APPROVE_STATE&apos;, &apos;AVAILABLE&apos;, 2, &apos;JUSTIFICATION&apos;, 3, false, &apos;DISAPPROVED&apos;);</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="variableNames"></stringProp>
@@ -284,7 +284,7 @@
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert question approved" enabled="true">
               <stringProp name="JSON_PATH">$.approved</stringProp>
-              <stringProp name="EXPECTED_VALUE">true</stringProp>
+              <stringProp name="EXPECTED_VALUE">APPROVED</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
