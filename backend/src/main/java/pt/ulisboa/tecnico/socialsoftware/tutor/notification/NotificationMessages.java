@@ -2,8 +2,8 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.notification;
 
 public enum NotificationMessages {
 
-    // TODO IMPLEMENT THE CREATION OF THESE NOTIFICATIONS
-    
+    // TODO IMPLEMENT THE CREATION OF THESE NOTIFICATIONS AFTER FRONTEND IMPLEMENTATION
+
     CLARIFICATION_CREATED_TITLE("New clarification request"),
     CLARIFICATION_CREATED_DESCRIPTION("Student %d has created a clarification request."),
     CLARIFICATION_ANSWERED_TITLE("Teacher answered your clarification request"),
