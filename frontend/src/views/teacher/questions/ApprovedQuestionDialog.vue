@@ -46,13 +46,22 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn color="blue darken-1" @click="$emit('dialog', false)" data-cy="Cancel"
+        <v-btn
+          color="blue darken-1"
+          @click="$emit('dialog', false)"
+          data-cy="Cancel"
           >Cancel</v-btn
         >
-        <v-btn color="blue darken-1" @click="saveQuestion" data-cy="saveQuestion"
+        <v-btn
+          color="blue darken-1"
+          @click="saveQuestion"
+          data-cy="saveQuestion"
           >Save Changes</v-btn
         >
-        <v-btn color="green darken-1" @click="approveStudentQuestion" data-cy="approveQuestionButton"
+        <v-btn
+          color="green darken-1"
+          @click="approveStudentQuestion"
+          data-cy="approveQuestionButton"
           >Approve</v-btn
         >
       </v-card-actions>
@@ -94,6 +103,13 @@ export default class ApprovedQuestionDialog extends Vue {
     }
 
     try {
+      if (this.editApprovedQuestion.status != 'AVAILABLE') {
+        await this.$store.dispatch(
+          'error',
+          'Question must have AVAILABLE status to be edited'
+        );
+        return;
+      }
       const result =
         this.editApprovedQuestion.id != null
           ? await RemoteServices.updateQuestion(this.editApprovedQuestion)
