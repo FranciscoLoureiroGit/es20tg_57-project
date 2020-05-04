@@ -175,6 +175,14 @@ public class QuestionController {
         return questionService.questionSetApproved(questionId);
     }
 
+    @PostMapping("/questions/{questionId}/resubmit-question")
+    @PreAuthorize("(hasRole('ROLE_TEACHER') or hasRole('ROLE_STUDENT'))")
+    public QuestionDto resubmitQuestion(@PathVariable Integer questionId, @Valid @RequestBody QuestionDto question) {
+        questionService.questionSetStatus(questionId, Question.Status.PENDING);
+
+        return questionService.updateQuestion(questionId, question);
+    }
+
     @PutMapping("/questions/{questionId}/image")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public String uploadImage(@PathVariable Integer questionId, @RequestParam("file") MultipartFile file) throws IOException {
