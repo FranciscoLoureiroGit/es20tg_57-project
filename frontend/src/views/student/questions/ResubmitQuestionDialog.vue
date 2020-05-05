@@ -41,6 +41,7 @@
             rows="10"
             v-model="questionToResubmit.options[index - 1].content"
             :label="`Option ${index}`"
+            :data-cy="`option-${index}`"
           ></v-textarea>
         </div>
       </v-card-text>

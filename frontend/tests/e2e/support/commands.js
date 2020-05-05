@@ -367,3 +367,37 @@ Cypress.Commands.add('removeQuestionTest', title => {
     .find('[data-cy="deleteQuestionButton"]')
     .click({ force: true });
 });
+
+Cypress.Commands.add('changeQuestionToRemovedTest', (title) => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="changeQuestionStateDialog"]')
+    .click({force: true})
+  cy.get('[data-cy="Status"]').type('REMOVED{enter}', {force: true})
+  cy.get('[data-cy="changeQuestionButton"]').click()
+});
+
+Cypress.Commands.add('resubmitQuestionSuccessAndInsuccess', (title,questionName,op1,op2,op3,op4) => {
+  cy.get('[data-cy="search-question"]').type(title, {force: true})
+  cy.get('[data-cy="resubmit-question"]').click()
+  cy.get('[data-cy="QuestionTitle"]').clear({force: true})
+  cy.get('[data-cy="QuestionTitle"]').type(questionName, {force: true})
+  cy.get('[data-cy="option-1"]').clear({force: true})
+  cy.get('[data-cy="option-1"]').type(op1, {force: true})
+  cy.get('[data-cy="option-2"]').clear({force: true})
+  cy.get('[data-cy="option-2"]').type(op2, {force: true})
+  cy.get('[data-cy="option-3"]').clear({force: true})
+  cy.get('[data-cy="option-3"]').type(op3, {force: true})
+  cy.get('[data-cy="option-4"]').clear({force: true})
+  cy.get('[data-cy="option-4"]').type(op4, {force: true})
+  cy.get('[data-cy="resubmitQuestionButton"]').click()
+  cy.wait(10)
+  cy.get('[data-cy="search-question"]').clear({force: true})
+  cy.get('[data-cy="search-question"]').type(questionName, {force: true})
+  cy.get('[data-cy="resubmit-question"]').click()
+  cy.get('[data-cy="resubmitQuestionButton"]').click()
+  cy.closeErrorMessage();
+});
