@@ -36,8 +36,6 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,24 +119,12 @@ public class QuestionsTournamentService {
         QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
         Quiz quiz = tournament.getQuiz();
         checkTournamentQuiz(quiz);
-        QuizAnswer quizAnswer;
-        if(!isUserInQuizAnswers(quiz, userId)){
-            quizAnswer = new QuizAnswer(user, quiz);
-            quizAnswerRepository.save(quizAnswer);
-        }
-        else{
-            quizAnswer = quizAnswerRepository.findQuizAnswer(quiz.getId(), userId).orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND));
-            if(quizAnswer.isCompleted())
-                return new StatementQuizDto();
-        }
-        return new StatementQuizDto(quizAnswer);
-
-
+        return getStatementQuizDto(user, quiz);
     }
 
     private void checkTournamentQuiz(Quiz quiz) {
         if(quiz == null)
-            throw new TutorException(QUIZ_ALREADY_COMPLETED);
+            throw new TutorException(TOURNAMENT_QUIZ_NOT_GENERATED);
         if(!isTournamentQuizAvailable(quiz))
             throw new TutorException(TOURNAMENT_NOT_AVAILABLE);
     }
@@ -151,13 +137,20 @@ public class QuestionsTournamentService {
         return false;
     }
 
-    private boolean isUserInQuizAnswers(Quiz quiz, int userId) {
-        Set<QuizAnswer> quizAnswers = quiz.getQuizAnswers();
-        for(QuizAnswer quizAnswer : quizAnswers) {
-            if(quizAnswer.getUser().getId() == userId)
-                return true;
-        }
-        return false;
+    private StatementQuizDto getStatementQuizDto(User user, Quiz quiz) {
+        QuizAnswer quizAnswer = getQuizAnswer(user, quiz);
+        if(quizAnswer.isCompleted())
+            return new StatementQuizDto();
+        else
+            return new StatementQuizDto(quizAnswer);
+    }
+
+    private QuizAnswer getQuizAnswer(User user, Quiz quiz) {
+        return quizAnswerRepository.findQuizAnswer(quiz.getId(), user.getId()).orElseGet(() -> {
+                QuizAnswer qa = new QuizAnswer(user, quiz);
+                quizAnswerRepository.save(qa);
+                return qa;
+            });
     }
 
     @Retryable(

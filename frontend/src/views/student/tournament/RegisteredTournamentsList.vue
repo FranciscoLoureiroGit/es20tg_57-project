@@ -43,7 +43,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import RemoteServices from '@/services/RemoteServices';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import Topic from '@/models/management/Topic';
 import { milisecondsToHHMMSS } from '@/services/ConvertDateService';
@@ -52,8 +51,6 @@ import { milisecondsToHHMMSS } from '@/services/ConvertDateService';
 export default class RegisteredTournamentsList extends Vue {
   @Prop({ type: Array, required: true })
   readonly questionsTournaments!: QuestionsTournament[];
-  openDialog: boolean = false;
-  startedDialog: boolean = false;
 
   getState(tournament: QuestionsTournament): string {
     let currentTime = Date.now();
@@ -75,7 +72,10 @@ export default class RegisteredTournamentsList extends Vue {
     let state = this.getState(tournament);
     switch (state) {
       case 'Open': {
-        alert('Tournament not started yet\nTime Remaining: ' + this.timeToStart(tournament));
+        alert(
+          'Tournament not started yet\nTime Remaining: ' +
+            this.timeToStart(tournament)
+        );
         break;
       }
       case 'Started': {

@@ -5,6 +5,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
@@ -55,6 +57,9 @@ class GetTournamentQuizTest extends Specification {
     UserRepository userRepository
 
     @Autowired
+    QuizAnswerRepository answerRepository
+
+    @Autowired
     TopicRepository topicRepository
 
     @Autowired
@@ -99,10 +104,6 @@ class GetTournamentQuizTest extends Specification {
         student.addCourse(courseExecution)
         tournament.setStudentTournamentCreator(student)
         tournament.setCourseExecution(courseExecution)
-
-
-        tournament.setStartingDate(DateHandler.now().plusSeconds(5))
-        tournament.setEndingDate(DateHandler.now().plusDays(2))
         tournament.addTopic(topic1)
 
 
@@ -114,17 +115,112 @@ class GetTournamentQuizTest extends Specification {
     }
 
     def "get Tournament Quiz"() {
-        given: "a tournamentDto"
+        given: "a tournament opened Dto"
+        tournament.setStartingDate(DateHandler.now().plusSeconds(3))
+        tournament.setEndingDate(DateHandler.now().plusDays(2))
         def tournamentDto = new QuestionsTournamentDto(tournament)
-        and: "a UserDto in tournament"
+
+        and: "a UserDto in tournament and quiz generation"
         def userDto = new UserDto(student1)
         questionsTournamentService.studentRegister(userDto.id, tournamentDto.id)
-        sleep(5000)
+        sleep(3000)
+
         when:
         def result = questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
+
         then:
         result != null
         result.availableDate == tournamentDto.startingDate
+        result.id == tournament.quiz.id
+    }
+
+    def "get Quiz from an open or closed Tournament"() {
+        given: "a tournament Dto"
+        tournament.setStartingDate(sDate)
+        tournament.setEndingDate(eDate)
+        def tournamentDto = new QuestionsTournamentDto(tournament)
+
+        and: "a UserDto in tournament and quiz generation"
+        def userDto = new UserDto(student1)
+        questionsTournamentService.studentRegister(userDto.id, tournamentDto.id)
+        sleep(sleepTime)
+
+        when:
+        questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
+
+        then:
+        def error = thrown(TutorException)
+        error.errorMessage == TOURNAMENT_NOT_AVAILABLE
+
+        where:
+        sDate                           | eDate                              | sleepTime
+        DateHandler.now().plusDays(5)   | DateHandler.now().plusDays(10)     | 0
+        DateHandler.now().plusSeconds(2)| DateHandler.now().plusSeconds(3)   | 3000
+    }
+
+    def "get Tournament Quiz 2 times"() {
+        given: "a tournament opened Dto"
+        tournament.setStartingDate(DateHandler.now().plusSeconds(3))
+        tournament.setEndingDate(DateHandler.now().plusDays(2))
+        def tournamentDto = new QuestionsTournamentDto(tournament)
+
+        and: "a UserDto in tournament and quiz generation"
+        def userDto = new UserDto(student1)
+        questionsTournamentService.studentRegister(userDto.id, tournamentDto.id)
+        sleep(3000)
+
+        when:
+        def result1 = questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
+        def result2 = questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
+
+        then: "both results are the same object"
+        result1 != null
+        result2 != null
+        result1.id == result2.id
+        result1.quizAnswerId == result2.quizAnswerId
+    }
+
+    def "get Tournament Quiz in a already answered quiz"() {
+        given: "a tournament opened Dto"
+        tournament.setStartingDate(DateHandler.now().plusSeconds(3))
+        tournament.setEndingDate(DateHandler.now().plusDays(2))
+        def tournamentDto = new QuestionsTournamentDto(tournament)
+
+        and: "a UserDto in tournament and quiz generation"
+        def userDto = new UserDto(student1)
+        questionsTournamentService.studentRegister(userDto.id, tournamentDto.id)
+        sleep(3000)
+
+        and: "Quiz was answered"
+        def quizAnswer = new QuizAnswer(student1, tournament.quiz)
+        quizAnswer.setCompleted(true)
+        answerRepository.save(quizAnswer)
+
+        when:
+        def result = questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
+
+        then: "result is a statementQuiz empty"
+        result != null
+        result.id == null;
+        result.quizAnswerId == null;
+    }
+
+    def "get Tournament Quiz with quiz not generated"() {
+        given: "a tournament opened Dto"
+        tournament.setStartingDate(DateHandler.now())
+        tournament.setEndingDate(DateHandler.now().plusDays(2))
+        def tournamentDto = new QuestionsTournamentDto(tournament)
+
+        and: "a UserDto in tournament and quiz generation"
+        def userDto = new UserDto(student1)
+
+        when:
+        questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
+
+        then: "error message quiz was not generated"
+        def error = thrown(TutorException)
+        error.errorMessage == TOURNAMENT_QUIZ_NOT_GENERATED
+
     }
 
     @TestConfiguration

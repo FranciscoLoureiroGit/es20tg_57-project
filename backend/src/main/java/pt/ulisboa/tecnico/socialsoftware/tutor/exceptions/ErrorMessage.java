@@ -96,6 +96,7 @@ public enum ErrorMessage {
     TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
     TOURNAMENT_NOT_FOUND("Tournament not found with id %d"),
     TOURNAMENT_NOT_AVAILABLE("Tournament not started or ended"),
+    TOURNAMENT_QUIZ_NOT_GENERATED("Tournament Quiz was not generated"),
     DUPLICATED_REGISTRATION("User already registered in tournament"),
     NULLID("null userId or questionsTournamentId"),
     NO_CLARIFICATION_REQUEST("No such Clarification Request"),

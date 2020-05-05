@@ -1,9 +1,8 @@
 <template>
   <div>
     <registered-tournaments-list
-      v-if="!openTournamentMode && !startedTournamentMode"
+      v-if="!startedTournamentMode"
       :questions-tournaments="questionsTournaments"
-      @showOpenTournamentMode="showOpenTournamentMode"
       @showStartedTournament="showStartedTournament"
     />
     <started-tournament-dialog
@@ -33,7 +32,6 @@ export default class RegisteredTournamentsView extends Vue {
   questionsTournaments: QuestionsTournament[] = [];
   questionsTournament: QuestionsTournament | null = null;
   quiz: StatementQuiz | null = null;
-  openTournamentMode: boolean = false;
   startedTournamentMode: boolean = false;
 
   async created() {
@@ -46,11 +44,6 @@ export default class RegisteredTournamentsView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-
-  showOpenTournamentMode(tournament: QuestionsTournament) {
-    this.openTournamentMode = true;
-    this.questionsTournament = tournament;
   }
 
   async showStartedTournament(tournament: QuestionsTournament) {
