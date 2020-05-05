@@ -1,14 +1,15 @@
 <template>
-  <v-card v-if="startedTournamentMode && questionsTournament" class="v-text-field">
+  <v-card v-if="startedTournamentMode && questionsTournament" class="table">
     <v-card-title class="justify-center">Started Tournament ID {{ questionsTournament.id }}</v-card-title>
     <v-spacer></v-spacer>
     <v-btn v-if='quiz.id != null' dark color="primary" text @click="solveQuiz(quiz)">
       Start Quiz
     </v-btn>
     <v-card-text v-if="quiz.id == null">Quiz Already Answered</v-card-text>
-    <v-spacer>
-    </v-spacer>
-    <v-btn dark color="primary" @click="closeDialog()">Close</v-btn>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn dark color="primary" @click="closeDialog()">Close</v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
