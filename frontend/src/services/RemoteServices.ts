@@ -291,10 +291,22 @@ export default class RemoteServices {
       });
   }
 
-  //NEW method to approve a Question
+  //NEW method to approve a Question (Teacher)
   static async approveQuestion(questionId: number): Promise<Question> {
     return httpClient
       .post(`/questions/${questionId}/approve-question`)
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  //NEW method to resubmit a Question (Student)
+  static async resubmitQuestion(question: Question): Promise<Question> {
+    return httpClient
+      .post(`/questions/${question.id}/resubmit-question`, question)
       .then(response => {
         return new Question(response.data);
       })

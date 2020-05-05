@@ -292,6 +292,7 @@ export default class QuestionsSubmittedView extends Vue {
     this.questions.unshift(question);
     this.editQuestionDialog = false;
     this.changedQuestionDialog = false;
+    this.approvedQuestionDialog = false;
     this.currentQuestion = null;
   }
 
