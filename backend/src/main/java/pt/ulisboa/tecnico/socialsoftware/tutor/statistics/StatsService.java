@@ -12,6 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
@@ -120,31 +121,70 @@ public class StatsService {
 
         ClarificationStatsDto clarificationStatsDto = new ClarificationStatsDto();
 
-        Stream<Clarification> clarifications = user.getClarifications().stream();
+        int totalClarifications;
+        int publicClarifications;
+        int answeredClarifications;
+        int reopenedClarifications;
+        Map<Integer, Long> clarificationsPerMonth;
 
-        if(executionId < 0) clarifications.filter(clarification -> clarification.getQuestionAnswer()
-        .getCourseExecution().getId() == executionId);  //Filtering for a specific course
+        if(executionId > 0) {
+            //Filtering for a specific course
+
+            //Check if course exists
+            courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+
+            totalClarifications = (int) user.getClarifications().stream().filter(clarification -> clarification.getQuestionAnswer()
+                    .getCourseExecution().getId() == executionId).count();
+
+            publicClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .filter(clarification -> clarification.getPublic())
+                    .count();
 
 
-        int totalClarifications = (int) clarifications.count();
+            answeredClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .filter(clarification -> clarification.getHasAnswer())
+                    .count();
 
-        int publicClarifications = (int) clarifications
-                .filter(clarification -> clarification.getPublic())
-                .count();
-
-
-        int answeredClarifications = (int) clarifications
-                .filter(clarification -> clarification.getHasAnswer())
-                .count();
-
-        int reopenedClarifications = (int) clarifications
-                .filter(clarification -> !clarification.getExtraClarificationList().isEmpty())
-                .count();
+            reopenedClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .filter(clarification -> !clarification.getExtraClarificationList().isEmpty())
+                    .count();
 
 
-        Map<Integer, Long> clarificationsPerMonth = clarifications
-                .map(clarification -> clarification.getCreationDate().getYear() * 100 + clarification.getCreationDate().getMonthValue())    //Mapping local date time into a YYYYMM format, which is easier to sort
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            clarificationsPerMonth = user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .map(clarification -> clarification.getCreationDate().getYear() * 100 + clarification.getCreationDate().getMonthValue())    //Mapping local date time into a YYYYMM format, which is easier to sort
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+
+        } else {
+            //Return all clarifications
+            totalClarifications = (int) user.getClarifications().stream().count();
+
+            publicClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getPublic())
+                    .count();
+
+
+            answeredClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getHasAnswer())
+                    .count();
+
+            reopenedClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> !clarification.getExtraClarificationList().isEmpty())
+                    .count();
+
+
+            clarificationsPerMonth = user.getClarifications().stream()
+                    .map(clarification -> clarification.getCreationDate().getYear() * 100 + clarification.getCreationDate().getMonthValue())    //Mapping local date time into a YYYYMM format, which is easier to sort
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        }
 
 
 
