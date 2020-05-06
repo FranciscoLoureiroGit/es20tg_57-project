@@ -215,12 +215,12 @@ class GetTournamentQuizTest extends Specification {
         def userDto = new UserDto(student1)
 
         when:
-        questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
+        def result = questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
 
         then: "error message quiz was not generated"
-        def error = thrown(TutorException)
-        error.errorMessage == TOURNAMENT_QUIZ_NOT_GENERATED
-
+        def resultTournament = questionsTournamentRepository.findById(tournamentDto.id)
+        tournament.isClosed();
+        DateHandler.toLocalDateTime(result.conclusionDate).isBefore(DateHandler.now())
     }
 
     @TestConfiguration

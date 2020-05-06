@@ -282,7 +282,7 @@ export default class TournamentForm extends Vue {
         this.questionsTournament
       );
       this.cleanTournamentTopics();
-      this.$emit('updateTournament', updatedTournament);
+      this.$emit('updateTournament');
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

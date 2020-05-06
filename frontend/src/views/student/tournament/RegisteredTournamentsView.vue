@@ -35,6 +35,10 @@ export default class RegisteredTournamentsView extends Vue {
   startedTournamentMode: boolean = false;
 
   async created() {
+    await this.loadContent()
+  }
+
+  async loadContent() {
     await this.$store.dispatch('loading');
     try {
       this.questionsTournaments = (
@@ -51,7 +55,14 @@ export default class RegisteredTournamentsView extends Vue {
     this.quiz = await RemoteServices.getTournamentQuiz(
       this.questionsTournament
     );
-    this.startedTournamentMode = true;
+    if (Date.parse(this.quiz.conclusionDate) < Date.now()) {
+      alert(
+        'tournament was force closed because there were less than 2 participants'
+      );
+      await this.loadContent();
+    } else {
+      this.startedTournamentMode = true;
+    }
   }
 
   closeStartedTournamentDialog() {

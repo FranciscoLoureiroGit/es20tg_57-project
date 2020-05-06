@@ -157,7 +157,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('cancelTournament', () => {
-  cy.get(':nth-child(1) > :nth-child(9) > [data-cy=cancelTournament]')
+  cy.get('[data-cy="cancelTournament"]')
     .click();
 });
 

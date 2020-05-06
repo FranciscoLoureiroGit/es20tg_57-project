@@ -140,9 +140,20 @@ public class QuestionsTournament {
         this.studentTournamentRegistrations.add(studentTournamentRegistration);
     }
 
-    public boolean isOpen(){
-        LocalDateTime currentTime = DateHandler.now();
-        return currentTime.isBefore(this.startingDate);
+    public boolean isStarted() {
+        return !isOpen() && !isClosed();
+    }
+
+    public boolean isOpen() {
+        return DateHandler.now().isBefore(this.startingDate);
+    }
+
+    public boolean isClosed() {
+        return DateHandler.now().isAfter(this.endingDate);
+    }
+
+    public void forceClose() {
+        this.setEndingDate(DateHandler.now());
     }
 
     public void generateQuizQuestions(Quiz quiz) {

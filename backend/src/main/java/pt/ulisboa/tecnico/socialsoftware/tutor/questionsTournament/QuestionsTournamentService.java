@@ -34,7 +34,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,14 +120,18 @@ public class QuestionsTournamentService {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
         Quiz quiz = tournament.getQuiz();
-        checkTournamentQuiz(quiz);
+        checkTournament(tournament);
+        if(quiz == null) {
+            tournament.forceClose();
+            StatementQuizDto sqDto = new StatementQuizDto();
+            sqDto.setConclusionDate(DateHandler.toISOString(tournament.getEndingDate()));
+            return sqDto;
+        }
         return getStatementQuizDto(user, quiz);
     }
 
-    private void checkTournamentQuiz(Quiz quiz) {
-        if(quiz == null)
-            throw new TutorException(TOURNAMENT_QUIZ_NOT_GENERATED);
-        if(!isTournamentQuizAvailable(quiz))
+    private void checkTournament(QuestionsTournament tournament) {
+        if(!tournament.isStarted())
             throw new TutorException(TOURNAMENT_NOT_AVAILABLE);
     }
 

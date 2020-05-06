@@ -2,7 +2,7 @@
   <div>
     <tournament-form
       @switchMode="changeMode"
-      @updateTournament="updateTournament"
+      @updateTournament="closeTournamentForm"
       :edit-mode="editMode"
       :questionsTournament="questionsTournament"
     />
@@ -34,6 +34,10 @@ export default class OpenTournamentsView extends Vue {
   editMode: boolean = false;
 
   async created() {
+    await this.loadContent()
+  }
+
+  async loadContent() {
     await this.$store.dispatch('loading');
     try {
       this.questionsTournaments = await RemoteServices.getOpenTournaments();
@@ -57,13 +61,10 @@ export default class OpenTournamentsView extends Vue {
     this.questionsTournament = new QuestionsTournament();
   }
 
-  updateTournament(updatedTournament: QuestionsTournament){
-    this.questionsTournaments = this.questionsTournaments.filter(
-      tournament => tournament.id !== updatedTournament.id
-    );
-    this.questionsTournaments.unshift(updatedTournament);
+  closeTournamentForm(){
     this.editMode = false;
     this.questionsTournament = null;
+    this.loadContent()
   }
 
   deleteTournament(tournamentId: number) {
