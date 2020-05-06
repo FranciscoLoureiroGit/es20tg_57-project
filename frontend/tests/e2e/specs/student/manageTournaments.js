@@ -31,12 +31,17 @@ describe('Tournament walkthrough', () => {
   });
 
   it('login goes to registered tournaments', () => {
+    cy.goToOpenQuestionsTournaments();
+    cy.contains('New Tournament').click();
+    cy.createQuestionsTournament('12', 'Case Studies');
     cy.goToRegisteredQuestionsTournaments();
     cy.goToOpenQuestionsTournaments();
   });
 
   it('cancels a tournament', () => {
     cy.goToOpenQuestionsTournaments();
+    cy.contains('New Tournament').click();
+    cy.createQuestionsTournament('12', 'Case Studies');
     cy.cancelTournament();
   });
 });

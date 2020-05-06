@@ -82,8 +82,9 @@ Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
 });
 
 Cypress.Commands.add('goToRegisteredQuestionsTournaments', () => {
+  cy.get(':nth-child(1) > :nth-child(9) > [data-cy=registerStudent]').click();
   cy.contains('Questions Tournaments').click();
-  cy.contains('Registered').click();
+  cy.get('#list-item-60').click();
   cy.get('.list-row > :nth-child(5)').should('contain.text', 'Case Studies');
 });
 
@@ -122,7 +123,7 @@ Cypress.Commands.add(
       .click();
     cy.contains('Show Tournament').click();
     cy.contains('close').click();
-    cy.get('[data-cy="saveButton"]').click({ force: true });
+    cy.get('[data-cy="saveButton"]').click();
   }
 );
 
