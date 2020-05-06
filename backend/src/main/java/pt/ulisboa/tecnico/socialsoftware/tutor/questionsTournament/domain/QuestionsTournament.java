@@ -28,8 +28,7 @@ public class QuestionsTournament {
     @Column(name = "ending_date")
     private LocalDateTime endingDate;
 
-    @OneToOne
-    @JoinColumn(name = "quiz_id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "questionsTournament", orphanRemoval = true)
     private Quiz quiz = null;
 
     @ManyToMany
