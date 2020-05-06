@@ -108,4 +108,8 @@ public class StudentTournamentRegistration {
     public void setQuestionsTournament(QuestionsTournament questionsTournament) {
         this.questionsTournament = questionsTournament;
     }
+
+    public boolean isWinner(){
+        return user.equals(questionsTournament.getTournamentWinner());
+    }
 }

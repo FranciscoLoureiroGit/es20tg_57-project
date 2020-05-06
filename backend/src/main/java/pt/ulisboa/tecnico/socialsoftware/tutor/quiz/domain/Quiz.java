@@ -277,6 +277,8 @@ public class Quiz implements DomainEntity {
 
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
+        if (this.isTournamentQuiz())
+            this.questionsTournament.checkTournamentWinner(quizAnswer);
     }
 
     @Override
@@ -347,5 +349,9 @@ public class Quiz implements DomainEntity {
         setCreationDate(DateHandler.now());
         setType(QuizType.GENERATED.toString());
         setTitle("Generated Quiz");
+    }
+
+    public boolean isTournamentQuiz(){
+        return this.questionsTournament != null;
     }
 }

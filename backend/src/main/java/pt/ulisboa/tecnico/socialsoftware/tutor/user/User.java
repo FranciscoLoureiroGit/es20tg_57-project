@@ -49,6 +49,9 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfCorrectTeacherAnswers;
     private Integer numberOfCorrectInClassAnswers;
     private Integer numberOfCorrectStudentAnswers;
+    private Integer numberOfTournamentsWon;
+    private Integer numberOfTournamentQuestionsAnswers;
+    private Integer numberOfCorrectTournamentQuestionsAnswers;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -89,6 +92,9 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+        this.numberOfTournamentsWon = 0;
+        this.numberOfTournamentQuestionsAnswers = 0;
+        this.numberOfCorrectTournamentQuestionsAnswers = 0;
     }
 
     @Override
@@ -319,6 +325,20 @@ public class User implements UserDetails, DomainEntity {
         return numberOfCorrectStudentAnswers;
     }
 
+    public Integer getNumberOfTournamentsWon() {
+        return this.numberOfTournamentsWon = (int) this.getStudentTournamentRegistrations().stream()
+                .filter(StudentTournamentRegistration::isWinner)
+                .count();
+    }
+
+    public Integer getNumberOfTournamentQuestionsAnswers() {
+        return numberOfTournamentQuestionsAnswers;
+    }
+
+    public Integer getNumberOfCorrectTournamentQuestionsAnswers() {
+        return numberOfCorrectTournamentQuestionsAnswers;
+    }
+
     public void setNumberOfCorrectStudentAnswers(Integer numberOfCorrectStudentAnswers) {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
@@ -394,6 +414,18 @@ public class User implements UserDetails, DomainEntity {
         }
     }
 
+    public void increaseNumberOfTournamentsWon() {
+        this.numberOfTournamentsWon = getNumberOfTournamentsWon() + 1;
+    }
+
+    public void increaseNumberOfTournamentQuestionsAnswers() {
+        this.numberOfTournamentQuestionsAnswers = getNumberOfTournamentQuestionsAnswers() + 1;
+    }
+
+    public void increaseNumberOfCorrectTournamentQuestionsAnswers() {
+        this.numberOfCorrectTournamentQuestionsAnswers = getNumberOfCorrectTournamentQuestionsAnswers() + 1;
+    }
+
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
@@ -414,6 +446,18 @@ public class User implements UserDetails, DomainEntity {
 
     public boolean isInCourseExecution(CourseExecution courseExecution) {
         return this.getCourseExecutions().contains(courseExecution);
+    }
+
+    public void setNumberOfTournamentsWon(Integer numberOfTournamentsWon) {
+        this.numberOfTournamentsWon = numberOfTournamentsWon;
+    }
+
+    public void setNumberOfTournamentQuestionsAnswers(Integer numberOfTournamentQuestionsAnswers) {
+        this.numberOfTournamentQuestionsAnswers = numberOfTournamentQuestionsAnswers;
+    }
+
+    public void setNumberOfCorrectTournamentQuestionsAnswers(Integer numberOfCorrectTournamentQuestionsAnswers) {
+        this.numberOfCorrectTournamentQuestionsAnswers = numberOfCorrectTournamentQuestionsAnswers;
     }
 
     @Override

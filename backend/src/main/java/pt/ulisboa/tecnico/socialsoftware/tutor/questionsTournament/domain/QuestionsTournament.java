@@ -1,8 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto;
@@ -38,7 +41,13 @@ public class QuestionsTournament {
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
 
+    @ManyToOne
+    private User tournamentWinner;
+
     private int numberOfQuestions;
+
+    @OneToOne
+    private QuizAnswer winnerQuizAnswer;
 
     @ManyToOne
     @JoinColumn(name= "user_id")
@@ -144,16 +153,27 @@ public class QuestionsTournament {
         return !isOpen() && !isClosed();
     }
 
-    public boolean isOpen() {
-        return DateHandler.now().isBefore(this.startingDate);
-    }
-
     public boolean isClosed() {
         return DateHandler.now().isAfter(this.endingDate);
     }
 
     public void forceClose() {
         this.setEndingDate(DateHandler.now());
+    }
+
+    public User getTournamentWinner() {
+        if (this.tournamentWinner != null && LocalDateTime.now().isAfter(this.endingDate))
+            return tournamentWinner;
+        return null;
+    }
+
+    public void setTournamentWinner(User tournamentWinner) {
+        this.tournamentWinner = tournamentWinner;
+    }
+
+    public boolean isOpen(){
+        LocalDateTime currentTime = DateHandler.now();
+        return currentTime.isBefore(this.startingDate);
     }
 
     public void generateQuizQuestions(Quiz quiz) {
@@ -229,6 +249,22 @@ public class QuestionsTournament {
     private void checkTopic(Topic topic){
         if(!courseExecution.getCourse().getTopics().contains(topic)){
             throw new TutorException(TOPIC_IN_COURSE_NOT_FOUND, topic.getId());
+        }
+    }
+
+    public void checkTournamentWinner(QuizAnswer quizAnswer) {
+        if (this.tournamentWinner == null){
+            this.tournamentWinner = quizAnswer.getUser();
+            this.winnerQuizAnswer = quizAnswer;
+        }
+        else{
+            int oldWinnerCorrectAnswers = (int) winnerQuizAnswer.getNumberOfCorrectAnswers();
+            int newCorrectAnswers = (int) quizAnswer.getNumberOfCorrectAnswers();
+
+            if (newCorrectAnswers > oldWinnerCorrectAnswers){
+                this.tournamentWinner = quizAnswer.getUser();
+                this.winnerQuizAnswer = quizAnswer;
+            }
         }
     }
 }

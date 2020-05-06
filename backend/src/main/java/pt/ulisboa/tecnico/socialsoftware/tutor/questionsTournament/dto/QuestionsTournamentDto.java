@@ -32,6 +32,7 @@ public class QuestionsTournamentDto {
     private QuizDto quiz = null;
     private CourseDto course;
     private List<StudentTournamentRegistrationDto> studentTournamentRegistrations = new ArrayList<>();
+    private UserDto tournamentWinner;
 
 
 
@@ -50,6 +51,7 @@ public class QuestionsTournamentDto {
         }
         this.course = new CourseDto(questionsTournament.getCourseExecution());
         this.studentTournamentRegistrations = questionsTournament.getStudentTournamentRegistrations().stream().map(StudentTournamentRegistrationDto::new).collect(Collectors.toList());
+        this.tournamentWinner = null;
     }
 
     public void setId(Integer id) {
@@ -122,5 +124,13 @@ public class QuestionsTournamentDto {
 
     public void setQuiz(QuizDto quiz) {
         this.quiz = quiz;
+    }
+
+    public UserDto getTournamentWinner() {
+        return tournamentWinner;
+    }
+
+    public void setTournamentWinner(UserDto tournamentWinner) {
+        this.tournamentWinner = tournamentWinner;
     }
 }
