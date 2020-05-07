@@ -151,7 +151,9 @@
                 <v-icon>create</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title data-cy="my-questions-button">My Questions</v-list-item-title>
+                <v-list-item-title data-cy="my-questions-button"
+                  >My Questions</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -203,11 +205,31 @@
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title data-cy="clarificationsButton">
-                  Clarifications</v-list-item-title>
+                  Clarifications</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
           </v-list>
         </v-menu>
+
+        <v-btn
+          left
+          style="padding-right: 2vh; "
+          class="ml-2"
+          min-width="0"
+          max-width="4vh"
+          text
+          @click.stop="notificationDrawer = !notificationDrawer"
+          @click="getNotifications"
+          v-if="isLoggedIn"
+        >
+          <v-badge color="red" overlap>
+            <template v-slot:badge>
+              <span>{{ newNotifications }}</span>
+            </template>
+            <v-icon color="white">mdi-bell</v-icon>
+          </v-badge>
+        </v-btn>
 
         <v-btn to="/student/stats" v-if="isStudent && currentCourse" text dark>
           Stats
@@ -241,6 +263,81 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
+
+    <!-- Notification Navigation Drawer -->
+    <v-navigation-drawer
+      v-scroll
+      width="32vh"
+      app
+      v-model="notificationDrawer"
+      absolute
+      temporary
+      right
+    >
+      <div style="background-color: #1976D2">
+        <v-card-text  class="font-weight-bold" style="font-size: 1.7vh; padding-top: 3vh; padding-bottom: 3vh; color: white"
+        >Notifications
+          <span style="color: black" v-if="newNotifications > 0"
+          >({{ newNotifications }} new)</span
+          >
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-divider></v-divider>
+        <v-divider></v-divider>
+      </div>
+
+      <div v-scroll style="padding-bottom: 2vh">
+        <div v-if="notifications.length > 0">
+          <v-expansion-panels
+            v-for="(item, i) in this.notifications.slice().reverse()"
+            :key="i"
+            accordion
+            hover
+          >
+            <v-expansion-panel>
+              <v-expansion-panel-header
+                v-if="item.status === 'DELIVERED'"
+                class="font-weight-bold"
+                @click="changeNotificationStatus(item)"
+              >
+                <li style="justify-content: space-between">
+                  <span>{{ item.title }}</span
+                  ><span
+                    style="font-size: 1.2vh; font-weight: normal; color: #818181"
+                  >
+                    {{ timeSince(item) }}</span
+                  >
+                </li></v-expansion-panel-header
+              >
+              <v-expansion-panel-header
+                v-if="item.status === 'READ'"
+                ><li style="justify-content: space-between">
+                  <v-icon @click="deleteNotification(item)" style="padding-right: 1.5vh">mdi-close</v-icon>
+                  <span>{{ item.title }}</span
+                  ><span
+                    style="font-size: 1.2vh; font-weight: normal; color: #818181"
+                  >
+                    {{ timeSince(item) }}</span
+                  >
+                </li></v-expansion-panel-header
+              >
+              <v-expansion-panel-content class="font-weight-light">
+                {{ item.description }}</v-expansion-panel-content
+              >
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </div>
+      </div>
+      <v-card-text style="font-size: 1.4vh" v-if="notifications.length === 0"
+        >You have no notifications</v-card-text
+      >
+      <v-btn small v-if="notifications.length > 0"
+             @click="deleteAllUserNotifications" >
+
+
+      Clear All</v-btn>
+
+    </v-navigation-drawer>
 
     <!-- Start of mobile side menu -->
     <v-navigation-drawer app v-model="drawer" absolute dark temporary>
@@ -421,19 +518,44 @@
           </v-list-item>
         </v-list-group>
 
+        <v-btn
+          left
+          style="padding-right: 2vh; "
+          class="ml-2"
+          min-width="0"
+          max-width="4vh"
+          text
+          @click.stop="
+            (notificationDrawer = !notificationDrawer), (drawer = !drawer)
+          "
+          @click="getNotifications"
+          v-if="isLoggedIn"
+        >
+          <v-badge color="red" overlap>
+            <template v-slot:badge>
+              <span>{{ newNotifications }}</span>
+            </template>
+            <v-icon color="white">mdi-bell</v-icon>
+          </v-badge>
+        </v-btn>
+
         <v-list-item to="/courses" v-if="isLoggedIn && moreThanOneCourse">
           <v-list-item-action>
             <v-icon>fas fa-book</v-icon>
           </v-list-item-action>
           <v-list-item-content>Change course</v-list-item-content>
         </v-list-item>
-        <v-list-item data-cy="logoutMobileButton" @click="logout" v-if="isLoggedIn">
+        <v-list-item
+          data-cy="logoutMobileButton"
+          @click="logout"
+          v-if="isLoggedIn"
+        >
           <v-list-item-action>
             <v-icon>fas fa-sign-out-alt</v-icon>
           </v-list-item-action>
           <v-list-item-content>Logout</v-list-item-content>
         </v-list-item>
-        <v-list-item :href="fenixUrl" v-else>
+        <v-list-item :href="fenixUrl" v-else @click="getNotifications">
           <v-list-item-action>
             <v-icon>fas fa-sign-in-alt</v-icon>
           </v-list-item-action>
@@ -446,13 +568,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import NotificationView from '@/views/NotificationView.vue';
+import RemoteServices from '@/services/RemoteServices';
+import Notification from '@/models/management/Notification';
 
-@Component
+@Component({
+  components: { NotificationView }
+})
 export default class TopBar extends Vue {
   fenixUrl: string = process.env.VUE_APP_FENIX_URL;
   appName: string = process.env.VUE_APP_NAME;
   drawer: boolean = false;
+  notificationDrawer: boolean = false;
+  notifications: Notification[] = [];
+  newNotifications: number = 0;
 
   get currentCourse() {
     return this.$store.getters.getCurrentCourse;
@@ -484,6 +614,109 @@ export default class TopBar extends Vue {
   async logout() {
     await this.$store.dispatch('logout');
     await this.$router.push({ name: 'home' }).catch(() => {});
+  }
+
+  @Watch('isLoggedIn')
+  async getNotifications() {
+    if (this.isLoggedIn) {
+      await this.$store.dispatch('loading');
+      try {
+        this.notifications = await RemoteServices.getUserNotifications();
+        this.getUnread();
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    }
+  }
+
+  async deleteNotification(notification: Notification) {
+    await this.$store.dispatch('loading');
+    try {
+      await RemoteServices.deleteNotification(notification);
+      const index = this.notifications.indexOf(notification, 0);
+      if (index > -1) {
+        this.notifications.splice(index, 1);
+      }
+      this.getUnread();
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
+  async changeNotificationStatus(notification: Notification) {
+    notification.status = 'READ';
+    await this.$store.dispatch('loading');
+    try {
+      await RemoteServices.changeNotificationStatus(notification);
+      let index: number = this.notifications.indexOf(notification);
+      this.notifications[index] = notification;
+      this.getUnread();
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
+  async deleteAllUserNotifications() {
+    await this.$store.dispatch('loading');
+    try {
+      await RemoteServices.deleteAllUserNotifications();
+      this.notifications = [];
+      this.getUnread();
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
+  show() {
+    if (this.notifications.length > 0) return true;
+    else return false;
+  }
+
+  getUnread() {
+    let count: number = 0;
+    let i: number = 0;
+    for (i; i < this.notifications.length; i += 1) {
+      if (this.notifications[i].status == 'DELIVERED') count += 1;
+    }
+    this.newNotifications = count;
+  }
+
+  timeSince(notification: Notification) {
+    let now: Date = new Date();
+    let creationDate: string = notification.creationDate;
+    if (creationDate != null) {
+      let then: Date = new Date(creationDate.replace(' ', 'T'));
+      let seconds = (now.valueOf() - then.valueOf()) / 1000;
+
+      let interval = Math.floor(seconds / 31536000);
+      if (interval === 1) {
+        return interval + ' year ago';
+      }
+      if (interval > 1) {
+        return interval + ' years ago';
+      }
+      interval = Math.floor(seconds / 2592000);
+      if (interval > 1) {
+        return interval + ' months ago';
+      }
+      interval = Math.floor(seconds / 86400);
+      if (interval > 1) {
+        return interval + ' days ago';
+      }
+      interval = Math.floor(seconds / 3600);
+      if (interval > 1) {
+        return interval + ' hours ago';
+      }
+      interval = Math.floor(seconds / 60);
+      if (interval > 1) {
+        return interval + ' minutes ago';
+      }
+      return Math.floor(seconds) + ' seconds ago';
+    }
   }
 }
 </script>

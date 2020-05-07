@@ -91,6 +91,7 @@ public class NotificationService {
         User user = notification.getUser();
         user.addNotification(notification);
         notification.setStatus(Notification.Status.DELIVERED);
+        notification.setCreationDate(LocalDateTime.now());
 
         // If is urgent notification, sends email
         if (notification.getUser().getEmail() != null && notification.getUrgent())
@@ -166,7 +167,7 @@ public class NotificationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<NotificationDto> getUserNotifications(Integer userId) {
         return notificationRepository.findByUserId(userId)
-                .stream().map(NotificationDto::new).collect(Collectors.toList());
+                .stream().filter(no -> !no.getStatus().equals(Notification.Status.PENDING)).map(NotificationDto::new).collect(Collectors.toList());
     }
 
     private void checkInput(NotificationDto notificationDto) {

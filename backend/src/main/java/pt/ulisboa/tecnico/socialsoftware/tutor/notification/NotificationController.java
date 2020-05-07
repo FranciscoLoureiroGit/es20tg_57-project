@@ -25,7 +25,7 @@ public class NotificationController {
         notificationService.changeNotificationStatus(notificationDto);
     }
 
-    @DeleteMapping("/notifications/delete")
+    @PostMapping("/notifications/delete")
     public void deleteNotification(@Valid @RequestBody NotificationDto notificationDto) {
         notificationService.deleteNotification(notificationDto);
     }
@@ -34,4 +34,6 @@ public class NotificationController {
     public void deleteAllUserNotifications(Principal principal) {
         notificationService.deleteAllUserActiveNotifications(((User)((Authentication)principal).getPrincipal()).getId());
     }
+
+
 }
