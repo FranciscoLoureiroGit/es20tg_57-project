@@ -36,23 +36,24 @@ class SetTournamentStatsPrivacyTest extends Specification {
         def studentDto = new UserDto(student)
 
         when:
-        statsService.setTournamentStatsPrivacy(studentDto.id, false)
+        statsService.setTournamentsStatsPrivacy(studentDto.id, User.PrivacyStatus.PRIVATE)
 
         then:
-        !student.isTournamentsStatsPublic()
+        student.getTournamentsStatsPrivacy() == User.PrivacyStatus.PRIVATE
     }
 
     def "set tournament stats privacy to public from private"() {
         given: "student with tournament stats private"
-        student.setTournamentsStatsPublic(false)
+        student.setTournamentsStatsPrivacy(User.PrivacyStatus.PRIVATE)
+
         and: "a studentDto"
         def studentDto = new UserDto(student)
 
         when:
-        statsService.setTournamentStatsPrivacy(studentDto.id, true)
+        statsService.setTournamentsStatsPrivacy(studentDto.id, User.PrivacyStatus.PUBLIC)
 
         then:
-        student.isTournamentsStatsPublic()
+        student.getTournamentsStatsPrivacy() == User.PrivacyStatus.PUBLIC
     }
 
     @TestConfiguration

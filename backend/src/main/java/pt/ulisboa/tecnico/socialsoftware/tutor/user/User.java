@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 public class User implements UserDetails, DomainEntity {
     public enum Role {STUDENT, TEACHER, ADMIN, DEMO_ADMIN}
+    public enum PrivacyStatus {PUBLIC, PRIVATE}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +54,7 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfTournamentQuestionsAnswers;
     private Integer numberOfCorrectTournamentQuestionsAnswers;
 
-    private boolean isTournamentsStatsPublic;
+    private PrivacyStatus tournamentStatsPrivacy;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -97,7 +98,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfTournamentsWon = 0;
         this.numberOfTournamentQuestionsAnswers = 0;
         this.numberOfCorrectTournamentQuestionsAnswers = 0;
-        this.isTournamentsStatsPublic = true;
+        this.tournamentStatsPrivacy = PrivacyStatus.PUBLIC;
     }
 
     @Override
@@ -463,12 +464,12 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTournamentQuestionsAnswers = numberOfCorrectTournamentQuestionsAnswers;
     }
 
-    public boolean isTournamentsStatsPublic() {
-        return isTournamentsStatsPublic;
+    public PrivacyStatus getTournamentsStatsPrivacy() {
+        return tournamentStatsPrivacy;
     }
 
-    public void setTournamentsStatsPublic(boolean tournamentsStatsPublic) {
-        isTournamentsStatsPublic = tournamentsStatsPublic;
+    public void setTournamentsStatsPrivacy(PrivacyStatus privacyStatus) {
+        this.tournamentStatsPrivacy = privacyStatus;
     }
 
     @Override

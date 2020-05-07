@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statistics;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+
 import java.io.Serializable;
 
 public class TournamentStatsDto implements Serializable {
@@ -7,7 +9,7 @@ public class TournamentStatsDto implements Serializable {
     private Integer totalTournaments = 0;
     private Integer totalAnswers = 0;
     private Integer correctAnswers = 0;
-    private boolean isPublic = true;
+    private User.PrivacyStatus privacyStatus = User.PrivacyStatus.PUBLIC;
 
     public Integer getTournamentsWon() {
         return tournamentsWon;
@@ -41,11 +43,11 @@ public class TournamentStatsDto implements Serializable {
         this.correctAnswers = correctAnswers;
     }
 
-    public boolean isPublic() {
-        return isPublic;
+    public User.PrivacyStatus getPrivacyStatus() {
+        return privacyStatus;
     }
 
-    public void setPublic(boolean aPublic) {
-        isPublic = aPublic;
+    public void setPrivacyStatus(User.PrivacyStatus privacyStatus) {
+        this.privacyStatus = privacyStatus;
     }
 }

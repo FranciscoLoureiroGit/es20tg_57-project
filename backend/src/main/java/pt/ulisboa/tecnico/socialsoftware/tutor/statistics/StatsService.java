@@ -129,7 +129,7 @@ public class StatsService {
         tournamentStatsDto.setCorrectAnswers(correctAnswers);
         tournamentStatsDto.setTotalAnswers(totalAnswers);
         tournamentStatsDto.setTotalTournaments(totalTournaments);
-        tournamentStatsDto.setPublic(user.isTournamentsStatsPublic());
+        tournamentStatsDto.setPrivacyStatus(user.getTournamentsStatsPrivacy());
 
         return tournamentStatsDto;
     }
@@ -138,8 +138,8 @@ public class StatsService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void setTournamentStatsPrivacy(Integer userId, boolean isPublic) {
+    public void setTournamentsStatsPrivacy(Integer userId, User.PrivacyStatus privacyStatus) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
-        user.setTournamentsStatsPublic(isPublic);
+        user.setTournamentsStatsPrivacy(privacyStatus);
     }
 }
