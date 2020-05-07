@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.ImpExpService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.NotificationService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.AssessmentService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.TopicService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
@@ -26,6 +27,15 @@ public class ScheduledTasks {
     @Autowired
     private AssessmentService assessmentService;
 
+    @Autowired
+	private NotificationService notificationService;
+
+	// Runs every 15 minutes
+	@Scheduled(fixedRate = 1000*60*15)
+	public void checkNotifications() {
+		notificationService.sendAllEmails();
+	}
+
 	@Scheduled(cron = "0 0 1,13 * * *")
 	public void exportAll() {
 		impExpService.exportAll();
@@ -40,4 +50,5 @@ public class ScheduledTasks {
     public void resetDemoInfo() {
 	    quizService.resetDemoQuizzes();
     }
+
 }

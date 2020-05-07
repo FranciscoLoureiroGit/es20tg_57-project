@@ -17,6 +17,7 @@ import Clarification from '@/models/management/Clarification';
 import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
+import Notification from '@/models/management/Notification';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -108,9 +109,13 @@ export default class RemoteServices {
       });
   }
 
-  static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<Question[]> {
+  static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<
+    Question[]
+  > {
     return httpClient
-      .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`)
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`
+      )
       .then(response => {
         return response.data.map((question: any) => {
           return new Question(question);
@@ -123,15 +128,17 @@ export default class RemoteServices {
 
   static async getQuestionsSubmittedByStudents(): Promise<Question[]> {
     return httpClient
-        .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/studentQuestions`)
-        .then(response => {
-          return response.data.map((question: any) => {
-            return new Question(question);
-          });
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/studentQuestions`
+      )
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new Question(question);
         });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async getStudentQuestions(): Promise<Question[]> {
@@ -225,7 +232,10 @@ export default class RemoteServices {
     clarification: Clarification
   ): Promise<Clarification> {
     return httpClient
-      .post(`/question-answer/${questionAnswerId}/clarifications`, clarification)
+      .post(
+        `/question-answer/${questionAnswerId}/clarifications`,
+        clarification
+      )
       .then(response => {
         return new Clarification(response.data);
       })
@@ -239,7 +249,10 @@ export default class RemoteServices {
     clarificationAnswer: ClarificationAnswer
   ): Promise<ClarificationAnswer> {
     return httpClient
-      .post(`/question-answer/${questionAnswerId}/clarifications/answer`, clarificationAnswer)
+      .post(
+        `/question-answer/${questionAnswerId}/clarifications/answer`,
+        clarificationAnswer
+      )
       .then(response => {
         return new ClarificationAnswer(response.data);
       })
@@ -755,6 +768,67 @@ export default class RemoteServices {
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  // NOTIFICATION SYSTEM SERVICES
+  static async notifyStudent(notification: Notification): Promise<Notification> {
+    return httpClient
+      .post('/notifications/create-one', notification)
+      .then(response => {
+          return new Notification(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async notifyAllStudents(notifications: Notification[]): Promise<Notification[]> {
+    return httpClient
+      .post('/notifications/create-many', notifications)
+      .then(response => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
+  static async getUserNotifications(): Promise<Notification[]> {
+    return httpClient
+      .get('/user/notifications')
+      .then(response => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async changeNotificationStatus(notification: Notification) {
+    return httpClient
+      .put('/notifications/change-status', notification)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteNotification(notification: Notification) {
+    return httpClient
+      .post('/notifications/delete', notification)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteAllUserNotifications() {
+    return httpClient.delete('/notifications/delete-all').catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   static async exportAll() {

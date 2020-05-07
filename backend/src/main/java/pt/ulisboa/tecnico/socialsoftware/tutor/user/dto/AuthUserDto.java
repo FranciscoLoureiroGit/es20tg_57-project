@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class AuthUserDto implements Serializable {
     private String name;
     private String username;
+    private String email;
     private User.Role role;
     private Map<String, List<CourseDto>> courses;
 
@@ -19,6 +20,10 @@ public class AuthUserDto implements Serializable {
         this.username = user.getUsername();
         this.role = user.getRole();
         this.courses = getActiveAndInactiveCourses(user, new ArrayList<>());
+
+        if (user.getEmail() != null) {
+            this.email = user.getEmail();
+        }
     }
 
     public AuthUserDto(User user, List<CourseDto> currentCourses) {
@@ -26,6 +31,18 @@ public class AuthUserDto implements Serializable {
         this.username = user.getUsername();
         this.role = user.getRole();
         this.courses = getActiveAndInactiveCourses(user, currentCourses);
+
+        if (user.getEmail() != null) {
+            this.email = user.getEmail();
+        }
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {

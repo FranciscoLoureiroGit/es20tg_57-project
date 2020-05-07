@@ -104,7 +104,13 @@ public enum ErrorMessage {
     CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request"),
     NO_SUCH_USER("No such user"),
     ALREADY_HAS_ANSWER("Clarification already has an answer"),
-    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty");
+    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty"),
+
+    NOTIFICATION_STATUS_NOT_ALLOWED("The specified status is not allowed at creation"),
+    NOTIFICATION_DELIVER_DATE_INVALID("The specififed deliver date for notification is invalid"),
+    NOTIFICATION_MISSING_DATA("Notification has invalid data"),
+    NOTIFICATION_NOT_FOUND("Notification %d was not found"),
+    MAIL_ERROR("Error while sending mail");
 
     public final String label;
 

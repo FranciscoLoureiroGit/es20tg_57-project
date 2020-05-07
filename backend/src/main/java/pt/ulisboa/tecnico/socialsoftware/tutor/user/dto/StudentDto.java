@@ -1,9 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.user.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentDto implements Serializable {
     private String username;
@@ -53,8 +56,8 @@ public class StudentDto implements Serializable {
             this.percentageOfCorrectStudentAnswers = user.getNumberOfCorrectStudentAnswers() * 100 / this.numberOfStudentAnswers;
         if (this.numberOfAnswers != 0)
             this.percentageOfCorrectAnswers = (user.getNumberOfCorrectTeacherAnswers() + user.getNumberOfCorrectInClassAnswers() + user.getNumberOfCorrectStudentAnswers())  * 100 / this.numberOfAnswers;
-        if (this.numberOfTournamentQuestionsAnswers != 0)
-            this.percentageOfCorrectTournamentQuestionsAnswers = (this.numberOfCorrectTournamentQuestionsAnswers * 100 )/ this.numberOfTournamentQuestionsAnswers;
+        //if (this.numberOfTournamentQuestionsAnswers != 0)
+          //  this.percentageOfCorrectTournamentQuestionsAnswers = (this.numberOfCorrectTournamentQuestionsAnswers * 100 )/ this.numberOfTournamentQuestionsAnswers;
 
     }
 
