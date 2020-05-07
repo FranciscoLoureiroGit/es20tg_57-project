@@ -7,6 +7,7 @@ public class TournamentStatsDto implements Serializable {
     private Integer totalTournaments = 0;
     private Integer totalAnswers = 0;
     private Integer correctAnswers = 0;
+    private boolean isPublic = true;
 
     public Integer getTournamentsWon() {
         return tournamentsWon;
@@ -38,5 +39,13 @@ public class TournamentStatsDto implements Serializable {
 
     public void setCorrectAnswers(Integer correctAnswers) {
         this.correctAnswers = correctAnswers;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 }

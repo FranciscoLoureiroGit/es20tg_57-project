@@ -15,13 +15,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.QuestionsTournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament
-import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.QuestionsTournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.StudentTournamentRegistrationRepository
@@ -32,7 +30,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 import spock.lang.Specification
 
-import java.time.LocalDateTime
 
 @DataJpaTest
 class GetTournamentQuizTest extends Specification {
@@ -218,7 +215,6 @@ class GetTournamentQuizTest extends Specification {
         def result = questionsTournamentService.getTournamentQuiz(userDto.id, tournamentDto.id)
 
         then: "error message quiz was not generated"
-        def resultTournament = questionsTournamentRepository.findById(tournamentDto.id)
         tournament.isClosed();
         DateHandler.toLocalDateTime(result.conclusionDate).isBefore(DateHandler.now())
     }

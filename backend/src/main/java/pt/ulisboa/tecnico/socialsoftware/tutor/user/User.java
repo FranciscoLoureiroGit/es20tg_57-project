@@ -53,6 +53,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfTournamentQuestionsAnswers;
     private Integer numberOfCorrectTournamentQuestionsAnswers;
 
+    private boolean isTournamentsStatsPublic;
+
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
@@ -95,6 +97,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfTournamentsWon = 0;
         this.numberOfTournamentQuestionsAnswers = 0;
         this.numberOfCorrectTournamentQuestionsAnswers = 0;
+        this.isTournamentsStatsPublic = true;
     }
 
     @Override
@@ -458,6 +461,14 @@ public class User implements UserDetails, DomainEntity {
 
     public void setNumberOfCorrectTournamentQuestionsAnswers(Integer numberOfCorrectTournamentQuestionsAnswers) {
         this.numberOfCorrectTournamentQuestionsAnswers = numberOfCorrectTournamentQuestionsAnswers;
+    }
+
+    public boolean isTournamentsStatsPublic() {
+        return isTournamentsStatsPublic;
+    }
+
+    public void setTournamentsStatsPublic(boolean tournamentsStatsPublic) {
+        isTournamentsStatsPublic = tournamentsStatsPublic;
     }
 
     @Override

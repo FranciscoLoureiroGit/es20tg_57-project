@@ -129,8 +129,17 @@ public class StatsService {
         tournamentStatsDto.setCorrectAnswers(correctAnswers);
         tournamentStatsDto.setTotalAnswers(totalAnswers);
         tournamentStatsDto.setTotalTournaments(totalTournaments);
+        tournamentStatsDto.setPublic(user.isTournamentsStatsPublic());
 
         return tournamentStatsDto;
+    }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void setTournamentStatsPrivacy(Integer userId, boolean isPublic) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        user.setTournamentsStatsPublic(isPublic);
     }
 }
