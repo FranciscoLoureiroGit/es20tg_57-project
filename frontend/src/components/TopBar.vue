@@ -135,6 +135,14 @@
                 <v-list-item-title>Open</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/registeredTournaments">
+              <v-list-item-action>
+                <v-icon>assignment</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Registered</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
 
@@ -151,7 +159,9 @@
                 <v-icon>assignment</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title data-cy="my-questions-button">My Questions</v-list-item-title>
+                <v-list-item-title data-cy="my-questions-button"
+                  >My Questions</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -203,7 +213,8 @@
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title data-cy="clarificationsButton">
-                  Clarifications</v-list-item-title>
+                  Clarifications</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -407,8 +418,18 @@
           </v-list-item>
 
           <v-list-item
-                  to="/student/available"
-                  v-if="isStudent && currentCourse"
+            to="/student/registeredTournaments"
+            v-if="isStudent && currentCourse"
+          >
+            <v-list-item-action>
+              <v-icon>assignment</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Registered</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item
+            to="/student/available"
+            v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>assignment</v-icon>
@@ -472,7 +493,11 @@
           </v-list-item-action>
           <v-list-item-content>Change course</v-list-item-content>
         </v-list-item>
-        <v-list-item data-cy="logoutMobileButton" @click="logout" v-if="isLoggedIn">
+        <v-list-item
+          data-cy="logoutMobileButton"
+          @click="logout"
+          v-if="isLoggedIn"
+        >
           <v-list-item-action>
             <v-icon>fas fa-sign-out-alt</v-icon>
           </v-list-item-action>

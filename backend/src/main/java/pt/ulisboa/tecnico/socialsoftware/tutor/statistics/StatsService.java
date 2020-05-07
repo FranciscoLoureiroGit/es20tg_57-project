@@ -112,6 +112,38 @@ public class StatsService {
         return statsDto;
     }
 
+    public TournamentStatsDto getTournamentStats(int userId, int executionId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        TournamentStatsDto tournamentStatsDto = new TournamentStatsDto();
+
+        int tournamentsWon = user.getNumberOfTournamentsWon();
+        int totalTournaments = user.getStudentTournamentRegistrations().size();
+
+        int totalAnswers = (int) user.getQuizAnswers().stream()
+                .filter(QuizAnswer::isTournamentQuizAnswer)
+                .map(QuizAnswer::getQuestionAnswers)
+                .mapToLong(Collection::size)
+                .sum();
+
+        int correctAnswers = (int) user.getQuizAnswers().stream()
+                .filter(QuizAnswer::isTournamentQuizAnswer)
+                .map(QuizAnswer::getQuestionAnswers)
+                .flatMap(Collection::stream)
+                .map(QuestionAnswer::getOption)
+                .filter(Objects::nonNull)
+                .filter(Option::getCorrect)
+                .count();
+
+        tournamentStatsDto.setTournamentsWon(tournamentsWon);
+        tournamentStatsDto.setCorrectAnswers(correctAnswers);
+        tournamentStatsDto.setTotalAnswers(totalAnswers);
+        tournamentStatsDto.setTotalTournaments(totalTournaments);
+        tournamentStatsDto.setPrivacyStatus(user.getTournamentsStatsPrivacy());
+
+        return tournamentStatsDto;
+    }
+
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
@@ -196,7 +228,9 @@ public class StatsService {
         clarificationStatsDto.setClarificationsPerMonth(clarificationsPerMonth);
 
         return clarificationStatsDto;
-
-
+    }
+    public void setTournamentsStatsPrivacy(Integer userId, User.PrivacyStatus privacyStatus) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        user.setTournamentsStatsPrivacy(privacyStatus);
     }
 }

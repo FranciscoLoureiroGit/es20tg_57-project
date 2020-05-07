@@ -34,6 +34,7 @@ import ClarificationAnswerView from '@/views/teacher/clarifications/Clarificatio
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
 import ClarificationDialogue from '@/views/student/clarifications/ClarificationDialogue.vue';
 import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
+import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
 
 Vue.use(Router);
 
@@ -175,6 +176,15 @@ let router = new Router({
           component: OpenTournamentsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Open Tournaments',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'registeredTournaments',
+          name: 'registered-tournaments',
+          component: RegisteredTournamentsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Registered Tournaments',
             requiredAuth: 'Student'
           }
         },

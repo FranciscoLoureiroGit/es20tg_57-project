@@ -81,6 +81,13 @@ Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
   cy.contains('Open').click();
 });
 
+Cypress.Commands.add('goToRegisteredQuestionsTournaments', () => {
+  cy.get(':nth-child(1) > :nth-child(9) > [data-cy=registerStudent]').click();
+  cy.contains('Questions Tournaments').click();
+  cy.get('#list-item-60').click();
+  cy.get('.list-row > :nth-child(5)').should('contain.text', 'Case Studies');
+});
+
 Cypress.Commands.add('registerStudentInTournament', tournamentId => {
   cy.get('tbody')
     .contains(tournamentId)
@@ -95,23 +102,18 @@ Cypress.Commands.add(
   'createQuestionsTournament',
   (numberOfQuestions, topicId) => {
     cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
-    cy.contains('*Ending Date')
-      .parent()
-      .find('input')
-      .click();
-    cy.contains('30').click();
-    cy.contains('OK').click();
-    cy.clearLocalStorage();
-    cy.contains('*Starting Date')
-      .parent()
-      .find('input')
-      .click();
-    cy.get('.v-dialog__content--active')
-      .contains('.v-btn__content', '25')
-      .click();
-    cy.get('.v-dialog__content--active')
-      .contains('OK')
-      .click();
+    cy.get('[data-cy=startingDate]').click()
+    cy.contains('10').click()
+    cy.get(
+      '#startingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
+    cy.get('[data-cy=endingDate]').click()
+    cy.get(
+      '#endingDateInput-picker-container-DatePicker > .calendar > .month-container > :nth-child(1) > .datepicker-days > :nth-child(34) > .datepicker-day-text'
+    ).click()
+    cy.get(
+      '#endingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
     cy.contains(topicId)
       .parent()
       .should('have.length', 1)
@@ -120,9 +122,44 @@ Cypress.Commands.add(
       .find('[data-cy="addTopic"]')
       .click();
     cy.contains('Show Tournament').click();
+    cy.contains('close').click();
+    cy.get('[data-cy="saveButton"]').click();
+  }
+);
+
+Cypress.Commands.add(
+  'createQuestionsTournamentWithIllegalDates',
+  (numberOfQuestions, topicId) => {
+    cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
+    cy.get('[data-cy=endingDate]').click()
+    cy.get(
+      '#endingDateInput-picker-container-DatePicker > .calendar > .month-container > :nth-child(1) > .datepicker-days > :nth-child(14) > .datepicker-day-text'
+    ).click()
+    cy.get(
+      '#endingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
+    cy.get('[data-cy=startingDate]').click()
+    cy.contains('19').click()
+    cy.get(
+      '#startingDateInput-wrapper > .datetimepicker > .datepicker > .datepicker-buttons-container > .validate'
+    ).click()
+    cy.contains(topicId)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 4)
+      .find('[data-cy="addTopic"]')
+      .click();
+    cy.contains('Show Tournament').click();
+    cy.contains('close').click();
     cy.get('[data-cy="saveButton"]').click({ force: true });
   }
 );
+
+Cypress.Commands.add('cancelTournament', () => {
+  cy.get('[data-cy="cancelTournament"]')
+    .click();
+});
 
 Cypress.Commands.add('createAndAnswerQuiz', () => {
   cy.contains('Create').click();
