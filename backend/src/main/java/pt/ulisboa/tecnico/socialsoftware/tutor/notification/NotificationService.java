@@ -125,7 +125,7 @@ public class NotificationService {
 
         User user = userRepository.findByUsername(notificationDto.getUsername());
         if (user == null) {
-            throw new TutorException(USER_NOT_FOUND, notificationDto.getUsername());
+            throw new TutorException(USER_NOT_FOUND);
         }
         Notification notification = notificationRepository.findById(notificationDto.getId()).orElseThrow(() ->
                 new TutorException(NOTIFICATION_NOT_FOUND, notificationDto.getId()));

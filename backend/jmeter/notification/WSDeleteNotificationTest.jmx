@@ -54,6 +54,11 @@
             <stringProp name="Argument.value">&apos;DELIVERED&apos;</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="username" elementType="Argument">
+            <stringProp name="Argument.name">username</stringProp>
+            <stringProp name="Argument.value">Demo-Teacher</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -208,7 +213,7 @@ values (${notificationId}, ${notificationStatus}, ${notificationTitle}, ${notifi
                   <stringProp name="Argument.value">{&#xd;
 	&#xd;
 	&quot;id&quot;: &quot;${notificationId}&quot;,&#xd;
-	&quot;userId&quot;: &quot;${userId}&quot;&#xd;
+	&quot;username&quot;: &quot;${username}&quot;&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -219,7 +224,7 @@ values (${notificationId}, ${notificationStatus}, ${notificationTitle}, ${notifi
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/notifications/delete</stringProp>
-            <stringProp name="HTTPSampler.method">DELETE</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
