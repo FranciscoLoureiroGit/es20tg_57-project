@@ -17,6 +17,8 @@ import Clarification from '@/models/management/Clarification';
 import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
+import StudentTournamentStats from '@/models/statement/StudentTournamentStats';
+import TournamentStatsView from '@/views/student/TournamentStatsView.vue';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -550,6 +552,19 @@ export default class RemoteServices {
           throw Error(await this.errorMessage(error));
         });
     }
+  }
+
+  static async getUserTournamentStats(): Promise<StudentTournamentStats> {
+    return httpClient
+      .get(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/stats/tournaments`
+      )
+      .then(response => {
+        return new StudentTournamentStats(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async getCourseStudents(course: Course) {

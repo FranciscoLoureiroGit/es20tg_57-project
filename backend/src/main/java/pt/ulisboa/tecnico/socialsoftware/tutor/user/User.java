@@ -330,17 +330,18 @@ public class User implements UserDetails, DomainEntity {
     }
 
     public Integer getNumberOfTournamentsWon() {
+
         return this.numberOfTournamentsWon = (int) this.getStudentTournamentRegistrations().stream()
                 .filter(StudentTournamentRegistration::isWinner)
                 .count();
     }
 
     public Integer getNumberOfTournamentQuestionsAnswers() {
-        return numberOfTournamentQuestionsAnswers;
+        return Objects.requireNonNullElse(this.numberOfTournamentQuestionsAnswers, 0);
     }
 
     public Integer getNumberOfCorrectTournamentQuestionsAnswers() {
-        return numberOfCorrectTournamentQuestionsAnswers;
+        return Objects.requireNonNullElse(this.numberOfCorrectTournamentQuestionsAnswers, 0);
     }
 
     public void setNumberOfCorrectStudentAnswers(Integer numberOfCorrectStudentAnswers) {

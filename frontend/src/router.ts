@@ -33,6 +33,7 @@ import ClarificationsManagementView from '@/views/teacher/clarifications/Clarifi
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
 import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
+import TournamentStatsView from '@/views/student/TournamentStatsView.vue';
 
 Vue.use(Router);
 
@@ -244,6 +245,15 @@ let router = new Router({
           path: 'stats',
           name: 'stats',
           component: StatsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Stats',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'stats/tournaments',
+          name: 'tournament-stats',
+          component: TournamentStatsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Stats',
             requiredAuth: 'Student'

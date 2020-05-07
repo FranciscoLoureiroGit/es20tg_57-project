@@ -165,10 +165,6 @@ public class QuizAnswer implements DomainEntity {
         if (!this.usedInStatistics) {
             user.increaseNumberOfQuizzes(getQuiz().getType());
 
-            if (getQuiz().isTournamentQuiz()){
-                if( user.equals(getQuiz().getQuestionsTournament().getTournamentWinner()))
-                    user.increaseNumberOfTournamentsWon();
-            }
             getQuestionAnswers().forEach(questionAnswer -> {
                 user.increaseNumberOfAnswers(getQuiz().getType());
                 if (questionAnswer.getOption() != null && questionAnswer.getOption().getCorrect()) {
@@ -178,6 +174,12 @@ public class QuizAnswer implements DomainEntity {
 
             getQuestionAnswers().forEach(questionAnswer ->
                     questionAnswer.getQuizQuestion().getQuestion().addAnswerStatistics(questionAnswer));
+
+            if (getQuiz().isTournamentQuiz()){
+                getQuiz().getQuestionsTournament().checkTournamentWinner(this);
+                if( user.equals(getQuiz().getQuestionsTournament().getTournamentWinner()))
+                    user.increaseNumberOfTournamentsWon();
+            }
 
             this.usedInStatistics = true;
         }
@@ -203,5 +205,9 @@ public class QuizAnswer implements DomainEntity {
                 .filter(Objects::nonNull)
                 .filter(Option::getCorrect)
                 .count();
+    }
+
+    public boolean tournamentHasEnded(){
+        return getQuiz().getQuestionsTournament().isClosed();
     }
 }
