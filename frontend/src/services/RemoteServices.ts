@@ -108,7 +108,7 @@ export default class RemoteServices {
       });
   }
 
-  static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<Question[]> {
+  static async getAllQuestionsApproved(): Promise<Question[]> {
     return httpClient
       .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`)
       .then(response => {

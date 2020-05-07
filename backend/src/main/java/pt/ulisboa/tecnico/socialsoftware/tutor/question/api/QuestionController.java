@@ -13,7 +13,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import org.springframework.security.core.Authentication;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 import java.security.Principal;
@@ -25,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -68,7 +66,7 @@ public class QuestionController {
     @GetMapping("/courses/{courseId}/questions/availableFiltered")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<QuestionDto> getAllApprovedQuestions(@PathVariable int courseId){
-        return questionService.findAvailableQuestionsWithStudentsIncluded(courseId);
+        return questionService.findApprovedQuestions(courseId);
     }
 
     @GetMapping("/courses/{courseId}/questions/studentQuestions")

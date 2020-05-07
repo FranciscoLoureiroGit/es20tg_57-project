@@ -117,7 +117,7 @@ public class QuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<QuestionDto> findAvailableQuestionsWithStudentsIncluded(int courseId) {
+    public List<QuestionDto> findApprovedQuestions(int courseId) {
         List<QuestionDto> av = questionRepository.findQuestions(courseId).stream().map(QuestionDto::new).collect(Collectors.toList());
         List<QuestionDto> output = new ArrayList<QuestionDto>();
         for (QuestionDto question : av) {
