@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
@@ -11,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 @Table(name = "notifications")
 public class Notification {
     public enum Status {
-        PENDING, DELIVERED, READ
+        DELIVERED, READ
     }
 
     @Id
@@ -33,9 +34,6 @@ public class Notification {
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
-    @Column(name = "time_to_deliver")
-    private LocalDateTime timeToDeliver;
-
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
@@ -49,13 +47,9 @@ public class Notification {
         this.urgent = notificationDto.isUrgent();
         if (notificationDto.getStatus() != null) {
             this.status = Notification.Status.valueOf(notificationDto.getStatus());
-            if (Notification.Status.valueOf(notificationDto.getStatus()) == Status.PENDING && notificationDto.getTimeToDeliver() != null) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                this.timeToDeliver = LocalDateTime.parse(notificationDto.getTimeToDeliver(), formatter);
-            }
         }
         else {
-            this.status = Status.PENDING;
+            this.status = Status.DELIVERED;
         }
     }
 
@@ -108,14 +102,6 @@ public class Notification {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
-    }
-
-    public LocalDateTime getTimeToDeliver() {
-        return timeToDeliver;
-    }
-
-    public void setTimeToDeliver(LocalDateTime timeToDeliver) {
-        this.timeToDeliver = timeToDeliver;
     }
 
     public User getUser() {

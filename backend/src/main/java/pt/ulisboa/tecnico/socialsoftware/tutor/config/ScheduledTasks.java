@@ -46,8 +46,8 @@ public class ScheduledTasks {
     }
 
     // Runs every 5 minutes
-	@Scheduled(cron = "0 0/5 * * * *")
+	@Scheduled(cron = "0 0/1 * * * *")
 	public void checkNotifications() {
-		notificationService.checkNotifications();
+		notificationService.sendAllEmails();
 	}
 }

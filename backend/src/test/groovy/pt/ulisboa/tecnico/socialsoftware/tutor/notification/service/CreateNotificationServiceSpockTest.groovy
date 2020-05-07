@@ -59,18 +59,17 @@ class CreateNotificationServiceSpockTest extends Specification {
         given: "a studentDto"
         def studentDto = new UserDto(student)
         and: "a notificationDto"
-        NotificationDto notificationDto = new NotificationDto(TITLE, DESCRIPTION, "DELIVERED", student.getId())
+        NotificationDto notificationDto = new NotificationDto(TITLE, DESCRIPTION, "DELIVERED", studentDto.getUsername())
         notificationDto.setUrgent(true) // enables email sending service
 
         when:
-        notificationService.createNotification(notificationDto, studentDto.getId())
+        notificationService.createNotification(notificationDto, studentDto.getUsername())
 
         then: "the correct notification is inside notificationRepository and user"
         notificationRepository.count() == 1L
         def result = notificationRepository.findAll().get(0)
         result.getId() != null
         result.getStatus() == Notification.Status.DELIVERED
-        result.getTimeToDeliver() == null
         result.getCreationDate() != null
         result.getDescription() == DESCRIPTION
         result.getTitle() == TITLE
@@ -80,23 +79,22 @@ class CreateNotificationServiceSpockTest extends Specification {
         studentTest.getNotifications().contains(result)
     }
 
-    // this test does not send email because it is null
+    // this test does not send email
     def "create teacher pending notification with valid inputs" () {
         given: "a teacherDto"
         def teacherDto = new UserDto(teacher)
         and: "a notificationDto"
-        NotificationDto notificationDto = new NotificationDto(TITLE, DESCRIPTION, "PENDING", teacher.getId())
-        notificationDto.setTimeToDeliver("2020-05-05 10:20")
+        NotificationDto notificationDto = new NotificationDto(TITLE, DESCRIPTION, "DELIVERED", teacher.getUsername())
+        notificationDto.setUrgent(false);
 
         when:
-        notificationService.createNotification(notificationDto, teacherDto.getId())
+        notificationService.createNotification(notificationDto, teacherDto.getUsername())
 
         then: "the correct notification is inside notificationRepository and not user"
         notificationRepository.count() == 1L
         def result = notificationRepository.findAll().get(0)
         result.getId() != null
-        result.getStatus() == Notification.Status.PENDING
-        result.getTimeToDeliver() == LocalDateTime.parse("2020-05-05 10:20", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        result.getStatus() == Notification.Status.DELIVERED
         result.getCreationDate() != null
         result.getDescription() == DESCRIPTION
         result.getTitle() == TITLE
@@ -110,16 +108,16 @@ class CreateNotificationServiceSpockTest extends Specification {
         given: "a teacherDto"
         def teacherDto = new UserDto(teacher)
         and: "a notificationDto"
-        NotificationDto notificationDto = new NotificationDto(title, description, status, teacher.getId())
-        if(status == "PENDING")
-            notificationDto.setTimeToDeliver(timeToDeliver)
+        NotificationDto notificationDto = new NotificationDto(title, description, status, teacher.getUsername())
 
         when:
-        notificationService.createNotification(notificationDto, teacherDto.getId())
+        notificationService.createNotification(notificationDto, teacherDto.getUsername())
 
         then: "the correct notification is inside notificationRepository and not user"
         def error = thrown(TutorException)
         error.errorMessage == errorMessage
+
+
 
         where:
         title   |   description     |   status          |   timeToDeliver        | errorMessage
@@ -128,7 +126,6 @@ class CreateNotificationServiceSpockTest extends Specification {
         ""      |   DESCRIPTION     |   "DELIVERED"     |   null                 | NOTIFICATION_MISSING_DATA
         TITLE   |   ""              |   "DELIVERED"     |   null                 | NOTIFICATION_MISSING_DATA
         ""      |   ""              |   "DELIVERED"     |   null                 | NOTIFICATION_MISSING_DATA
-        TITLE   |   DESCRIPTION     |   "PENDING"       |   "2020-03-05 10:20"   | NOTIFICATION_DELIVER_DATE_INVALID
     }
 
     /*

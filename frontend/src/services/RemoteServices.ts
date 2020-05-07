@@ -733,6 +733,31 @@ export default class RemoteServices {
   }
 
   // NOTIFICATION SYSTEM SERVICES
+  static async notifyStudent(notification: Notification): Promise<Notification> {
+    return httpClient
+      .post('/notifications/create-one', notification)
+      .then(response => {
+          return new Notification(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async notifyAllStudents(notifications: Notification[]): Promise<Notification[]> {
+    return httpClient
+      .post('/notifications/create-many', notifications)
+      .then(response => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
   static async getUserNotifications(): Promise<Notification[]> {
     return httpClient
       .get('/user/notifications')

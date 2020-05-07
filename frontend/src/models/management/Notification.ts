@@ -4,7 +4,9 @@ export default class Notification {
   description: string = '';
   status: string = '';
   creationDate!: '';
-  userId: number | null = null;
+  username: string | null = null;
+  timeToDeliver!: '';
+  urgent: boolean = false;
 
   constructor(jsonObj?: Notification) {
     if (jsonObj) {
@@ -13,7 +15,9 @@ export default class Notification {
       this.description = jsonObj.description;
       this.creationDate = jsonObj.creationDate;
       this.status = jsonObj.status;
-      this.userId = jsonObj.userId;
+      this.username = jsonObj.username;
+      this.timeToDeliver = jsonObj.timeToDeliver;
+      this.urgent = jsonObj.urgent;
     }
   }
 }

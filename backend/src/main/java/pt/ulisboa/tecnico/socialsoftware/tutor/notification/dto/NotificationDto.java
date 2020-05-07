@@ -9,33 +9,29 @@ public class NotificationDto {
     private String status;
     private String title;
     private String description;
-    private Integer userId;
+    private String username;
     private String creationDate;
-    private String timeToDeliver;
     private boolean urgent = false;
 
     public NotificationDto() {}
 
-    public NotificationDto(String title, String description, String status, Integer userId) {
+    public NotificationDto(String title, String description, String status, String username) {
         this.title = title;
         this.description = description;
         this.status = status;
-        this.userId = userId;
+        this.username = username;
     }
 
     public NotificationDto(Notification notification) {
         this.id = notification.getId();
         this.title = notification.getTitle();
         this.description = notification.getDescription();
-        this.userId = notification.getUser().getId();
+        this.username = notification.getUser().getUsername();
 
         if (notification.getStatus() != null)
             this.status = notification.getStatus().name();
         if (notification.getCreationDate() != null)
             this.creationDate = notification.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        if (notification.getTimeToDeliver() != null)
-            this.timeToDeliver = notification.getTimeToDeliver().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-
     }
 
     public boolean isUrgent() {
@@ -78,12 +74,12 @@ public class NotificationDto {
         this.description = description;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getCreationDate() {
@@ -94,11 +90,4 @@ public class NotificationDto {
         this.creationDate = creationDate;
     }
 
-    public String getTimeToDeliver() {
-        return timeToDeliver;
-    }
-
-    public void setTimeToDeliver(String timeToDeliver) {
-        this.timeToDeliver = timeToDeliver;
-    }
 }

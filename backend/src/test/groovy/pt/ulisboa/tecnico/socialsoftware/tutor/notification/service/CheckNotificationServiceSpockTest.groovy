@@ -57,7 +57,7 @@ class CheckNotificationServiceSpockTest extends Specification {
         result.size() == 1
         def notificationRes = result.get(0)
         notificationRes.getId() == notification.id
-        notificationRes.getUserId() == studentDto.getId()
+        notificationRes.getUsername() == studentDto.getUsername()
         notificationRes.getTitle() == TITLE
         notificationRes.getDescription() == DESCRIPTION
     }

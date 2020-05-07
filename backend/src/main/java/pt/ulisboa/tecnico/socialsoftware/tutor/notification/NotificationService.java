@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain.Notification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.notification.dto.NotificationDto;
@@ -27,8 +28,9 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
 public class NotificationService {
-    private static final String EMAIL_HEADER = "==== QUIZZES TUTOR NOTIFICATION SYSTEM ==== \n";
+    private static final String EMAIL_HEADER = "=========== QUIZZES TUTOR NOTIFICATION SYSTEM ========== \n\n";
     private static final String SUBJECT_HEADER = "Quizzes Tutor - ";
+    private List<Notification> pendingEmails = new ArrayList<>();
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -60,26 +62,21 @@ public class NotificationService {
     }
 
     /**
-     * Method is used for checking pending notifications and sending them to the user if the time is right,
+     * Method is used for checking pending emails and sending them to the user,
      * it can also call other services by itself
-     * @apiNote  This is a highly cpu-bound process and should be done every 5min
+     * @apiNote  This is a highly cpu-bound process and should be done every 15min
      * @see pt.ulisboa.tecnico.socialsoftware.tutor.config.ScheduledTasks
      * */
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void checkNotifications() {
-        // checks for pending notifications and sees if the time has arrived, if so, sends it
-        List<Notification> notifications = notificationRepository.findPending();
-
-        for (Notification notification: notifications) {
-            if (notification.getTimeToDeliver() != null && notification.getTimeToDeliver().isBefore(LocalDateTime.now())) {
-                // then the user can be notified
-                sendNotification(notification);
-            }
-            // otherwise the notification stays pending
+    public void sendAllEmails() {
+        // checks for pending emails ands sends them
+        for (Notification notification: this.pendingEmails) {
+                sendEmail(new NotificationDto(notification));
         }
+        this.pendingEmails = new ArrayList<>();
     }
 
     @Retryable(
@@ -95,23 +92,23 @@ public class NotificationService {
 
         // If is urgent notification, sends email
         if (notification.getUser().getEmail() != null && notification.getUrgent())
-            sendEmail(new NotificationDto(notification));
+            this.pendingEmails.add(notification);
     }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public NotificationDto createNotification(NotificationDto notificationDto, Integer userId) {
-        if (userId != null) {
-            User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+    public NotificationDto createNotification(NotificationDto notificationDto, String username) {
+        if (username != null) {
+            User user = userRepository.findByUsername(username);
+            if (user == null) {
+                throw new TutorException(USER_NOT_FOUND, username);
+            }
             checkInput(notificationDto);
             Notification notification = setNotificationValues(notificationDto, user);
             notificationRepository.save(notification);
-            if (!notificationDto.getStatus().equals(Notification.Status.PENDING.name()) && notificationDto.getTimeToDeliver() == null) {
-                // SendNotification if not pending
-                sendNotification(notification);
-            }
+            sendNotification(notification);
             return new NotificationDto(notification);
         }
         throw new TutorException(NOTIFICATION_MISSING_DATA);
@@ -123,12 +120,13 @@ public class NotificationService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deleteNotification(NotificationDto notificationDto) {
-        if (notificationDto.getUserId() == null)
+        if (notificationDto.getUsername() == null)
             throw new TutorException(NOTIFICATION_MISSING_DATA);
 
-        User user = userRepository.findById(notificationDto.getUserId()).orElseThrow(() ->
-                new TutorException(USER_NOT_FOUND, notificationDto.getUserId()));
-
+        User user = userRepository.findByUsername(notificationDto.getUsername());
+        if (user == null) {
+            throw new TutorException(USER_NOT_FOUND, notificationDto.getUsername());
+        }
         Notification notification = notificationRepository.findById(notificationDto.getId()).orElseThrow(() ->
                 new TutorException(NOTIFICATION_NOT_FOUND, notificationDto.getId()));
 
@@ -167,17 +165,13 @@ public class NotificationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<NotificationDto> getUserNotifications(Integer userId) {
         return notificationRepository.findByUserId(userId)
-                .stream().filter(no -> !no.getStatus().equals(Notification.Status.PENDING)).map(NotificationDto::new).collect(Collectors.toList());
+                .stream().map(NotificationDto::new).collect(Collectors.toList());
     }
 
     private void checkInput(NotificationDto notificationDto) {
         if(notificationDto.getTitle().equals("") || notificationDto.getDescription().equals("")){
             throw new TutorException(NOTIFICATION_MISSING_DATA);
-        } else if (notificationDto.getTimeToDeliver() != null && LocalDateTime.parse(notificationDto.getTimeToDeliver(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).isBefore(LocalDateTime.now())) {
-            throw new TutorException(NOTIFICATION_DELIVER_DATE_INVALID);
-        } else if (!(notificationDto.getStatus().equals(Notification.Status.PENDING.name()) ||
-                notificationDto.getStatus().equals(Notification.Status.DELIVERED.name()))) {
+        } else if (!notificationDto.getStatus().equals(Notification.Status.DELIVERED.name())) {
             throw new TutorException(NOTIFICATION_STATUS_NOT_ALLOWED);
         }
     }

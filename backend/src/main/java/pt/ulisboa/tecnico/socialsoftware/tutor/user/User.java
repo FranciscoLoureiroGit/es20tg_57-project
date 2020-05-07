@@ -38,7 +38,7 @@ public class User implements UserDetails, DomainEntity {
     @Column(unique=true)
     private String username;
 
-    @Column(unique=true)
+    @Column
     private String email;
 
     private String name;

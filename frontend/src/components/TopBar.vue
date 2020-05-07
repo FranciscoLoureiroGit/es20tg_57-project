@@ -15,10 +15,11 @@
           tile
           to="/"
           v-if="currentCourse"
+          data-cy="homeButton"
         >
           {{ currentCourse.name }}
         </v-btn>
-        <v-btn dark active-class="no-active" text tile to="/" v-else>
+        <v-btn  dark active-class="no-active" text tile to="/" v-else>
           {{ appName }}
         </v-btn>
       </v-toolbar-title>
@@ -222,6 +223,7 @@
           @click.stop="notificationDrawer = !notificationDrawer"
           @click="getNotifications"
           v-if="isLoggedIn"
+          data-cy="notificationButton"
         >
           <v-badge color="red" overlap>
             <template v-slot:badge>
@@ -569,13 +571,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import NotificationView from '@/views/NotificationView.vue';
 import RemoteServices from '@/services/RemoteServices';
 import Notification from '@/models/management/Notification';
 
-@Component({
-  components: { NotificationView }
-})
+@Component
 export default class TopBar extends Vue {
   fenixUrl: string = process.env.VUE_APP_FENIX_URL;
   appName: string = process.env.VUE_APP_NAME;

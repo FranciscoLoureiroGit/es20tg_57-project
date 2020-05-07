@@ -40,7 +40,7 @@ class ChangeStatusNotificationServiceSpockTest extends Specification {
         notification = new Notification()
         notification.setTitle(TITLE)
         notification.setDescription(DESCRIPTION)
-        notification.setStatus(Notification.Status.PENDING)
+        notification.setStatus(Notification.Status.DELIVERED)
         notification.setUser(student)
         notificationRepository.save(notification)
 
@@ -52,7 +52,7 @@ class ChangeStatusNotificationServiceSpockTest extends Specification {
         def studentDto = new UserDto(student)
         and: "a notificationDto"
         NotificationDto notificationDto = new NotificationDto(notification)
-        notificationDto.setStatus("DELIVERED")
+        notificationDto.setStatus("READ")
 
         when:
         notificationService.changeNotificationStatus(notificationDto)
@@ -61,8 +61,7 @@ class ChangeStatusNotificationServiceSpockTest extends Specification {
         notificationRepository.count() == 1L
         def result = notificationRepository.findAll().get(0)
         result.getId() != null
-        result.getStatus() == Notification.Status.DELIVERED
-        result.getTimeToDeliver() == null
+        result.getStatus() == Notification.Status.READ
         result.getDescription() == DESCRIPTION
         result.getTitle() == TITLE
         result.getUser() == student
