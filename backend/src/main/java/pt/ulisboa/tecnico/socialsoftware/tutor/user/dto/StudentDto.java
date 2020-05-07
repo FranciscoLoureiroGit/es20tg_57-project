@@ -53,8 +53,8 @@ public class StudentDto implements Serializable {
             this.percentageOfCorrectStudentAnswers = user.getNumberOfCorrectStudentAnswers() * 100 / this.numberOfStudentAnswers;
         if (this.numberOfAnswers != 0)
             this.percentageOfCorrectAnswers = (user.getNumberOfCorrectTeacherAnswers() + user.getNumberOfCorrectInClassAnswers() + user.getNumberOfCorrectStudentAnswers())  * 100 / this.numberOfAnswers;
-        if (this.numberOfTournamentQuestionsAnswers != 0)
-            this.percentageOfCorrectTournamentQuestionsAnswers = (this.numberOfCorrectTournamentQuestionsAnswers * 100 )/ this.numberOfTournamentQuestionsAnswers;
+        //if (this.numberOfTournamentQuestionsAnswers != 0)
+          //  this.percentageOfCorrectTournamentQuestionsAnswers = (this.numberOfCorrectTournamentQuestionsAnswers * 100 )/ this.numberOfTournamentQuestionsAnswers;
 
     }
 

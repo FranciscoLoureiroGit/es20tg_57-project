@@ -201,29 +201,19 @@ Cypress.Commands.add('openClarificationDescription', title => {
     .should('have.length', 1)
     .children()
     .should('have.length', 4)
-    .find('[data-cy="showClarification"]')
-    .click();
-  cy.get('[data-cy="closeButton"]').click();
+    .get('[data-cy="openClarificationButton"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="backButton"]').click();
 });
 
-Cypress.Commands.add('openClarificationQuestion', title => {
-  cy.contains(title)
-    .parent()
-    .should('have.length', 1)
-    .children()
-    .should('have.length', 4)
-    .find('[data-cy="showQuestion"]')
-    .click();
-  cy.get('[data-cy="closeButton"]').click();
-});
 
 Cypress.Commands.add('addClarificationQA', variation => {
-  cy.get('[data-cy="LogoutButton"]').click();
+  cy.get('[data-cy="logoutButton"]').click();
   cy.demoStudentLogin();
   cy.get('[data-cy="quizzesButton"]').click();
   cy.createAndAnswerQuiz();
   cy.createClarificationRequestFromQuiz('TITLE_' + String(variation), 'DESC');
-  cy.get('[data-cy="LogoutButton"]').click();
+  cy.get('[data-cy="logoutButton"]').click();
   cy.demoTeacherLogin();
 });
 
@@ -334,7 +324,7 @@ Cypress.Commands.add('removeQuestionTest', title => {
     .click({ force: true });
 });
 
-Cypress.Commands.add('changeClarificationPrivacy', (title, privacy) => {
+Cypress.Commands.add('changeClarificationPrivacy', (title) => {
   cy.contains('Management').click();
   cy.contains('Clarification Requests').click();
   cy.contains(title)
@@ -342,7 +332,18 @@ Cypress.Commands.add('changeClarificationPrivacy', (title, privacy) => {
     .should('have.length', 1)
     .children()
     .should('have.length', 8)
-    .contains('[data-cy="set-' + privacy + '"]')
-    .click({ force: true })
-    .contains('[data-cy="requestPrivacy"]')
+    .get('[data-cy="changePrivacy"]').click({multiple: true, force: true})
 });
+
+Cypress.Commands.add('showPublicClarifications', () => {
+  cy.get('[data-cy="quizzesButton"]').click();
+  cy.get('[data-cy="clarificationsButton"]').click();
+  cy.contains('Public Clarifications').click();
+});
+
+Cypress.Commands.add('openQuestionPublicClarifications', () => {
+    cy.contains('Solved').click();
+    cy.contains('Generated Quiz').click();
+    cy.get('[data-cy="questionClarificationsButton"]').click();
+  }
+);

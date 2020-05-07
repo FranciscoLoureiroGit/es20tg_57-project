@@ -7,7 +7,7 @@ describe('Teacher clarifications walkthrough', () => {
 
   afterEach(() => {
     cy.wait(1000)
-    cy.get('[data-cy="LogoutButton"]').click()
+    cy.get('[data-cy="logoutButton"]').click()
   })
 
   it('login answers existing clarification request', () => {
@@ -18,10 +18,5 @@ describe('Teacher clarifications walkthrough', () => {
   it('check for closed clarification in the management list', () => {
     cy.listClarificationWithAnswer('TITLE_' + String(variation))
   })
-
-
-
-
-
 
 });

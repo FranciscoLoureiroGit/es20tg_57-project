@@ -102,7 +102,7 @@
               class="mr-2"
               v-on="on"
               @click="changePrivacy(item)"
-              data-cy="set-public"
+              data-cy="changePrivacy"
               >mdi-lock</v-icon
             >
           </template>
@@ -116,7 +116,7 @@
               class="mr-2"
               v-on="on"
               @click="changePrivacy(item)"
-              data-cy="set-private"
+              data-cy="changePrivacy"
               >mdi-lock-open-variant</v-icon
             >
           </template>

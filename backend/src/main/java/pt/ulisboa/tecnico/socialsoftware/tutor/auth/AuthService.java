@@ -133,7 +133,8 @@ public class AuthService {
     public AuthDto demoStudentAuth() {
         User user;
         if (activeProfile.equals("dev")) {
-            user = this.userService.createDemoStudent();
+            //user = this.userService.createDemoStudent();
+            user = this.userService.getDemoStudent();
         } else {
             user = this.userService.getDemoStudent();
       }

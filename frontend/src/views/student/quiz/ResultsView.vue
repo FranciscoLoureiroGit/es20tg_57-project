@@ -97,6 +97,7 @@
                 ]"
                 counter="70"
                 required
+                style="padding-top: 3vh"
               />
               <v-spacer></v-spacer>
               <v-flex xs24 sm12 md12>
@@ -130,7 +131,7 @@
                   <span>Refresh form</span>
                 </v-tooltip>
               </v-slide-x-reverse-transition>
-              <v-btn color="primary" flat @click="submit">Submit</v-btn>
+              <v-btn color="primary" flat @click="submit" data-cy="saveButton">Submit</v-btn>
             </v-card-actions>
           </v-card-text>
         </v-card>

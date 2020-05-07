@@ -85,6 +85,7 @@
                           class="mr-2"
                           v-on="on"
                           @click="openClarificationDialogue(item)"
+                          data-cy="openClarificationButton"
                           >fas fa-chevron-circle-right</v-icon
                         >
                       </template>
@@ -179,7 +180,6 @@
                     <div align="left" >
                       <v-card-title
                               style="overflow-wrap: break-word"
-                        data-cy="showClarification"
                         v-html="item.title"
                         @click="showClarificationDialog(item)"
                       ></v-card-title>

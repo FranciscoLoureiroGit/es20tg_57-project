@@ -1,37 +1,39 @@
 describe('Teacher clarifications walkthrough', () => {
   let variation = Date.now()
   beforeEach(() => {
-
     cy.demoTeacherLogin()
   })
 
   afterEach(() => {
     cy.wait(1000)
-    cy.get('[data-cy="LogoutButton"]').click()
+    cy.get('[data-cy="logoutButton"]').click()
   })
 
-  it('login answers existing clarification request', () => {
+  it('teacher answers existing clarification request', () => {
     cy.addClarificationQA(variation)
   });
 
-  it('check for private clarification request and make it public', () => {
-    cy.changeClarificationPrivacy('TITLE_' + String(variation), 'public')
+  it('teacher checks for private clarification request and make it public', () => {
+    cy.changeClarificationPrivacy('TITLE_' + String(variation))
   })
 
-  it('check for public clarification request and make it private', () => {
-    cy.changeClarificationPrivacy('TITLE_' + String(variation), 'private')
+  it('teacher checks  for public clarification request and make it private', () => {
+    cy.changeClarificationPrivacy('TITLE_' + String(variation))
   })
 
-  it('user checks for all public clarifications', () => {
-    cy.changeClarificationPrivacy('TITLE_' + String(variation), 'private')
+  it('student checks for all public clarifications', () => {
+    cy.changeClarificationPrivacy('TITLE_' + String(variation)) // make it public again
+    cy.get('[data-cy="logoutButton"]').click()
+    cy.demoStudentLogin()
+    cy.showPublicClarifications();
+    cy.openClarificationDescription('TITLE_' + String(variation));
   })
 
-  it('user checks for a specific question public clarifications', () => {
-    cy.changeClarificationPrivacy('TITLE_' + String(variation), 'private')
+  it('student checks for a specific question public clarifications', () => {
+    cy.get('[data-cy="logoutButton"]').click()
+    cy.demoStudentLogin()
+    cy.get('[data-cy="quizzesButton"]').click();
+    cy.openQuestionPublicClarifications();
   })
-
-
-
-
 
 });
