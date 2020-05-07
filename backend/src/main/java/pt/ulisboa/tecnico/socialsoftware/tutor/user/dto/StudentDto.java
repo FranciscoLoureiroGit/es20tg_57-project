@@ -30,11 +30,9 @@ public class StudentDto implements Serializable {
     public StudentDto(User user) {
         this.username = user.getUsername();
         this.name = user.getName();
-
         this.numberOfTeacherQuizzes = user.getNumberOfTeacherQuizzes();
         this.numberOfInClassQuizzes = user.getNumberOfInClassQuizzes();
         this.numberOfStudentQuizzes = user.getNumberOfStudentQuizzes();
-
         this.numberOfAnswers = user.getNumberOfTeacherAnswers() + user.getNumberOfInClassAnswers() + user.getNumberOfStudentAnswers();
         this.numberOfTeacherAnswers = user.getNumberOfTeacherAnswers();
         this.numberOfInClassAnswers = user.getNumberOfInClassAnswers();
@@ -43,6 +41,9 @@ public class StudentDto implements Serializable {
         this.numberOfTournamentsWon = user.getNumberOfTournamentsWon();
         this.numberOfTournamentQuestionsAnswers = user.getNumberOfTournamentQuestionsAnswers();
         this.numberOfCorrectTournamentQuestionsAnswers = user.getNumberOfCorrectTournamentQuestionsAnswers();
+        
+        this.lastAccess = DateHandler.toISOString(user.getLastAccess());
+        this.creationDate = DateHandler.toISOString(user.getCreationDate());
 
         if (this.numberOfTeacherAnswers != 0)
             this.percentageOfCorrectTeacherAnswers = user.getNumberOfCorrectTeacherAnswers() * 100 / this.numberOfTeacherAnswers;
@@ -55,10 +56,6 @@ public class StudentDto implements Serializable {
         if (this.numberOfTournamentQuestionsAnswers != 0)
             this.percentageOfCorrectTournamentQuestionsAnswers = (this.numberOfCorrectTournamentQuestionsAnswers * 100 )/ this.numberOfTournamentQuestionsAnswers;
 
-        if (user.getLastAccess() != null)
-            this.lastAccess = DateHandler.toISOString(user.getLastAccess());
-        if (user.getCreationDate() != null)
-            this.creationDate = DateHandler.toISOString(user.getCreationDate());
     }
 
     public String getUsername() {
