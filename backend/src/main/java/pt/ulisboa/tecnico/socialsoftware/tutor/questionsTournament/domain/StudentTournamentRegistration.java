@@ -23,7 +23,7 @@ public class StudentTournamentRegistration {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "questions_tournament_id")
     private QuestionsTournament questionsTournament;
 

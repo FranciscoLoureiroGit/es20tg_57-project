@@ -252,6 +252,10 @@ public class QuestionsTournament {
         }
     }
 
+    public QuizAnswer getWinnerQuizAnswer() {
+        return winnerQuizAnswer;
+    }
+
     public void checkTournamentWinner(QuizAnswer quizAnswer) {
         if (this.tournamentWinner == null){
             this.tournamentWinner = quizAnswer.getUser();

@@ -71,9 +71,11 @@ class GetTournamentStatsTest extends Specification {
     TopicRepository topicRepository
 
     def result
+    def result2
     def quiz
     def quiz2
     def quizAnswer
+    def quizAnswer2
     def course
     def courseExecution1
     def courseExecution2
@@ -116,13 +118,12 @@ class GetTournamentStatsTest extends Specification {
 
         userRepository.save(user)
 
-        user2 = new User('name', "username2", 2, User.Role.STUDENT)
+        user2 = new User('name2', "username2", 2, User.Role.STUDENT)
         user2.getCourseExecutions().add(courseExecution1)
         courseExecution1.getUsers().add(user2)
 
         user2.getCourseExecutions().add(courseExecution2)
         courseExecution2.getUsers().add(user2)
-
 
         userRepository.save(user2)
 
@@ -302,6 +303,75 @@ class GetTournamentStatsTest extends Specification {
         result.getTotalAnswers() == 6
         result.getTournamentsWon() == 2
         result.getTotalTournaments() == 2
+    }
+
+    def "two students participate in 1 tournament"(){
+        given: "a student registered in tournament"
+        def registration = new StudentTournamentRegistration(user, tournament1)
+        user.addStudentTournamentRegistration(registration)
+        tournament1.addStudentTournamentRegistration(registration)
+        studentTournamentRegistrationRepository.save(registration)
+
+        and: "another student registered in a tournament"
+        def registration2 = new StudentTournamentRegistration(user2, tournament1)
+        user2.addStudentTournamentRegistration(registration2)
+        tournament1.addStudentTournamentRegistration(registration2)
+        studentTournamentRegistrationRepository.save(registration2)
+
+        and: "two quiz answers"
+
+        quiz = tournament1.getQuiz()
+        assert quiz != null
+        assert tournament1.getQuiz() != null
+        quizAnswer = new QuizAnswer(user,quiz)
+        def optionCorrect = new Option()
+        optionCorrect.setCorrect(true)
+        def optionWrong = new Option()
+        optionWrong.setCorrect(false)
+        assert quiz.getQuizQuestions().size() != 0
+        questionAnswer1 = new QuestionAnswer(quizAnswer, quiz.getQuizQuestions()[0],2 ,optionCorrect,0)
+        questionAnswer2 = new QuestionAnswer(quizAnswer, quiz.getQuizQuestions()[1],3 ,optionCorrect,1)
+        questionAnswer3 = new QuestionAnswer(quizAnswer, quiz.getQuizQuestions()[2],1 ,optionWrong,2)
+        List<QuestionAnswer> questionsAnswerList = new ArrayList<QuestionAnswer>()
+        questionsAnswerList.add(questionAnswer1)
+        questionsAnswerList.add(questionAnswer2)
+        questionsAnswerList.add(questionAnswer3)
+        quizAnswer.setQuestionAnswers(questionsAnswerList)
+
+        quizAnswer2 = new QuizAnswer(user2,quiz)
+        assert quiz.getQuizQuestions().size() != 0
+        def questionAnswer4 = new QuestionAnswer(quizAnswer2, quiz.getQuizQuestions()[0],2 ,optionCorrect,0)
+        def questionAnswer5 = new QuestionAnswer(quizAnswer2, quiz.getQuizQuestions()[1],3 ,optionCorrect,1)
+        def questionAnswer6 = new QuestionAnswer(quizAnswer2, quiz.getQuizQuestions()[2],1 ,optionCorrect,2)
+        List<QuestionAnswer> questionsAnswerList2 = new ArrayList<QuestionAnswer>()
+        questionsAnswerList2.add(questionAnswer4)
+        questionsAnswerList2.add(questionAnswer5)
+        questionsAnswerList2.add(questionAnswer6)
+        quizAnswer2.setQuestionAnswers(questionsAnswerList2)
+
+        assert quizAnswer.isTournamentQuizAnswer()
+        quiz.addQuizAnswer(quizAnswer)
+        quiz.addQuizAnswer(quizAnswer2)
+        while(!tournament1.isClosed())
+            continue;
+
+        when:
+        result = statsService.getTournamentStats(user.getId(), courseExecution1.getId())
+        result2 = statsService.getTournamentStats(user2.getId(), courseExecution1.getId())
+
+        assert tournament1.isClosed()
+
+        then:
+        assert tournament1.getTournamentWinner() == user2
+        assert tournament1.getWinnerQuizAnswer() == quizAnswer2
+        result.getCorrectAnswers() == 2
+        result.getTotalAnswers() == 3
+        result.getTournamentsWon() == 0
+        result.getTotalTournaments() == 1
+        result2.getCorrectAnswers() == 3
+        result2.getTotalAnswers() == 3
+        result2.getTournamentsWon() == 1
+        result2.getTotalTournaments() == 1
     }
 
     private void setTopics() {

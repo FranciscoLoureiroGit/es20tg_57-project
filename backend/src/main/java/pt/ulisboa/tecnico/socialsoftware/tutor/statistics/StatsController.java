@@ -30,4 +30,17 @@ public class StatsController {
 
         return statsService.getStats(user.getId(), executionId);
     }
+
+    @GetMapping("/executions/{executionId}/stats/tournaments")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public TournamentStatsDto getTournamentStats(Principal principal, @PathVariable int executionId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+
+        if (user == null) {
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return statsService.getTournamentStats(user.getId(), executionId);
+    }
 }
