@@ -30,7 +30,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 public class NotificationService {
     private static final String EMAIL_HEADER = "=========== QUIZZES TUTOR NOTIFICATION SYSTEM ========== \n\n";
     private static final String SUBJECT_HEADER = "Quizzes Tutor - ";
-    private List<Notification> pendingEmails = new ArrayList<>();
+    private List<NotificationDto> pendingEmails = new ArrayList<>();
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -73,8 +73,8 @@ public class NotificationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void sendAllEmails() {
         // checks for pending emails ands sends them
-        for (Notification notification: this.pendingEmails) {
-                sendEmail(new NotificationDto(notification));
+        for (NotificationDto notificationDto: this.pendingEmails) {
+                sendEmail(notificationDto);
         }
         this.pendingEmails = new ArrayList<>();
     }
@@ -92,7 +92,7 @@ public class NotificationService {
 
         // If is urgent notification, sends email
         if (notification.getUser().getEmail() != null && notification.getUrgent())
-            this.pendingEmails.add(notification);
+            this.pendingEmails.add(new NotificationDto(notification));
     }
 
     @Retryable(

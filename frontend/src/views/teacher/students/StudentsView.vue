@@ -85,6 +85,7 @@
           <v-textarea
             outline
             rows="3"
+            data-cy="NotificationDescription"
             v-model="notification.description"
             label="Description"
           ></v-textarea>
@@ -104,13 +105,14 @@
           <v-btn color="blue darken-1" @click="onCloseNotificationDialog"
             >Cancel</v-btn
           >
-          <v-btn v-if="isAll" color="blue darken-1" @click="sendAllNotifications"
+          <v-btn data-cy="sendAllButton" v-if="isAll" color="blue darken-1" @click="sendAllNotifications"
             >Send To All</v-btn
           >
           <v-btn
             v-else
             color="blue darken-1"
             @click="sendNotification"
+            data-cy="sendButton"
             >Send To Student</v-btn
           >
         </v-card-actions>
@@ -240,6 +242,7 @@ export default class StudentsView extends Vue {
         await RemoteServices.notifyStudent(this.notification);
         this.dialog = false;
         this.isAll = false;
+        this.urgent = false;
       } else {
         await this.$store.dispatch('error', 'This student has no valid username');
       }
@@ -269,6 +272,7 @@ export default class StudentsView extends Vue {
           await RemoteServices.notifyAllStudents(allNotifications);
         this.dialog = false;
         this.isAll = false;
+        this.urgent = false;
       }
     } catch (error) {
       await this.$store.dispatch('error', error);

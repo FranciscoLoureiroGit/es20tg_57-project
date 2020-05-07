@@ -286,9 +286,9 @@
     >
       <div style="background-color: #1976D2">
         <v-card-text  class="font-weight-bold" style="font-size: 1.7vh; padding-top: 3vh; padding-bottom: 3vh; color: white"
-        >Notifications
-          <span style="color: black" v-if="newNotifications > 0"
-          >({{ newNotifications }} new)</span
+        ><v-icon data-cy="exitButton" style="padding-right: 4vh" x-large @click="notificationDrawer = false">mdi-arrow-left</v-icon ><span v-if="newNotifications === 0" style="padding-right: 7vh">Notifications</span>
+          <span style="color: #761515; padding-right: 3vh; font-size: 1.4vh" v-if="newNotifications > 0"
+          ><span style="color: white; font-size: 1.7vh">Notifications</span> ({{ newNotifications }} new)</span
           >
         </v-card-text>
         <v-divider></v-divider>
@@ -342,7 +342,8 @@
         >You have no notifications</v-card-text
       >
       <v-btn small v-if="notifications.length > 0"
-             @click="deleteAllUserNotifications" >
+             @click="deleteAllUserNotifications" data-cy="clearAllButton">
+
 
 
       Clear All</v-btn>

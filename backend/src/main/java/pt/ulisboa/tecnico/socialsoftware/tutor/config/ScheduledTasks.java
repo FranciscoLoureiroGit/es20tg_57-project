@@ -30,6 +30,12 @@ public class ScheduledTasks {
     @Autowired
 	private NotificationService notificationService;
 
+	// Runs every 15 minutes
+	@Scheduled(fixedRate = 1000*60*15)
+	public void checkNotifications() {
+		notificationService.sendAllEmails();
+	}
+
 	@Scheduled(cron = "0 0 1,13 * * *")
 	public void exportAll() {
 		impExpService.exportAll();
@@ -45,9 +51,4 @@ public class ScheduledTasks {
 	    quizService.resetDemoQuizzes();
     }
 
-    // Runs every 5 minutes
-	@Scheduled(cron = "0 0/1 * * * *")
-	public void checkNotifications() {
-		notificationService.sendAllEmails();
-	}
 }
