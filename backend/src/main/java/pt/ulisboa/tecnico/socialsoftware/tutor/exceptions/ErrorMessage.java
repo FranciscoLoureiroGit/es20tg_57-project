@@ -90,10 +90,13 @@ public enum ErrorMessage {
 
     USER_NOT_STUDENT("User is not a student"),
     STUDENT_NOT_ON_COURSE_EXECUTION("Student is not on the course execution"),
+    USER_NOT_TOURNAMENT_CREATOR("User can't delete tournament which didn't create"),
     TOURNAMENT_ENDED("Tournament already ended"),
     TOURNAMENT_ALREADY_STARTED("Tournament already started"),
     TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
     TOURNAMENT_NOT_FOUND("Tournament not found with id %d"),
+    TOURNAMENT_NOT_AVAILABLE("Tournament not started or ended"),
+    TOURNAMENT_QUIZ_NOT_GENERATED("Tournament Quiz was not generated"),
     DUPLICATED_REGISTRATION("User already registered in tournament"),
     NULLID("null userId or questionsTournamentId"),
     NO_CLARIFICATION_REQUEST("No such Clarification Request"),
