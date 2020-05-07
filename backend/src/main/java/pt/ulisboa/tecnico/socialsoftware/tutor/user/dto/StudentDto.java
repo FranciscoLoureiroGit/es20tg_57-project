@@ -21,6 +21,11 @@ public class StudentDto implements Serializable {
     private int percentageOfCorrectStudentAnswers = 0;
     private String creationDate;
     private String lastAccess;
+    private Integer numberOfTournamentsWon;
+    private Integer numberOfTournamentParticipations;
+    private Integer numberOfTournamentQuestionsAnswers;
+    private Integer numberOfCorrectTournamentQuestionsAnswers;
+    private int percentageOfCorrectTournamentQuestionsAnswers;
 
     public StudentDto(User user) {
         this.username = user.getUsername();
@@ -32,6 +37,11 @@ public class StudentDto implements Serializable {
         this.numberOfTeacherAnswers = user.getNumberOfTeacherAnswers();
         this.numberOfInClassAnswers = user.getNumberOfInClassAnswers();
         this.numberOfStudentAnswers = user.getNumberOfStudentAnswers();
+        this.numberOfTournamentParticipations = user.getStudentTournamentRegistrations().size();
+        this.numberOfTournamentsWon = user.getNumberOfTournamentsWon();
+        this.numberOfTournamentQuestionsAnswers = user.getNumberOfTournamentQuestionsAnswers();
+        this.numberOfCorrectTournamentQuestionsAnswers = user.getNumberOfCorrectTournamentQuestionsAnswers();
+        
         this.lastAccess = DateHandler.toISOString(user.getLastAccess());
         this.creationDate = DateHandler.toISOString(user.getCreationDate());
 
@@ -43,6 +53,8 @@ public class StudentDto implements Serializable {
             this.percentageOfCorrectStudentAnswers = user.getNumberOfCorrectStudentAnswers() * 100 / this.numberOfStudentAnswers;
         if (this.numberOfAnswers != 0)
             this.percentageOfCorrectAnswers = (user.getNumberOfCorrectTeacherAnswers() + user.getNumberOfCorrectInClassAnswers() + user.getNumberOfCorrectStudentAnswers())  * 100 / this.numberOfAnswers;
+        if (this.numberOfTournamentQuestionsAnswers != 0)
+            this.percentageOfCorrectTournamentQuestionsAnswers = (this.numberOfCorrectTournamentQuestionsAnswers * 100 )/ this.numberOfTournamentQuestionsAnswers;
 
     }
 
@@ -164,6 +176,46 @@ public class StudentDto implements Serializable {
 
     public void setPercentageOfCorrectStudentAnswers(int percentageOfCorrectStudentAnswers) {
         this.percentageOfCorrectStudentAnswers = percentageOfCorrectStudentAnswers;
+    }
+
+    public Integer getNumberOfTournamentsWon() {
+        return numberOfTournamentsWon;
+    }
+
+    public void setNumberOfTournamentsWon(Integer numberOfTournamentsWon) {
+        this.numberOfTournamentsWon = numberOfTournamentsWon;
+    }
+
+    public Integer getNumberOfTournamentParticipations() {
+        return numberOfTournamentParticipations;
+    }
+
+    public void setNumberOfTournamentParticipations(Integer numberOfTournamentParticipations) {
+        this.numberOfTournamentParticipations = numberOfTournamentParticipations;
+    }
+
+    public Integer getNumberOfTournamentQuestionsAnswers() {
+        return numberOfTournamentQuestionsAnswers;
+    }
+
+    public void setNumberOfTournamentQuestionsAnswers(Integer numberOfTournamentQuestionsAnswers) {
+        this.numberOfTournamentQuestionsAnswers = numberOfTournamentQuestionsAnswers;
+    }
+
+    public Integer getNumberOfCorrectTournamentQuestionsAnswers() {
+        return numberOfCorrectTournamentQuestionsAnswers;
+    }
+
+    public void setNumberOfCorrectTournamentQuestionsAnswers(Integer numberOfCorrectTournamentQuestionsAnswers) {
+        this.numberOfCorrectTournamentQuestionsAnswers = numberOfCorrectTournamentQuestionsAnswers;
+    }
+
+    public int getPercentageOfCorrectTournamentQuestionsAnswers() {
+        return percentageOfCorrectTournamentQuestionsAnswers;
+    }
+
+    public void setPercentageOfCorrectTournamentQuestionsAnswers(int percentageOfCorrectTournamentQuestionsAnswers) {
+        this.percentageOfCorrectTournamentQuestionsAnswers = percentageOfCorrectTournamentQuestionsAnswers;
     }
 
     @Override

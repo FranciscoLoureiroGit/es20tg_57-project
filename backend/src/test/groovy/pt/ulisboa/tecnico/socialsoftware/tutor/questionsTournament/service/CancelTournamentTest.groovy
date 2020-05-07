@@ -5,18 +5,18 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
-import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.QuestionsTournamentService
-import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.dto.QuestionsTournamentDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.QuestionsTournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.repository.StudentTournamentRegistrationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
@@ -25,13 +25,17 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTIONSTOURNAMENT_NOT_CONSISTENT
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_TOURNAMENT_CREATOR
+
 
 @DataJpaTest
-class CreateQuestionsTournamentServiceSpockPerfomanceTest extends Specification {
+class CancelTournamentTest extends Specification{
     public static final String COURSE_NAME = "Software Architecture"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
+    public static final Integer NUMBER_OF_QUESTIONS = 13
 
     @Autowired
     CourseRepository courseRepository
@@ -57,13 +61,14 @@ class CreateQuestionsTournamentServiceSpockPerfomanceTest extends Specification 
     @Autowired
     QuestionsTournamentRepository tournamentRepository;
 
-    def startingDate = DateHandler.toISOString(DateHandler.now())
-    def endingDate = DateHandler.toISOString(DateHandler.now().plusDays(1))
     def topic1 = new TopicDto()
     def topic2 = new TopicDto()
     def courseExecution;
     def user
     def course
+    def tournament
+    def startingDate = LocalDateTime.now()
+    def endingDate = LocalDateTime.now().plusDays(1)
 
     def setup(){
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
@@ -77,28 +82,42 @@ class CreateQuestionsTournamentServiceSpockPerfomanceTest extends Specification 
         courseExecution.getUsers().add(user)
         userRepository.save(user)
 
+        tournament = new QuestionsTournament()
+        tournament.setStudentTournamentCreator(user)
+        tournament.setCourseExecution(courseExecution)
+        tournament.setStartingDate(startingDate)
+        tournament.setEndingDate(endingDate)
+        tournament.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
+
         setTopics()
+        tournament.getTopics().add(new Topic(course,topic1))
+        tournament.getTopics().add(new Topic(course,topic2))
+
+        questionsTournamentRepository.save(tournament)
     }
 
-    def "performance testing to create 1 question tournament"(){
-        given: "a questions tournament with starting and ending date, topics and number of questions"
-        def questionsTournament = new QuestionsTournamentDto()
-        questionsTournament.setStartingDate(startingDate)
-        questionsTournament.setEndingDate(endingDate)
-        questionsTournament.getTopics().add(topic1)
-        questionsTournament.getTopics().add(topic2)
-        questionsTournament.setNumberOfQuestions(2)
-
-        startingDate = DateHandler.toLocalDateTime(startingDate)
-        endingDate = DateHandler.toLocalDateTime(endingDate)
-
+    def "student who created tournament deletes it"(){
         when:
-        1.upto(1,{
-            questionsTournamentService.createQuestionsTournament(courseExecution.getId(),user.getId(),questionsTournament )
-        })
+        questionsTournamentService.cancelTournament(user.getId(),tournament.getId());
 
-        then:
-        true
+        then: "tournament is deleted"
+        def result = tournamentRepository.findByTournamentId(tournament.getId())
+
+        result.empty
+    }
+
+    def "student tries to delete tournament which didn't create"(){
+        given: "a new student"
+        user = new User('name2', "username2", 2, User.Role.STUDENT)
+        user.getCourseExecutions().add(courseExecution)
+        courseExecution.getUsers().add(user)
+        userRepository.save(user)
+        when:
+        questionsTournamentService.cancelTournament(user.getId(),tournament.getId());
+
+        then: "tournament is deleted"
+        def exception = thrown(TutorException)
+        exception.errorMessage == USER_NOT_TOURNAMENT_CREATOR
     }
 
     private void setTopics() {
@@ -138,5 +157,6 @@ class CreateQuestionsTournamentServiceSpockPerfomanceTest extends Specification 
         QuestionService questionService() {
             return new QuestionService()
         }
+
     }
 }

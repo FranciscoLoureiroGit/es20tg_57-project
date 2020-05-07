@@ -704,6 +704,34 @@ export default class RemoteServices {
       });
   }
 
+  static async getRegisteredTournaments(): Promise<QuestionsTournament[]> {
+    return httpClient
+      .get(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/questionsTournament/registered`
+      )
+      .then(response => {
+        return response.data.map((tournament: any) => {
+          return new QuestionsTournament(tournament);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getTournamentQuiz(tournament: QuestionsTournament): Promise<StatementQuiz> {
+    return httpClient
+      .get(
+        `/questionsTournament/${tournament.id}/quiz`
+      )
+      .then(response => {
+        return new StatementQuiz(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async registerStudentInTournament(
     questionsTournamentId: number
   ): Promise<QuestionsTournamentRegistration> {
@@ -714,6 +742,16 @@ export default class RemoteServices {
       .then(response => {
         return new QuestionsTournamentRegistration(response.data);
       })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async cancelTournament(questionsTournamentId: number) {
+    return httpClient
+      .post(
+        `/questionsTournament/${questionsTournamentId}/cancelTournament`
+      )
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });

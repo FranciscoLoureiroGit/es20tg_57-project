@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain;
 
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -22,16 +23,16 @@ public class StudentTournamentRegistration {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "questions_tournament_id")
     private QuestionsTournament questionsTournament;
 
     public StudentTournamentRegistration() {
-        registrationDate = LocalDateTime.now();
+        registrationDate = DateHandler.now();
     }
 
     public StudentTournamentRegistration(User user, QuestionsTournament questionsTournament) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateHandler.now();
         checkStartedOrEndedTournament(questionsTournament, now);
         setupRegistration(user, questionsTournament, now);
     }
@@ -106,5 +107,9 @@ public class StudentTournamentRegistration {
 
     public void setQuestionsTournament(QuestionsTournament questionsTournament) {
         this.questionsTournament = questionsTournament;
+    }
+
+    public boolean isWinner(){
+        return user.equals(questionsTournament.getTournamentWinner());
     }
 }
