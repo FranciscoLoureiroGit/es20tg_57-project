@@ -110,8 +110,13 @@ public enum ErrorMessage {
     NO_EXTRA_CLARIFICATION_TYPE("Extra clarification type is undefined"),
     NO_EXTRA_CLARIFICATION_PARENT("Extra clarification parent is undefined"),
     EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION("User is not allowed to perform this action"),
-    EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE("Next comment cannot be of type %s")
-    ;
+    EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE("Next comment cannot be of type %s"),
+
+    NOTIFICATION_STATUS_NOT_ALLOWED("The specified status is not allowed at creation"),
+    NOTIFICATION_DELIVER_DATE_INVALID("The specififed deliver date for notification is invalid"),
+    NOTIFICATION_MISSING_DATA("Notification has invalid data"),
+    NOTIFICATION_NOT_FOUND("Notification %d was not found"),
+    MAIL_ERROR("Error while sending mail");
 
     public final String label;
 

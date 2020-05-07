@@ -18,6 +18,7 @@ import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 import ExtraClarification from '@/models/management/ExtraClarification';
+import Notification from '@/models/management/Notification';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -825,6 +826,67 @@ export default class RemoteServices {
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  // NOTIFICATION SYSTEM SERVICES
+  static async notifyStudent(notification: Notification): Promise<Notification> {
+    return httpClient
+      .post('/notifications/create-one', notification)
+      .then(response => {
+          return new Notification(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async notifyAllStudents(notifications: Notification[]): Promise<Notification[]> {
+    return httpClient
+      .post('/notifications/create-many', notifications)
+      .then(response => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
+  static async getUserNotifications(): Promise<Notification[]> {
+    return httpClient
+      .get('/user/notifications')
+      .then(response => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async changeNotificationStatus(notification: Notification) {
+    return httpClient
+      .put('/notifications/change-status', notification)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteNotification(notification: Notification) {
+    return httpClient
+      .post('/notifications/delete', notification)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteAllUserNotifications() {
+    return httpClient.delete('/notifications/delete-all').catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   static async exportAll() {

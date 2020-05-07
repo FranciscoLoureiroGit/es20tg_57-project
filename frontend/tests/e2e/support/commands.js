@@ -324,6 +324,7 @@ Cypress.Commands.add('removeQuestionTest', title => {
     .click({ force: true });
 });
 
+
 Cypress.Commands.add('changeClarificationPrivacy', (title) => {
   cy.contains('Management').click();
   cy.contains('Clarification Requests').click();
@@ -347,3 +348,25 @@ Cypress.Commands.add('openQuestionPublicClarifications', () => {
     cy.get('[data-cy="questionClarificationsButton"]').click();
   }
 );
+
+Cypress.Commands.add('notifyStudents', (title, description) => {
+  cy.contains('Management').click();
+  cy.contains('Students').click();
+  cy.wait(2000);
+  cy.contains('Notify All Students').click({ force: true });
+  cy.get('[data-cy="NotificationTitle"]').type(title);
+  cy.get('[data-cy="NotificationDescription"]').type(description);
+  cy.get('[data-cy="sendAllButton"]').click();
+});
+
+Cypress.Commands.add('notifyDemoStudent', (title, description) => {
+  cy.contains('Management').click();
+  cy.contains('Students').click();
+  cy.wait(2000);
+  cy.contains('Demo Student')
+    .find('[data-cy="notifyStudent"]')
+    .click({ force: true });
+  cy.get('[data-cy="NotificationTitle"]').type(title);
+  cy.get('[data-cy="NotificationDescription"]').type(description);
+  cy.get('[data-cy="sendButton"]').click();
+});
