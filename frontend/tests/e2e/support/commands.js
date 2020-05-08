@@ -334,7 +334,7 @@ Cypress.Commands.add('approveQuestionTest', (title) => {
     .click({ force: true });
   cy.get('[data-cy="Status"]').type('AVAILABLE{enter}', { force: true });
   cy.get('[data-cy="changeQuestionButton"]').click();
-  cy.wait(100);
+  cy.wait(1000);
 
   cy.contains(title)
     .parent()
@@ -369,7 +369,7 @@ Cypress.Commands.add('editQuestionTeacherTest', (title, newTitle, content) => {
     .click({ force: true });
   cy.get('[data-cy="Status"]').type('AVAILABLE{enter}', { force: true });
   cy.get('[data-cy="changeQuestionButton"]').click();
-  cy.wait(100);
+  cy.wait(1000);
 
   cy.contains(title)
     .parent()
