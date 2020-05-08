@@ -48,6 +48,7 @@
         </div>
       </div>
     </div>
+    <!--
     <div>
       <toggle-button
         @change="onChangeEventHandler($event)"
@@ -61,6 +62,7 @@
         data-cy="togglePrivacy"
       />
     </div>
+    -->
   </div>
 </template>
 
@@ -85,31 +87,6 @@ export default class TournamentStatsView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-
-  async onChangeEventHandler() {
-    try {
-      if (this.stats != null) {
-        this.stats.privacyStatusBoolean = !this.stats.privacyStatusBoolean;
-      }
-      await RemoteServices.setTournamentPrivacyStatus(
-        this.calculatePrivacyStatus()
-      );
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-  }
-
-  isPrivate(): boolean {
-    return this.stats?.privacyStatus.toUpperCase() === 'PRIVATE';
-  }
-
-  calculatePrivacyStatus(): String {
-    if (this.isPrivate()) {
-      return 'PUBLIC';
-    } else {
-      return 'PRIVATE';
-    }
   }
 }
 </script>

@@ -614,14 +614,6 @@ export default class RemoteServices {
     }
   }
 
-  static async setTournamentPrivacyStatus(privacyStatus: String) {
-    return httpClient
-      .post('/privacy/tournamentsStats', privacyStatus)
-      .catch(async error => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
   static async saveTournament(
     tournament: QuestionsTournament
   ): Promise<QuestionsTournament> {
