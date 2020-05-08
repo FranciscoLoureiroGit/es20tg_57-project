@@ -107,7 +107,7 @@
         <v-card class="mt-3 mx-auto"
                 max-width="400">
           <v-card-title>
-            <b style="padding-left: 6vh">Total Clarifications</b>
+            <b style="padding-left: 2vh">Total Clarifications</b>
           </v-card-title>
           <v-divider inset/>
           <v-card-text >
@@ -128,7 +128,7 @@
         <v-card class="mt-3 mx-auto"
                 max-width="400">
           <v-card-title >
-            <b style="padding-left: 6vh">Public Clarifications</b>
+            <b style="padding-left: 2vh">Public Clarifications</b>
           </v-card-title>
           <v-divider inset/>
           <v-card-text >
@@ -146,7 +146,7 @@
         <v-card class="mt-3 mx-auto"
                 max-width="400">
           <v-card-title>
-            <b style="padding-left: 6vh">Answered Clarifications</b>
+            <b style="padding-left: 2vh">Answered Clarifications</b>
           </v-card-title>
           <v-divider inset/>
           <v-card-text >
@@ -164,7 +164,7 @@
         <v-card class="mt-3 mx-auto"
                 max-width="400">
           <v-card-title>
-            <b style="padding-left: 6vh">Reopened Clarifications</b>
+            <b style="padding-left: 2vh">Reopened Clarifications</b>
           </v-card-title>
           <v-divider inset/>
           <v-card-text >
@@ -252,7 +252,7 @@ import StudentClarificationStats from '@/models/statement/StudentClarificationSt
 export default class ClarificationStatsView extends Vue {
 
 
-  studentClarificationStats: StudentClarificationStats | null = null;
+  studentClarificationStats: StudentClarificationStats = new StudentClarificationStats();
 
   /*
   dateData : number[] = [];
