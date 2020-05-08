@@ -25,7 +25,7 @@
       <v-list class="pt-0" dense>
         <v-list-item style="padding-top: 1vh">
           <v-list-item-action @click="mini = false">
-            <v-icon >
+            <v-icon>
               far fa-question-circle
             </v-icon>
           </v-list-item-action>
@@ -38,7 +38,7 @@
           <v-divider></v-divider>
         </v-list-item>
 
-        <v-list-item>
+        <v-list-item style="padding-bottom: 1vh; justify-content: space-between">
           <v-list-item-action @click="mini = false">
             <v-icon>
               mdi-comment-question
@@ -49,9 +49,31 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item>
-          <v-divider></v-divider>
-        </v-list-item>
+
+
+            <v-expansion-panels >
+              <v-expansion-panel style="padding-top: 1vh; padding-bottom: 1vh; ">
+                <v-expansion-panel-header style="horiz-align: left">
+                  <v-icon>
+                    fas fa-cog
+                  </v-icon>
+                  <li style="justify-content: space-between">
+                    <span>
+                    Settings</span>
+                  </li>
+                  </v-expansion-panel-header>
+                <v-expansion-panel-content class="font-weight-light">
+                  <v-checkbox
+                          style="padding-left: 1vh"
+                          class="mx-2"
+                          label="Dashboard is public"
+                          v-model="is_public"
+                  ></v-checkbox><v-btn @click="changePrivacy">Save</v-btn>
+                <span v-if="saved" style="padding-left: 2vh">Saved!</span></v-expansion-panel-content>
+
+              </v-expansion-panel>
+            </v-expansion-panels>
+
       </v-list>
     </v-navigation-drawer>
 
@@ -66,6 +88,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import StatsView from '../StatsView.vue';
 import ClarificationStatsView from './ClarificationStatsView.vue';
+import RemoteServices from '@/services/RemoteServices';
 
 @Component({
   components: {
@@ -78,6 +101,19 @@ export default class DashboardView extends Vue {
   displayClarificationStats: boolean = false;
   drawer: boolean = true;
   mini: boolean = true;
+  is_public: boolean = false;
+  saved: boolean = false;
+
+  async changePrivacy() {
+    await this.$store.dispatch('loading');
+    try {
+      await RemoteServices.changeStudentDashboardPrivacy(this.is_public ? 'PUBLIC' : 'PRIVATE');
+      this.saved = true;
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
 
   resetViews() {
     this.displayQuestionStats = false;
