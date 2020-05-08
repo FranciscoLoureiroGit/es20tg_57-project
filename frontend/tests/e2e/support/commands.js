@@ -494,11 +494,11 @@ Cypress.Commands.add('answerToAdditionalClarification', (title, comment) => {
 });
 
 
-Cypress.Commands.add('goToDashboard', () => {
+Cypress.Commands.add('goToTournamentDashboard', () => {
   cy.get('[data-cy=userButton]').click();
   cy.contains('Dashboard').click();
-  cy.get('.pt-0 > :nth-child(5) > .v-list-item__action > .v-icon').click();
-  cy.get(':nth-child(5) > .v-list-item__content').click();
+  cy.get('.pt-0 > :nth-child(6) > .v-list-item__action > .v-icon').click();
+  cy.get(':nth-child(6) > .v-list-item__content').click();
 });
 
 Cypress.Commands.add('changeQuestionToRemovedTest', (title) => {

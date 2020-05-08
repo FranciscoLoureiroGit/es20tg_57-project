@@ -8,6 +8,6 @@ describe('Statistics walkthrough', () => {
   });
 
   it('checks tournament stats', () => {
-    cy.goToDashboard();
+    cy.goToTournamentDashboard();
   });
 });

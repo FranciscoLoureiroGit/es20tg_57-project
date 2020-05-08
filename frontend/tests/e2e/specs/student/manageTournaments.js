@@ -37,9 +37,4 @@ describe('Tournament walkthrough', () => {
     cy.goToOpenQuestionsTournaments();
     cy.registerStudentInTournament('1');
   });
-
-  it('login goes to registered tournaments', () => {
-    cy.goToRegisteredQuestionsTournaments();
-    cy.goToOpenQuestionsTournaments();
-  });
 });
