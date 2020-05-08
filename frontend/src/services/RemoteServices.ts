@@ -967,7 +967,7 @@ export default class RemoteServices {
 
   static async getPublicDashboards(): Promise<PublicStats[]> {
     return httpClient
-      .post(
+      .get(
         `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/stats-public/${Store.getters.getCurrentCourse.courseExecutionId}`
       )
       .then(response => {
