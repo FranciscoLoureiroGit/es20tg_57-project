@@ -236,7 +236,7 @@ public class StatsService {
     public List<PublicStatsDto> getPublicStats(int userId, int executionId){
 
         return userRepository.findAll().stream()
-                .filter(user -> user.getDashboardPrivacy().name().equals("PUBLIC"))
+                .filter(user -> user.getDashboardPrivacy() != null && user.getDashboardPrivacy().name().equals("PUBLIC"))
                 .map(
                 user -> {
                     PublicStatsDto publicStats = new PublicStatsDto();
