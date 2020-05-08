@@ -4,23 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import org.springframework.retry.stats.StatisticsRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.statistics.StatsService
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class CreateAnApprovedQuestionTest extends Specification{
+class GetStudentQuestionStatisticTest extends Specification{
     static final String COURSE_NAME = "Software Architecture"
     static final String ACRONYM = "AS1"
     static final String ACADEMIC_TERM = "1 SEM"
@@ -60,7 +61,7 @@ class CreateAnApprovedQuestionTest extends Specification{
     static final int KEY_TEACHER = 1
     static final int KEY_STUDENT = 2
     static final int KEY_QUESTION = 2                       /* if question has id == 2, then its key is 22 */
-    static final String JUSTIFICATION = "Question is available"
+
 
     def course
     def courseExecution
@@ -74,6 +75,7 @@ class CreateAnApprovedQuestionTest extends Specification{
     def option3
     def option4
     def options
+
     /* Repositories */
 
     @Autowired
@@ -93,6 +95,10 @@ class CreateAnApprovedQuestionTest extends Specification{
 
     @Autowired
     OptionRepository optionRepository
+
+    @Autowired
+    StatsService statsService
+
 
     def setup(){
         /* Setup options*/
@@ -138,7 +144,8 @@ class CreateAnApprovedQuestionTest extends Specification{
         courseExecutionRepository.save(courseExecution)
     }
 
-    def "the student student submits a question"(){
+
+    def "testing approved and total questions"(){
         given: "add and setup a question"
         questionDto = new QuestionDto()
         questionDto.setKey(KEY_QUESTION)
@@ -148,43 +155,16 @@ class CreateAnApprovedQuestionTest extends Specification{
         questionDto.setUser(student)
         questionDto.setUser_id(student.getId())
         questionDto.setOptions(options)
+        questionService.createQuestion(course.getId(), questionDto)
 
         when:
-        def result = questionService.createQuestion(course.getId(), questionDto)
+        def result = statsService.getStudentQuestionsStatus(student.getId())
 
         then:"the returned data are correct"
-        result.getTitle() == QUESTION_TITLE
-        result.getContent() == QUESTION_CONTENT
-        result.getId() == QUESTION_ID
-        result.getOptions().size() == 4
-        def q1 = null
-        def questions = questionService.findApprovedQuestions(course.getId())
-        and: "the question does not belong to all available questions"
-        for(QuestionDto q: questions){
-            if(q.getTitle().equals(QUESTION_TITLE)){
-                q1=q
-                break
-            }
-        }
-        q1 == null
-
-        and: "change the question state"
-        questionService.questionChangeStatus(result.getId(), Question.Status.AVAILABLE, JUSTIFICATION)
-        questionService.questionSetApproved(result.getId())
-        and: "check if question is in a list with all available questions"
-        def questionsAvailable = questionService.findAvailableQuestions(course.getId())
-        def q2 = null
-        for(QuestionDto q: questionsAvailable){
-            if(q.getTitle().equals(QUESTION_TITLE)){
-                q2=q
-                break
-            }
-        }
-        q2.getTitle() == QUESTION_TITLE
-        q2.getStatus() == Question.Status.AVAILABLE.name()
-        q2.getJustification() == JUSTIFICATION
-        q2.getApproved() == Question.Status.APPROVED.name()
+        result.getNrTotalQuestions() == 1
+        result.getNrApprovedQuestions() == 0
     }
+
 
     @TestConfiguration
     static class QuestionServiceImplTestContextConfiguration {
@@ -193,6 +173,11 @@ class CreateAnApprovedQuestionTest extends Specification{
         QuestionService questionService() {
             return new QuestionService()
         }
-    }
 
+        @Bean
+        StatsService statsService() {
+            return new StatsService()
+        }
+    }
+    
 }
