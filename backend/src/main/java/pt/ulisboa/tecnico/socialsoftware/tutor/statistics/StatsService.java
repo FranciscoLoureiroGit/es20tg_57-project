@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statistics;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -9,10 +8,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
@@ -29,7 +26,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -232,6 +228,27 @@ public class StatsService {
 
         return clarificationStatsDto;
     }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<PublicStatsDto> getPublicStats(int userId, int executionId){
+
+        return userRepository.findAll().stream()
+                .filter(user -> user.getDashboardPrivacy() != null && user.getDashboardPrivacy().name().equals("PUBLIC"))
+                .map(
+                user -> {
+                    PublicStatsDto publicStats = new PublicStatsDto();
+                    publicStats.setClarificationStatsDto(getClarificationStats(user.getId(), 0));
+                    publicStats.setTournamentStatsDto(getTournamentStats(user.getId(), executionId));
+                    publicStats.setStudentQuestionsStatsDto(getStudentQuestionsStatus(user.getId()));
+                    publicStats.setUsername(user.getUsername());
+                    return publicStats;
+                }).collect(Collectors.toList());
+
+    }
+
     public void setDashboardPrivacy(Integer userId, User.PrivacyStatus privacyStatus) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         user.setDashboardPrivacy(privacyStatus);

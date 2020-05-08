@@ -22,6 +22,7 @@ import ExtraClarification from '@/models/management/ExtraClarification';
 import Notification from '@/models/management/Notification';
 import StudentQuestionStats from '@/models/statement/StudentQuestionStats';
 import StudentClarificationStats from '@/models/statement/StudentClarificationStats';
+import { PublicStats } from '@/models/statement/PublicStats';
 
 
 const httpClient = axios.create();
@@ -242,7 +243,9 @@ export default class RemoteServices {
       });
   }
 
-  static async getPublicQuestionClarifications(questionAnswerId: number): Promise<Clarification[]> {
+  static async getPublicQuestionClarifications(
+    questionAnswerId: number
+  ): Promise<Clarification[]> {
     return httpClient
       .get(`/question-answer/${questionAnswerId}/clarifications/public`)
       .then(response => {
@@ -255,12 +258,11 @@ export default class RemoteServices {
       });
   }
 
-  static async setClarificationPrivacy(clarification: Clarification): Promise<Clarification> {
+  static async setClarificationPrivacy(
+    clarification: Clarification
+  ): Promise<Clarification> {
     return httpClient
-      .put(
-        `/clarifications/${clarification.id}/privacy`,
-        clarification
-      )
+      .put(`/clarifications/${clarification.id}/privacy`, clarification)
       .then(response => {
         return new Clarification(response.data);
       })
@@ -955,6 +957,27 @@ export default class RemoteServices {
     return httpClient.delete('/notifications/delete-all').catch(async error => {
       throw Error(await this.errorMessage(error));
     });
+  }
+
+  static async changeStudentDashboardPrivacy(privacy: String) {
+    return httpClient.post('/privacy/dashboard', privacy).catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
+  static async getPublicDashboards(): Promise<PublicStats[]> {
+    return httpClient
+      .get(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/stats-public/${Store.getters.getCurrentCourse.courseExecutionId}`
+      )
+      .then(response => {
+        return response.data.map((publicStat: any) => {
+          return new PublicStats(publicStat);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async exportAll() {

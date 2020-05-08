@@ -38,6 +38,7 @@ import TournamentStatsView from '@/views/student/stats/TournamentStatsView.vue';
 import StudentStatisticsView from '@/views/student/stats/StudentStatisticsView.vue';
 import ClarificationStatsView from '@/views/student/stats/ClarificationStatsView.vue';
 import DashboardView from '@/views/student/stats/DashboardView.vue';
+import PublicDashboardDialog from '@/views/student/stats/PublicDashboardDialog.vue';
 
 
 Vue.use(Router);
@@ -322,13 +323,22 @@ let router = new Router({
           }
         },
         {
+          path: 'public-dashboard',
+          name: 'public-dashboard',
+          component: PublicDashboardDialog,
+          meta:{
+            title: process.env.VUE_APP_NAME + ' - Public Dashboard',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'scan',
           name: 'scan',
           component: ScanView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Scan',
             requiredAuth: 'Student'
-          }
+          },
         }
       ]
     },

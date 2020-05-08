@@ -39,14 +39,18 @@
         </v-list-item>
 
         <v-list-item>
-          <v-list-item-action @click="mini = false">
+          <v-list-item-action @click="mini = false" data-cy="clarificationShow">
             <v-icon>
               mdi-comment-question
             </v-icon>
           </v-list-item-action>
-          <v-list-item-content @click="showClarificationStats">
+          <v-list-item-content @click="showClarificationStats" data-cy="clarificationStats">
             Clarifications
           </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item>
+          <v-divider></v-divider>
         </v-list-item>
 
         <v-list-item>
@@ -75,9 +79,28 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item>
-          <v-divider></v-divider>
-        </v-list-item>
+        <v-expansion-panels >
+          <v-expansion-panel style="padding-top: 1vh; padding-bottom: 1vh; ">
+            <v-expansion-panel-header style="horiz-align: left" data-cy="settingsPrivacy">
+              <v-icon>
+                fas fa-cog
+              </v-icon>
+              <li style="justify-content: space-between">
+                    <span>
+                    Settings</span>
+              </li>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content class="font-weight-light">
+              <v-checkbox data-cy="privacyCheckbox"
+                      style="padding-left: 1vh"
+                      class="mx-2"
+                      label="Dashboard is public"
+                      v-model="is_public"
+              ></v-checkbox><v-btn @click="changePrivacy" data-cy="privacySave">Save</v-btn>
+              <span v-if="saved" style="padding-left: 2vh">Saved!</span></v-expansion-panel-content>
+
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-list>
     </v-navigation-drawer>
 
@@ -97,6 +120,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import StatsView from '../StatsView.vue';
 import ClarificationStatsView from './ClarificationStatsView.vue';
+import RemoteServices from '@/services/RemoteServices';
 import TournamentStatsView from '@/views/student/stats/TournamentStatsView.vue';
 import StudentStatisticsView from '@/views/student/stats/StudentStatisticsView.vue';
 
@@ -115,6 +139,22 @@ export default class DashboardView extends Vue {
   displayTournamentStats: boolean = false;
   drawer: boolean = true;
   mini: boolean = true;
+  is_public: boolean = false;
+  saved: boolean = false;
+
+  async changePrivacy() {
+    await this.$store.dispatch('loading');
+    try {
+      if (this.is_public)
+        await RemoteServices.changeStudentDashboardPrivacy('PUBLIC');
+      else
+        await RemoteServices.changeStudentDashboardPrivacy('PRIVATE');
+      this.saved = !this.saved;
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
 
   resetViews() {
     this.displayQuestionStats = false;

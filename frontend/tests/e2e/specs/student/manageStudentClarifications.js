@@ -47,4 +47,24 @@ describe('Student clarifications walkthrough', () => {
     cy.openClarificationDescription('TITLE_' + String(variation));
   });
 
+  it('login visualizes stats', ()=>{
+    cy.contains('User').click();
+    cy.get('[data-cy="userStats"]').click();
+    cy.get('[data-cy="clarificationShow"]').click();
+    cy.get('[data-cy="clarificationStats"]').click();
+
+    cy.get('[data-cy="totalClarifications"]').contains("Total Clarifications");
+  });
+
+  it('login set privacy', ()=> {
+    cy.contains('User').click();
+    cy.get('[data-cy="userStats"]').click();
+    cy.get('[data-cy="clarificationShow"]').click();
+    cy.get('[data-cy="settingsPrivacy"]').click();
+
+    cy.get('[data-cy="privacyCheckbox"]').click();
+    cy.get('[data-cy="privacySave"]').click();
+
+  })
+
 });

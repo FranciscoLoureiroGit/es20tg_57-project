@@ -11,6 +11,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
+import java.util.Map;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
@@ -92,5 +94,13 @@ public class StatsController {
     public ClarificationStatsDto getClarificationStats(Principal principal, @PathVariable int executionId,
                                                        @PathVariable int executionRequest, @PathVariable int yearMonth){
         return statsService.getClarificationMonthlyStats(((User)((Authentication)principal).getPrincipal()).getId(), executionRequest, yearMonth);
+    }
+
+    @GetMapping("/executions/{executionId}/stats-public/{executionRequest}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public List<PublicStatsDto> getPublicClarifications(Principal principal, @PathVariable int executionId,
+                                                               @PathVariable int executionRequest){
+        return statsService.getPublicStats(((User)((Authentication)principal).getPrincipal()).getId(), executionRequest);
+
     }
 }

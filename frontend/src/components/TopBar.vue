@@ -255,7 +255,15 @@
                 <v-icon>fas fa-tachometer-alt</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title align="left">Dashboard</v-list-item-title>
+                <v-list-item-title align="left">My Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/student/public-dashboard">
+              <v-list-item-action data-cy="allUserStats">
+                <v-icon>fas fa-globe</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left">Users Dashboards</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -510,6 +518,22 @@
           <template v-slot:activator>
             <v-list-item-title>Student</v-list-item-title>
           </template>
+          <v-list-item to="/student/dashboard">
+            <v-list-item-action data-cy="userStats">
+              <v-icon>fas fa-tachometer-alt</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title align="left">My Dashboard</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/student/public-dashboard">
+            <v-list-item-action data-cy="userStats">
+              <v-icon>fas fa-globe</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title align="left">Public Dashboards</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
           <v-list-item
             to="/student/openTournaments"

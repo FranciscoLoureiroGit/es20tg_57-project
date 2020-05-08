@@ -58,6 +58,7 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfTournamentQuestionsAnswers;
     private Integer numberOfCorrectTournamentQuestionsAnswers;
 
+    @Column(name="stats_privacy")
     private PrivacyStatus dashboardPrivacy;
 
     @Column(name = "creation_date")
@@ -105,7 +106,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfTournamentsWon = 0;
         this.numberOfTournamentQuestionsAnswers = 0;
         this.numberOfCorrectTournamentQuestionsAnswers = 0;
-        this.dashboardPrivacy = PrivacyStatus.PUBLIC;
+        this.dashboardPrivacy = PrivacyStatus.PRIVATE;
     }
 
     public String getEmail() {
