@@ -58,7 +58,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfTournamentQuestionsAnswers;
     private Integer numberOfCorrectTournamentQuestionsAnswers;
 
-    private PrivacyStatus tournamentStatsPrivacy;
+    @Column(name="stats_privacy")
+    private PrivacyStatus statsPrivacy;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -105,7 +106,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfTournamentsWon = 0;
         this.numberOfTournamentQuestionsAnswers = 0;
         this.numberOfCorrectTournamentQuestionsAnswers = 0;
-        this.tournamentStatsPrivacy = PrivacyStatus.PUBLIC;
+        this.statsPrivacy = PrivacyStatus.PRIVATE;
     }
 
     public String getEmail() {
@@ -479,12 +480,12 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTournamentQuestionsAnswers = numberOfCorrectTournamentQuestionsAnswers;
     }
 
-    public PrivacyStatus getTournamentsStatsPrivacy() {
-        return tournamentStatsPrivacy;
+    public PrivacyStatus getStatsPrivacy() {
+        return statsPrivacy;
     }
 
-    public void setTournamentsStatsPrivacy(PrivacyStatus privacyStatus) {
-        this.tournamentStatsPrivacy = privacyStatus;
+    public void setStatsPrivacy(PrivacyStatus privacyStatus) {
+        this.statsPrivacy = privacyStatus;
     }
 
     @Override
