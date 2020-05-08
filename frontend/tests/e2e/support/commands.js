@@ -288,13 +288,9 @@ Cypress.Commands.add('changeQuestionToAvailableTest', title => {
 });
 
 Cypress.Commands.add('changeQuestionToRemovedTest', (title, justification) => {
-  cy.contains(title)
-    .parent()
-    .should('have.length', 1)
-    .children()
-    .should('have.length', 7)
-    .find('[data-cy="changeQuestionStateDialog"]')
-    .click({ force: true });
+  cy.get('[data-cy="search"]').click({force:true});
+  cy.get('[data-cy="search"]').type(title, { force: true });
+  cy.get('[data-cy="changeQuestionStateDialog"]').type(title, { force: true });
   cy.get('[data-cy="Status"]').type('REMOVED{enter}', { force: true });
   cy.get('[data-cy="Justification"]').clear();
   cy.get('[data-cy="Justification"]').type(justification);
