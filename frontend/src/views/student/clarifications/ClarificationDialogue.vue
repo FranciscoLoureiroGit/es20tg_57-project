@@ -79,7 +79,7 @@
         </template>
       </div>
 
-      <div v-if="clarification.clarificationAnswerDto">
+      <div v-if="clarification.clarificationAnswerDto && !questionId && !public">
         <template>
           <div class="container">
             <v-card-title style="padding-left: 4vh"
@@ -149,6 +149,9 @@ export default class ClarificationDialogue extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: Clarification, required: true })
   readonly clarification!: Clarification;
+  @Prop({ required: false })
+  readonly questionId: number | undefined;
+  @Prop({ required: true }) public!: boolean;
 
   extraCommentEnable: boolean = true;
 

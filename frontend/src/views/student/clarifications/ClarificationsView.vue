@@ -223,6 +223,8 @@
 
     <clarification-dialogue
       :clarification="currentClarification"
+      :questionId="questionId"
+      :public="public"
       v-if="currentClarification && clarificationDialogue"
       v-model="clarificationDialogue"
       v-on:close-open-clarification-dialogue="onCloseOpenClarificationDialogue"
@@ -256,6 +258,7 @@ export default class ClarificationsView extends Vue {
   allTabs: String[] = ['My Clarifications', 'Public Clarifications'];
   explainPrivacyDialog: boolean = false;
   clarificationDialogue: boolean = false;
+  public: boolean = false;
 
   search: string = '';
   headers: object = [
@@ -278,13 +281,15 @@ export default class ClarificationsView extends Vue {
     try {
       if (type === 'My Clarifications') {
         this.clarifications = await RemoteServices.getStudentClarifications();
+        this.public = false;
       }
       if (type === 'Public Clarifications') {
         this.clarifications = await RemoteServices.getPublicClarifications();
+        this.public = true;
       }
       if (type === 'Question Clarifications' && this.questionId) {
         this.clarifications = await RemoteServices.getPublicQuestionClarifications(
-          this.questionId
+                this.questionId
         );
       }
     } catch (error) {
