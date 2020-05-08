@@ -31,8 +31,12 @@ import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 import ClarificationsManagementView from '@/views/teacher/clarifications/ClarificationsManagementView.vue';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
+import ClarificationDialogue from '@/views/student/clarifications/ClarificationDialogue.vue';
+import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
 import StudentStatisticsView from '@/views/student/questions/StudentStatisticsView.vue';
+import ClarificationStatsView from '@/views/student/stats/ClarificationStatsView.vue';
+import DashboardView from '@/views/student/stats/DashboardView.vue';
 
 Vue.use(Router);
 
@@ -145,6 +149,15 @@ let router = new Router({
                 title: process.env.VUE_APP_NAME + ' - Clarification Answer',
                 requiredAuth: 'Teacher'
               }
+            },
+            {
+              path: 'extra-answer',
+              name: 'extra-clarification-answer',
+              component: ExtraClariifcationDialog,
+              meta: {
+                title: process.env.VUE_APP_NAME + ' - Extra Clarification Answer',
+                requiredAuth: 'Teacher'
+              }
             }
           ],
           meta: {
@@ -247,7 +260,29 @@ let router = new Router({
           meta: {
             title: process.env.VUE_APP_NAME + ' - Clarifications',
             requiredAuth: 'Student'
-          }
+          },
+          children: [
+            {
+              path: 'dialogue',
+              name: 'clarification-dialogue',
+              component: ClarificationDialogue,
+              meta: {
+                title: process.env.VUE_APP_NAME + ' - Clarification Dialogue',
+                requiredAuth: 'Student'
+              },
+              children: [
+                {
+                  path: 'extra',
+                  name: 'extra-clarification-dialog',
+                  component: ExtraClariifcationDialog,
+                  meta: {
+                    title: process.env.VUE_APP_NAME + ' - Extra Clarification',
+                    requiredAuth: 'Student'
+                  }
+                }
+              ]
+            }
+          ]
         },
         {
           path: 'stats',
@@ -255,6 +290,24 @@ let router = new Router({
           component: StatsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Stats',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'clarificationStats',
+          name: 'clarificationStats',
+          component: ClarificationStatsView,
+          meta:{
+            title: process.env.VUE_APP_NAME + ' - Clarification Stats',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'dashboard',
+          name: 'dashboard',
+          component: DashboardView,
+          meta:{
+            title: process.env.VUE_APP_NAME + ' - Dashboard',
             requiredAuth: 'Student'
           }
         },

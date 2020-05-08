@@ -41,7 +41,7 @@
           </elementProp>
           <elementProp name="clarificationId" elementType="Argument">
             <stringProp name="Argument.name">clarificationId</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">100000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="quizId" elementType="Argument">
@@ -56,12 +56,12 @@
           </elementProp>
           <elementProp name="questionAnswerId" elementType="Argument">
             <stringProp name="Argument.name">questionAnswerId</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">100000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="quizAnswerId" elementType="Argument">
             <stringProp name="Argument.name">quizAnswerId</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">100000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="clarificationTitle" elementType="Argument">
@@ -76,12 +76,42 @@
           </elementProp>
           <elementProp name="clarificationKey" elementType="Argument">
             <stringProp name="Argument.name">clarificationKey</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">100000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="quizQuestionId" elementType="Argument">
             <stringProp name="Argument.name">quizQuestionId</stringProp>
             <stringProp name="Argument.value">40937</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="extraComment1" elementType="Argument">
+            <stringProp name="Argument.name">extraComment1</stringProp>
+            <stringProp name="Argument.value">&apos;LOREM IPSUM 1&apos;</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="studentCommentType" elementType="Argument">
+            <stringProp name="Argument.name">studentCommentType</stringProp>
+            <stringProp name="Argument.value">QUESTION</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clarificationAnswer" elementType="Argument">
+            <stringProp name="Argument.name">clarificationAnswer</stringProp>
+            <stringProp name="Argument.value">&apos;LOREM IPSUM&apos;</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clarificationAnswerId" elementType="Argument">
+            <stringProp name="Argument.name">clarificationAnswerId</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="extraComment2" elementType="Argument">
+            <stringProp name="Argument.name">extraComment2</stringProp>
+            <stringProp name="Argument.value">&apos;LOREM IPSUM 2&apos;</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="teacherCommentType" elementType="Argument">
+            <stringProp name="Argument.name">teacherCommentType</stringProp>
+            <stringProp name="Argument.value">ANSWER</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -137,8 +167,16 @@ INSERT INTO quiz_answers (id, completed, quiz_id, user_id, used_in_statistics) v
 (${quizAnswerId}, true, ${quizId}, ${demoStudentId}, false);
 INSERT INTO question_answers (id, quiz_answer_id, quiz_question_id) values (${questionAnswerId}, ${quizAnswerId}, ${quizQuestionId});
 
-INSERT INTO clarifications (id, user_id, title, description, question_answer_id, has_answer, is_public) 
-values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarificationDesc}, ${questionAnswerId}, false, false);
+INSERT INTO clarifications (id, user_id, title, description, question_answer_id, has_answer, is_public, status) 
+values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarificationDesc}, ${questionAnswerId}, true, false, &apos;CLOSED&apos;);
+
+INSERT INTO clarification_answer(id, answer, clarification_id, user_id)
+VALUES (${clarificationAnswerId}, ${clarificationAnswer}, ${clarificationId}, ${userId});
+
+INSERT INTO extra_clarifications(id, comment, comment_type,  clarification_id)
+VALUES (1, ${extraComment1}, &apos;QUESTION&apos;, ${clarificationId});
+
+ 
 
   
 
@@ -248,14 +286,17 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to make clarification public" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to create extra clarification answer" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;public&quot;: &quot;true&quot;&#xd;
+	&quot;commentType&quot;: &quot;${teacherCommentType}&quot;,&#xd;
+	&quot;comment&quot;: &quot;${extraComment2}&quot;,&#xd;
+	&#xd;
+	&quot;parentClarificationId&quot;: &quot;${clarificationId}&quot;&#xd;
 }&#xd;
 </stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
@@ -266,8 +307,8 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/clarifications/${clarificationId}/privacy</stringProp>
-            <stringProp name="HTTPSampler.method">PUT</stringProp>
+            <stringProp name="HTTPSampler.path">/question-answer/${questionAnswerId}/clarifications/extra</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -277,52 +318,31 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Privacy Assertion" enabled="true">
-              <stringProp name="JSON_PATH">$.public</stringProp>
-              <stringProp name="EXPECTED_VALUE">true</stringProp>
-              <boolProp name="JSONVALIDATION">false</boolProp>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert comment" enabled="true">
+              <stringProp name="JSON_PATH">$.comment</stringProp>
+              <stringProp name="EXPECTED_VALUE">${extraComment2}</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">true</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to make clarification private" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
-	&quot;public&quot;: &quot;false&quot;&#xd;
-}&#xd;
-</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${server}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/clarifications/${clarificationId}/privacy</stringProp>
-            <stringProp name="HTTPSampler.method">PUT</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Privacy Assertion" enabled="true">
-              <stringProp name="JSON_PATH">$.public</stringProp>
-              <stringProp name="EXPECTED_VALUE">false</stringProp>
-              <boolProp name="JSONVALIDATION">false</boolProp>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert parentClarificationId" enabled="true">
+              <stringProp name="JSON_PATH">$.parentClarificationId</stringProp>
+              <stringProp name="EXPECTED_VALUE">${clarificationId}</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">true</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert comment Type" enabled="true">
+              <stringProp name="JSON_PATH">$.commentType</stringProp>
+              <stringProp name="EXPECTED_VALUE">${teacherCommentType}</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
           </hashTree>
@@ -438,6 +458,9 @@ values (${clarificationId}, ${demoStudentId}, ${clarificationTitle}, ${clarifica
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="query">
+DELETE FROM extra_clarifications
+WHERE clarification_id = ${clarificationId};
+
 DELETE FROM clarification_answer
 WHERE user_id = ${userId};
 

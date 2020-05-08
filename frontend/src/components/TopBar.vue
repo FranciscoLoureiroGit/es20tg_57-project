@@ -2,9 +2,9 @@
   <nav>
     <v-app-bar color="primary" clipped-left>
       <v-app-bar-nav-icon
-        @click.stop="drawer = !drawer"
-        class="hidden-md-and-up"
-        aria-label="Menu"
+              @click.stop="drawer = !drawer"
+              class="hidden-md-and-up"
+              aria-label="Menu"
       />
 
       <v-toolbar-title>
@@ -125,8 +125,8 @@
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark>
-              Questions Tournaments
-              <v-icon>fas fa-file-alt</v-icon>
+              Tournaments
+              <v-icon>mdi-podium-gold</v-icon>
             </v-btn>
           </template>
           <v-list dense>
@@ -151,15 +151,15 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark data-cy="questions">
+            <v-btn data-cy="questions" v-on="on" text dark>
               Questions
-              <v-icon>fas fa-file-alt</v-icon>
+              <v-icon>mdi-head-question</v-icon>
             </v-btn>
           </template>
           <v-list dense>
             <v-list-item to="/student/submitQuestion">
               <v-list-item-action>
-                <v-icon>create</v-icon>
+                <v-icon>assignment</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title data-cy="my-questions-button"
@@ -223,6 +223,40 @@
           </v-list>
         </v-menu>
 
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn data-cy="userButton" v-on="on" text dark>
+              User
+              <v-icon>fas fa-user</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title> <span style="font-size: 1.2vh;">Signed in as
+                  <b>{{this.$store.getters.getUser.name.split(' ')[0] + ' '
+                    + this.$store.getters.getUser.name.split(' ')[this.$store.getters.getUser.name.split(' ').length - 1]
+                  }}</b></span> </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider></v-divider>
+          
+            <v-list-item to="/student/dashboard">
+              <v-list-item-action data-cy="userStats">
+                <v-icon>fas fa-tachometer-alt</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left" >Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+           
+
+            
+          </v-list>
+        </v-menu>
+
         <v-btn
           left
           style="padding-right: 2vh; "
@@ -243,10 +277,7 @@
           </v-badge>
         </v-btn>
 
-        <v-btn to="/student/stats" v-if="isStudent && currentCourse" text dark>
-          Stats
-          <v-icon>fas fa-user</v-icon>
-        </v-btn>
+        
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
@@ -269,11 +300,11 @@
         </v-menu>
 
         <v-btn
-          v-if="isLoggedIn && moreThanOneCourse"
-          to="/courses"
-          active-class="no-active"
-          text
-          dark
+                v-if="isLoggedIn && moreThanOneCourse"
+                to="/courses"
+                active-class="no-active"
+                text
+                dark
         >
           Change course
           <v-icon>fa fa-book</v-icon>
@@ -290,7 +321,7 @@
           <v-icon>fas fa-sign-out-alt</v-icon>
         </v-btn>
 
-        <v-btn v-else :href="fenixUrl" text dark>
+        <v-btn v-if="!isLoggedIn" :href="fenixUrl" text dark>
           Login <v-icon>fas fa-sign-in-alt</v-icon>
         </v-btn>
       </v-toolbar-items>
@@ -385,12 +416,14 @@
       <v-list class="pt-0" dense>
         <!-- Administration Group-->
         <v-list-group
-          prepend-icon="fas fa-file-alt"
-          :value="false"
-          v-if="isAdmin"
+                prepend-icon="fas fa-file-alt"
+                :value="false"
+                v-if="isAdmin"
         >
           <template v-slot:activator>
-            <v-list-item-title>Administration</v-list-item-title>
+            <v-list-item-title data-cy="Administration"
+            >Administration</v-list-item-title
+            >
           </template>
           <v-list-item to="/admin/courses">
             <v-list-item-action>
@@ -404,9 +437,9 @@
 
         <!-- Management Group-->
         <v-list-group
-          prepend-icon="fas fa-file-alt"
-          :value="false"
-          v-if="isTeacher && currentCourse"
+                prepend-icon="fas fa-file-alt"
+                :value="false"
+                v-if="isTeacher && currentCourse"
         >
           <template v-slot:activator>
             <v-list-item-title>Management</v-list-item-title>
@@ -471,17 +504,17 @@
 
         <!-- Student Group-->
         <v-list-group
-          prepend-icon="account_circle"
-          :value="false"
-          v-if="isStudent && currentCourse"
+                prepend-icon="account_circle"
+                :value="false"
+                v-if="isStudent && currentCourse"
         >
           <template v-slot:activator>
             <v-list-item-title>Student</v-list-item-title>
           </template>
 
           <v-list-item
-            to="/student/openTournaments"
-            v-if="isStudent && currentCourse"
+                  to="/student/openTournaments"
+                  v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>assignment</v-icon>
@@ -512,8 +545,8 @@
           <!-- Implementation for a student submit a question and check then STARTS HERE -->
 
           <v-list-item
-            to="/student/submitQuestion"
-            v-if="isStudent && currentCourse"
+                  to="/student/submitQuestion"
+                  v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>create</v-icon>
@@ -760,11 +793,11 @@ export default class TopBar extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.no-active::before {
-  opacity: 0 !important;
-}
+  .no-active::before {
+    opacity: 0 !important;
+  }
 
-nav {
-  z-index: 300;
-}
+  nav {
+    z-index: 300;
+  }
 </style>

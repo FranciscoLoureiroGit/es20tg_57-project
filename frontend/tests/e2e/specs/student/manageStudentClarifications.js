@@ -47,15 +47,4 @@ describe('Student clarifications walkthrough', () => {
     cy.openClarificationDescription('TITLE_' + String(variation));
   });
 
-  it('login shows clarifications a visualizes a specific one by question', () => {
-    let variation = Date.now(); // used for always having a different clarification title
-    cy.get('[data-cy="quizzesButton"]').click();
-    cy.createAndAnswerQuiz();
-    cy.createClarificationRequestFromQuiz(
-      'TITLE_' + String(variation),
-      'DESCRIPTION'
-    );
-    cy.showClarificationRequests();
-    cy.openClarificationQuestion('TITLE_' + String(variation));
-  });
 });

@@ -77,7 +77,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('goToOpenQuestionsTournaments', () => {
-  cy.contains('Questions Tournaments').click();
+  cy.contains('Tournaments').click();
   cy.contains('Open').click();
 });
 
@@ -200,22 +200,12 @@ Cypress.Commands.add('openClarificationDescription', title => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
-    .find('[data-cy="showClarification"]')
-    .click();
-  cy.get('[data-cy="closeButton"]').click();
+    .should('have.length', 4)
+    .get('[data-cy="openClarificationButton"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="backButton"]').click();
 });
 
-Cypress.Commands.add('openClarificationQuestion', title => {
-  cy.contains(title)
-    .parent()
-    .should('have.length', 1)
-    .children()
-    .should('have.length', 7)
-    .find('[data-cy="showQuestion"]')
-    .click();
-  cy.get('[data-cy="closeButton"]').click();
-});
 
 Cypress.Commands.add('addClarificationQA', variation => {
   cy.get('[data-cy="logoutButton"]').click();
@@ -234,7 +224,7 @@ Cypress.Commands.add('answerClarification', (answer, variation) => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 8)
     .find('[data-cy="answerClarification"]')
     .click();
 
@@ -249,7 +239,7 @@ Cypress.Commands.add('listClarificationWithAnswer', title => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 8)
     .find('[data-cy="requestStatus"]')
     .should('contain.text', 'CLOSED');
 
@@ -401,14 +391,112 @@ Cypress.Commands.add('removeQuestionTest', title => {
     .click({ force: true });
 });
 
-Cypress.Commands.add('changeQuestionToRemovedTest', (title) => {
+
+Cypress.Commands.add('changeClarificationPrivacy', (title) => {
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
   cy.contains(title)
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
-    .find('[data-cy="changeQuestionStateDialog"]')
-    .click({force: true})
+    .should('have.length', 8)
+    .get('[data-cy="changePrivacy"]').click({multiple: true, force: true})
+});
+
+Cypress.Commands.add('showPublicClarifications', () => {
+  cy.get('[data-cy="quizzesButton"]').click();
+  cy.get('[data-cy="clarificationsButton"]').click();
+  cy.contains('Public Clarifications').click();
+});
+
+Cypress.Commands.add('openQuestionPublicClarifications', () => {
+    cy.contains('Solved').click();
+    cy.contains('Generated Quiz').click();
+    cy.get('[data-cy="questionClarificationsButton"]').click();
+  }
+);
+
+Cypress.Commands.add('notifyStudents', (title, description) => {
+  cy.contains('Management').click();
+  cy.contains('Students').click();
+  cy.wait(2000);
+  cy.contains('Notify All Students').click({ force: true });
+  cy.get('[data-cy="NotificationTitle"]').type(title);
+  cy.get('[data-cy="NotificationDescription"]').type(description);
+  cy.get('[data-cy="sendAllButton"]').click();
+});
+
+Cypress.Commands.add('notifyDemoStudent', (title, description) => {
+  cy.contains('Management').click();
+  cy.contains('Students').click();
+  cy.wait(2000);
+  cy.contains('Demo Student')
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .find('[data-cy="notifyStudent"]')
+    .click({ force: true });
+  cy.get('[data-cy="NotificationTitle"]').type(title);
+  cy.get('[data-cy="NotificationDescription"]').type(description);
+  cy.get('[data-cy="sendButton"]').click();
+});
+
+Cypress.Commands.add('addCommentToClarification', (title) => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 4)
+    .get('[data-cy="openClarificationButton"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="commentButton"]').click();
+  cy.get('[data-cy="commentField"]').type('TESTE De comentario');
+  cy.get('[data-cy="submitButton"]').click();
+  cy.contains('TESTE De comentario');
+});
+
+Cypress.Commands.add('listAdditionalClarification', (title) => {
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .get('[data-cy="showAnswer"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="closeButton"]').click();
+});
+
+Cypress.Commands.add('answerToAdditionalClarification', (title, comment) => {
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .get('[data-cy="answerExtraClarification"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="commentField"]').type(comment);
+  cy.get('[data-cy="submitButton"]').click();
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .get('[data-cy="showAnswer"]')
+    .click({multiple: true, force: true});
+  cy.contains(comment);
+});
+
+Cypress.Commands.add('changeQuestionToRemovedTest', (title) => {
+  cy.get('[data-cy="search"]').click({force:true})
+  cy.get('[data-cy="search"]').type(title,{force:true})
+  cy.get('[data-cy="changeQuestionStateDialog"]').click({force: true})
   cy.get('[data-cy="Status"]').type('REMOVED{enter}', {force: true})
   cy.get('[data-cy="changeQuestionButton"]').click()
 });
@@ -436,32 +524,6 @@ Cypress.Commands.add('resubmitQuestionSuccessAndInsuccess', (title,questionName,
 });
 
 Cypress.Commands.add('checkStudentQStats', title => {
-    cy.get('[data-cy="dashboardButton"]').click();
-    cy.get('[data-cy="statisticsButton"]').click();
-});
-
-Cypress.Commands.add('notifyStudents', (title, description) => {
-  cy.contains('Management').click();
-  cy.contains('Students').click();
-  cy.wait(2000);
-  cy.contains('Notify All Students').click({ force: true });
-  cy.get('[data-cy="NotificationTitle"]').type(title);
-  cy.get('[data-cy="NotificationDescription"]').type(description);
-  cy.get('[data-cy="sendAllButton"]').click();
-});
-
-Cypress.Commands.add('notifyDemoStudent', (title, description) => {
-  cy.contains('Management').click();
-  cy.contains('Students').click();
-  cy.wait(2000);
-  cy.contains('Demo Student')
-    .parent()
-    .should('have.length', 1)
-    .children()
-    .should('have.length', 8)
-    .find('[data-cy="notifyStudent"]')
-    .click({ force: true });
-  cy.get('[data-cy="NotificationTitle"]').type(title);
-  cy.get('[data-cy="NotificationDescription"]').type(description);
-  cy.get('[data-cy="sendButton"]').click();
+  cy.get('[data-cy="dashboardButton"]').click();
+  cy.get('[data-cy="statisticsButton"]').click();
 });
