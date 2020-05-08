@@ -19,6 +19,11 @@ describe('Tournament walkthrough', () => {
     cy.createQuestionsTournament('d', 'Case Studies');
   });
 
+  it('cancels a tournament', () => {
+    cy.goToOpenQuestionsTournaments();
+    cy.cancelTournament();
+  });
+
   it('creates a tournament with illegal dates', () => {
     cy.goToOpenQuestionsTournaments();
     cy.contains('New Tournament').click();
@@ -27,16 +32,14 @@ describe('Tournament walkthrough', () => {
 
   it('login registers in a tournament', () => {
     cy.goToOpenQuestionsTournaments();
+    cy.contains('New Tournament').click();
+    cy.createQuestionsTournament('12', 'Case Studies');
+    cy.goToOpenQuestionsTournaments();
     cy.registerStudentInTournament('1');
   });
 
   it('login goes to registered tournaments', () => {
     cy.goToRegisteredQuestionsTournaments();
     cy.goToOpenQuestionsTournaments();
-  });
-
-  it('cancels a tournament', () => {
-    cy.goToOpenQuestionsTournaments();
-    cy.cancelTournament();
   });
 });
