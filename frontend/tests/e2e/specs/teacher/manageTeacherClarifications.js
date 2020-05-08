@@ -23,11 +23,12 @@ describe('Teacher clarifications walkthrough', () => {
     cy.get('[data-cy="logoutButton"]').click()
     cy.demoStudentLogin();
     cy.showClarificationRequests();
-    cy.openClarificationDescription('TITLE_' + String(variation));
+    cy.addCommentToClarification('TITLE_' + String(variation));
   })
 
   it('teacher answers additional question', () => {
-    cy.listClarificationWithAnswer('TITLE_' + String(variation))
+    cy.listAdditionalClarification('TITLE_' + String(variation));
+    cy.answerToAdditionalClarification('TITLE_' + String(variation), 'COMMENT' + String(variation));
   })
 
 

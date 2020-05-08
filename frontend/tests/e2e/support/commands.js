@@ -375,7 +375,7 @@ Cypress.Commands.add('notifyDemoStudent', (title, description) => {
   cy.get('[data-cy="sendButton"]').click();
 });
 
-Cypress.Commands.add('openClarificationDescription', title => {
+Cypress.Commands.add('addCommentToClarification', (title) => {
   cy.contains(title)
     .parent()
     .should('have.length', 1)
@@ -383,5 +383,45 @@ Cypress.Commands.add('openClarificationDescription', title => {
     .should('have.length', 4)
     .get('[data-cy="openClarificationButton"]')
     .click({multiple: true, force: true});
-  cy.get('[data-cy="backButton"]').click();
+  cy.get('[data-cy="commentButton"]').click();
+  cy.get('[data-cy="commentField"]').type('TESTE De comentario');
+  cy.get('[data-cy="submitButton"]').click();
+  cy.contains('TESTE De comentario');
+});
+
+Cypress.Commands.add('listAdditionalClarification', (title) => {
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .get('[data-cy="showAnswer"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="closeButton"]').click();
+});
+
+Cypress.Commands.add('answerToAdditionalClarification', (title, comment) => {
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .get('[data-cy="answerExtraClarification"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="commentField"]').type(comment);
+  cy.get('[data-cy="submitButton"]').click();
+  cy.contains('Management').click();
+  cy.contains('Clarification Requests').click();
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .get('[data-cy="showAnswer"]')
+    .click({multiple: true, force: true});
+  cy.contains(comment);
 });

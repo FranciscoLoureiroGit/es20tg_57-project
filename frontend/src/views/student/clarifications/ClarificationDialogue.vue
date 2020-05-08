@@ -105,6 +105,7 @@
                     v-on="on"
                     @click="showExtraClarificationCreateDialog"
                     :disabled="extraCommentEnable"
+                    data-cy="commentButton"
                   >
                     mdi-forum
                   </v-icon>

@@ -202,6 +202,7 @@ import ClarificationAnswerView from '@/views/teacher/clarifications/Clarificatio
 import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 import ExtraClarification from '@/models/management/ExtraClarification';
 import ExtraClarificationListDialog from '@/views/student/clarifications/ExtraClarificationListDialog.vue';
+import ExtraClarificationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 
 @Component({
   components: {
@@ -209,7 +210,7 @@ import ExtraClarificationListDialog from '@/views/student/clarifications/ExtraCl
     'show-clarification-dialog': ShowClarificationDialog,
     'show-question-dialog': ShowQuestionDialog,
     'create-clarification-answer-dialog': ClarificationAnswerView,
-    'create-extra-clarification-answer-dialog': ExtraClariifcationDialog,
+    'create-extra-clarification-answer-dialog': ExtraClarificationDialog,
     'list-extra-clarification-dialog': ExtraClarificationListDialog
   }
 })

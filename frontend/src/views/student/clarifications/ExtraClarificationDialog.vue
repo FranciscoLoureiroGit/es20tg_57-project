@@ -41,7 +41,7 @@
           <v-btn color="blue darken-1" @click="$emit('close-dialog')"
             >Cancel</v-btn
           >
-          <v-btn color="blue darken-1" @click="$emit('submit-comment')"
+          <v-btn data-cy="submitButton" color="blue darken-1" @click="$emit('submit-comment')"
             >Submit</v-btn
           >
         </v-card-actions>
