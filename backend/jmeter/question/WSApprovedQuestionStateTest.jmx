@@ -78,7 +78,7 @@
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">newReq</stringProp>
           <stringProp name="queryType">Callable Statement</stringProp>
-          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id, approved, status_approved) VALUES (50500,&apos;Question_Content_Approved&apos;,100, 70, &apos;Question_Title_FOR_TEST_APPROVE_STATE&apos;, &apos;AVAILABLE&apos;, 2, &apos;JUSTIFICATION&apos;, 3, false, &apos;DISAPPROVED&apos;);</stringProp>
+          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id, status_approved) VALUES (50500,&apos;Question_Content_Approved&apos;,100, 70, &apos;Question_Title_FOR_TEST_APPROVE_STATE&apos;, &apos;AVAILABLE&apos;, 2, &apos;JUSTIFICATION&apos;, 676, &apos;DISAPPROVED&apos;);</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="variableNames"></stringProp>
@@ -140,7 +140,7 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login as Teacher User" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login as Teacher" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
