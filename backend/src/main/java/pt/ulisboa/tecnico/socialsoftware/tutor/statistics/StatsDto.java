@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statistics;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+
 import java.io.Serializable;
 
 public class StatsDto implements Serializable {
@@ -11,6 +13,7 @@ public class StatsDto implements Serializable {
     private Integer uniqueCorrectAnswers = 0;
     private Integer uniqueWrongAnswers = 0;
     private Integer totalAvailableQuestions = 0;
+    private User.PrivacyStatus privacyStatus = User.PrivacyStatus.PUBLIC;
 
     public Integer getTotalQuizzes() {
         return totalQuizzes;
@@ -74,6 +77,14 @@ public class StatsDto implements Serializable {
 
     public void setTotalAvailableQuestions(Integer totalAvailableQuestions) {
         this.totalAvailableQuestions = totalAvailableQuestions;
+    }
+
+    public User.PrivacyStatus getPrivacyStatus() {
+        return privacyStatus;
+    }
+
+    public void setPrivacyStatus(User.PrivacyStatus privacyStatus) {
+        this.privacyStatus = privacyStatus;
     }
 
     @Override
