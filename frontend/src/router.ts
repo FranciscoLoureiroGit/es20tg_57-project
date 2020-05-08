@@ -33,7 +33,7 @@ import ClarificationsManagementView from '@/views/teacher/clarifications/Clarifi
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
 import ClarificationDialogue from '@/views/student/clarifications/ClarificationDialogue.vue';
-import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
+import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
 
 Vue.use(Router);

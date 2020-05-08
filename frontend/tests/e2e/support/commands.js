@@ -374,3 +374,14 @@ Cypress.Commands.add('notifyDemoStudent', (title, description) => {
   cy.get('[data-cy="NotificationDescription"]').type(description);
   cy.get('[data-cy="sendButton"]').click();
 });
+
+Cypress.Commands.add('openClarificationDescription', title => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 4)
+    .get('[data-cy="openClarificationButton"]')
+    .click({multiple: true, force: true});
+  cy.get('[data-cy="backButton"]').click();
+});

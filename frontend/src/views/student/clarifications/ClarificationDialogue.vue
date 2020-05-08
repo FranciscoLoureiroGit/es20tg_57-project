@@ -133,7 +133,7 @@ import Clarification from '@/models/management/Clarification';
 import Image from '@/models/management/Image';
 import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import ExtraClarification from '@/models/management/ExtraClarification';
-import ExtraClarificationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
+import ExtraClarificationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 import RemoteServices from '@/services/RemoteServices';
 import ExtraClarificationListDialog from '@/views/student/clarifications/ExtraClarificationListDialog.vue';
 
@@ -152,9 +152,8 @@ export default class ClarificationDialogue extends Vue {
   extraCommentEnable: boolean = true;
 
   extraClarificationCreateDialog: boolean = false;
-  newExtraClarification: ExtraClarification | null = null;
-
-  extraClarification: ExtraClarification | null = null;
+  newExtraClarification: ExtraClarification = new ExtraClarification();
+  extraClarification: ExtraClarification = new ExtraClarification();
 
   created() {
     this.extraCommentButtonStatus();
@@ -179,9 +178,8 @@ export default class ClarificationDialogue extends Vue {
           this.clarification!.questionAnswerDto!.id,
           this.newExtraClarification!
         );
-        this.clarification.extraClarificationDtos[
-          this.clarification.extraClarificationDtos.length
-        ] = this.extraClarification;
+        if (this.extraClarification)
+          this.clarification.extraClarificationDtos.push(this.extraClarification);
       }
     } catch (error) {
       await this.$store.dispatch('error', error);

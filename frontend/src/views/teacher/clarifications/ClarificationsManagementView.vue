@@ -59,10 +59,10 @@
               v-on="on"
               @click="showExtraClarificationDialog(item)"
               data-cy="showAnswer"
-              >visibility</v-icon
+              >mdi-forum</v-icon
             >
           </template>
-          <span>Show Answer</span>
+          <span>Show Discussion</span>
         </v-tooltip>
 
         <v-tooltip bottom v-if="getAnswer(item) === 'None'">
@@ -199,7 +199,7 @@ import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue
 import Image from '@/models/management/Image';
 import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
-import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
+import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 import ExtraClarification from '@/models/management/ExtraClarification';
 import ExtraClarificationListDialog from '@/views/student/clarifications/ExtraClarificationListDialog.vue';
 

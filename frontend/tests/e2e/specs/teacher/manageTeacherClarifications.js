@@ -22,7 +22,8 @@ describe('Teacher clarifications walkthrough', () => {
   it('student reopens clarification with additional question', () => {
     cy.get('[data-cy="logoutButton"]').click()
     cy.demoStudentLogin();
-    cy.listClarificationWithAnswer('TITLE_' + String(variation))
+    cy.showClarificationRequests();
+    cy.openClarificationDescription('TITLE_' + String(variation));
   })
 
   it('teacher answers additional question', () => {
