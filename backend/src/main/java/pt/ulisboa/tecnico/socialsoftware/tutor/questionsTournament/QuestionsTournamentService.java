@@ -168,7 +168,11 @@ public class QuestionsTournamentService {
         QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
         CourseExecution courseExecution = tournament.getCourseExecution();
 
+        if (!tournament.getStudentTournamentRegistrations().isEmpty()){
+            throw new TutorException(TOURNAMENT_NOT_EMPTY);
+        }
         if(!userIsNotTheCreator(user,tournament)){
+            //registrationRepository.deleteTournamentRegistrations(tournamentId);
             tournamentRepository.deleteById(tournamentId);
             courseExecution.deleteTournament(tournament);
         } else{

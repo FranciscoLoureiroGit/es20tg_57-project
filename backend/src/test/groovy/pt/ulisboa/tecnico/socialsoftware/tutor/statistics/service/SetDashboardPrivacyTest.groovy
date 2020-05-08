@@ -16,7 +16,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
 @DataJpaTest
-class SetTournamentStatsPrivacyTest extends Specification {
+class SetDashboardPrivacyTest extends Specification {
 
     @Autowired
     StatsService statsService
@@ -36,24 +36,24 @@ class SetTournamentStatsPrivacyTest extends Specification {
         def studentDto = new UserDto(student)
 
         when:
-        statsService.setTournamentsStatsPrivacy(studentDto.id, User.PrivacyStatus.PRIVATE)
+        statsService.setDashboardPrivacy(studentDto.id, User.PrivacyStatus.PRIVATE)
 
         then:
-        student.getStatsPrivacy() == User.PrivacyStatus.PRIVATE
+        student.getDashboardPrivacy() == User.PrivacyStatus.PRIVATE
     }
 
     def "set tournament stats privacy to public from private"() {
         given: "student with tournament stats private"
-        student.setStatsPrivacy(User.PrivacyStatus.PRIVATE)
+        student.setDashboardPrivacy(User.PrivacyStatus.PRIVATE)
 
         and: "a studentDto"
         def studentDto = new UserDto(student)
 
         when:
-        statsService.setTournamentsStatsPrivacy(studentDto.id, User.PrivacyStatus.PUBLIC)
+        statsService.setDashboardPrivacy(studentDto.id, User.PrivacyStatus.PUBLIC)
 
         then:
-        student.getStatsPrivacy() == User.PrivacyStatus.PUBLIC
+        student.getDashboardPrivacy() == User.PrivacyStatus.PUBLIC
     }
 
     @TestConfiguration

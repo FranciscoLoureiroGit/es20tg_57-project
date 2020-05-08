@@ -88,13 +88,31 @@
         <v-list-item>
           <v-divider></v-divider>
         </v-list-item>
+
+        <v-list-item>
+          <v-list-item-action @click="mini = false">
+            <v-icon>
+              mdi-podium-gold
+            </v-icon>
+          </v-list-item-action>
+          <v-list-item-content @click="showTournamentStats">
+            Tournaments
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item>
+          <v-divider></v-divider>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <!-- Extra Components to display go here -->
     <question-stats v-if="displayQuestionStats" />
 
+    <tournaments-stats v-if="displayTournamentStats" />
+
     <student-questions-stats v-if="displayStudentQuestionStats" />
+
 
     <clarification-stats v-if="displayClarificationStats" />
   </div>
@@ -105,11 +123,13 @@ import { Component, Vue } from 'vue-property-decorator';
 import StatsView from '../StatsView.vue';
 import ClarificationStatsView from './ClarificationStatsView.vue';
 import RemoteServices from '@/services/RemoteServices';
+import TournamentStatsView from '@/views/student/stats/TournamentStatsView.vue';
 import StudentStatisticsView from '@/views/student/stats/StudentStatisticsView.vue';
 
 @Component({
   components: {
     'clarification-stats': ClarificationStatsView,
+    'tournaments-stats': TournamentStatsView,
     'student-questions-stats': StudentStatisticsView,
     'question-stats': StatsView
   }
@@ -118,6 +138,7 @@ export default class DashboardView extends Vue {
   displayQuestionStats: boolean = true;
   displayStudentQuestionStats: boolean = true;
   displayClarificationStats: boolean = false;
+  displayTournamentStats: boolean = false;
   drawer: boolean = true;
   mini: boolean = true;
   is_public: boolean = false;
@@ -138,6 +159,7 @@ export default class DashboardView extends Vue {
     this.displayQuestionStats = false;
     this.displayStudentQuestionStats = false;
     this.displayClarificationStats = false;
+    this.displayTournamentStats = false;
     this.mini = true;
   }
 
@@ -154,6 +176,11 @@ export default class DashboardView extends Vue {
   showQuestionStats() {
     this.resetViews();
     this.displayQuestionStats = true;
+  }
+
+  showTournamentStats() {
+    this.resetViews();
+    this.displayTournamentStats = true;
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Web Service Get Open Tournaments" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Web Service Get Tournament Quiz Test" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -71,7 +71,7 @@
 VALUES (1, NOW() - interval &apos;12 hour&apos;, NOW() + interval &apos;24 hour&apos;, 11, 676, 10);
 
 INSERT INTO quizzes(id, available_date, key, questions_tournament_id, title)
-VALUES (6500, NOW() - interval &apos;12 hour&apos;, 8000, 1, &apos;QUIZTEST&apos;);
+VALUES (6500, NOW() - interval &apos;12 hour&apos;, 6500, 1, &apos;QUIZTEST&apos;);
 </stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>

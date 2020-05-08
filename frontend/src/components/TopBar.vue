@@ -227,6 +227,7 @@
           <template v-slot:activator="{ on }">
             <v-btn data-cy="userButton" v-on="on" text dark>
               User
+
               <v-icon>fas fa-user</v-icon>
             </v-btn>
           </template>
@@ -599,11 +600,11 @@
             <v-list-item-content>Solved Quizzes</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/stats">
+          <v-list-item to="/student/stats/tournaments">
             <v-list-item-action>
-              <v-icon>fas fa-user</v-icon>
+              <v-icon>assignment</v-icon>
             </v-list-item-action>
-            <v-list-item-content>Stats</v-list-item-content>
+            <v-list-item-content>Tournaments</v-list-item-content>
           </v-list-item>
 
           <v-list-item to="/student/clarifications">
