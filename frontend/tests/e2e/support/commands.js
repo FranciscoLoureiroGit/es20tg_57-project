@@ -524,6 +524,7 @@ Cypress.Commands.add('resubmitQuestionSuccessAndInsuccess', (title,questionName,
 });
 
 Cypress.Commands.add('checkStudentQStats', title => {
-  cy.get('[data-cy="dashboardButton"]').click();
-  cy.get('[data-cy="statisticsButton"]').click();
+  cy.get('[data-cy="userButton"]').click();
+  cy.get('[data-cy="userStats"]').click();
+  cy.wait(2000);
 });

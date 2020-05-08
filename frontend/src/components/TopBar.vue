@@ -277,9 +277,7 @@
           </v-badge>
         </v-btn>
 
-        
-
-        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+<!--        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark data-cy="dashboardButton">
               Dashboard
@@ -287,7 +285,7 @@
             </v-btn>
           </template>
           <v-list dense>
-            <!--NEW-->
+            &lt;!&ndash;NEW&ndash;&gt;
             <v-list-item to="/student/studentStatistics">
               <v-list-item-action>
                 <v-icon>assignment</v-icon>
@@ -297,7 +295,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-        </v-menu>
+        </v-menu>-->
 
         <v-btn
                 v-if="isLoggedIn && moreThanOneCourse"

@@ -34,7 +34,7 @@ import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.
 import ClarificationDialogue from '@/views/student/clarifications/ClarificationDialogue.vue';
 import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
-import StudentStatisticsView from '@/views/student/questions/StudentStatisticsView.vue';
+import StudentStatisticsView from '@/views/student/stats/StudentStatisticsView.vue';
 import ClarificationStatsView from '@/views/student/stats/ClarificationStatsView.vue';
 import DashboardView from '@/views/student/stats/DashboardView.vue';
 
