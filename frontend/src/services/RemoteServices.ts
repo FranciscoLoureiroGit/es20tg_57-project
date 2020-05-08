@@ -19,6 +19,7 @@ import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 import ExtraClarification from '@/models/management/ExtraClarification';
 import Notification from '@/models/management/Notification';
+import StudentQuestionStats from '@/models/statement/StudentQuestionStats';
 import StudentClarificationStats from '@/models/statement/StudentClarificationStats';
 
 const httpClient = axios.create();
@@ -98,6 +99,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getStudentQuestionStats(): Promise<StudentQuestionStats> {
+    return httpClient
+        .get(
+            '/executions/stats/student-questions'
+        )
+        .then(response => {
+          return new StudentQuestionStats(response.data);
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async getQuestions(): Promise<Question[]> {
     return httpClient
       .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions`)
@@ -111,9 +125,7 @@ export default class RemoteServices {
       });
   }
 
-  static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<
-    Question[]
-  > {
+  static async getAllQuestionsApproved(): Promise<Question[]> {
     return httpClient
       .get(
         `/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`
@@ -366,10 +378,34 @@ export default class RemoteServices {
       });
   }
 
-  //NOVO metodo para alterar estado e justificacao
+  //NEW method to change status and justification
   static async changeQuestionStatus(question: Question): Promise<Question> {
     return httpClient
       .post(`/questions/${question.id}/change-status`, question)
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  //NEW method to approve a Question (Teacher)
+  static async approveQuestion(questionId: number): Promise<Question> {
+    return httpClient
+      .post(`/questions/${questionId}/approve-question`)
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  //NEW method to resubmit a Question (Student)
+  static async resubmitQuestion(question: Question): Promise<Question> {
+    return httpClient
+      .post(`/questions/${question.id}/resubmit-question`, question)
       .then(response => {
         return new Question(response.data);
       })
@@ -806,11 +842,11 @@ export default class RemoteServices {
       });
   }
 
-  static async getTournamentQuiz(tournament: QuestionsTournament): Promise<StatementQuiz> {
+  static async getTournamentQuiz(
+    tournament: QuestionsTournament
+  ): Promise<StatementQuiz> {
     return httpClient
-      .get(
-        `/questionsTournament/${tournament.id}/quiz`
-      )
+      .get(`/questionsTournament/${tournament.id}/quiz`)
       .then(response => {
         return new StatementQuiz(response.data);
       })
@@ -836,27 +872,29 @@ export default class RemoteServices {
 
   static async cancelTournament(questionsTournamentId: number) {
     return httpClient
-      .post(
-        `/questionsTournament/${questionsTournamentId}/cancelTournament`
-      )
+      .post(`/questionsTournament/${questionsTournamentId}/cancelTournament`)
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
 
   // NOTIFICATION SYSTEM SERVICES
-  static async notifyStudent(notification: Notification): Promise<Notification> {
+  static async notifyStudent(
+    notification: Notification
+  ): Promise<Notification> {
     return httpClient
       .post('/notifications/create-one', notification)
       .then(response => {
-          return new Notification(response.data);
+        return new Notification(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
 
-  static async notifyAllStudents(notifications: Notification[]): Promise<Notification[]> {
+  static async notifyAllStudents(
+    notifications: Notification[]
+  ): Promise<Notification[]> {
     return httpClient
       .post('/notifications/create-many', notifications)
       .then(response => {
@@ -868,7 +906,6 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
-
 
   static async getUserNotifications(): Promise<Notification[]> {
     return httpClient

@@ -34,6 +34,7 @@ public class QuestionDto implements Serializable {
     private String justification;
     private Integer user_id;
     private String roleAuthor = "";
+    private String approved = Question.Status.DISAPPROVED.name();
 
     public QuestionDto() {
     }
@@ -66,6 +67,7 @@ public class QuestionDto implements Serializable {
         this.justification = question.getJustification();
         this.user_id = question.getStudent_id();
         this.roleAuthor = question.getRoleAuthor();
+        this.approved = question.getApproved();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -136,6 +138,14 @@ public class QuestionDto implements Serializable {
 
     public void setNumberOfNonGeneratedQuizzes(int numberOfNonGeneratedQuizzes) {
         this.numberOfNonGeneratedQuizzes = numberOfNonGeneratedQuizzes;
+    }
+
+    public void setApproved(){
+        this.approved = Question.Status.APPROVED.name();
+    }
+
+    public String getApproved(){
+        return this.approved;
     }
 
     public int getNumberOfCorrect() {

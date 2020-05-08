@@ -31,7 +31,7 @@
           </elementProp>
           <elementProp name="userId" elementType="Argument">
             <stringProp name="Argument.name">userId</stringProp>
-            <stringProp name="Argument.value">70000</stringProp>
+            <stringProp name="Argument.value">676</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -73,7 +73,7 @@
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">newReq</stringProp>
           <stringProp name="queryType">Callable Statement</stringProp>
-          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id) VALUES (60000,&apos;Question_Content&apos;,100, 70, &apos;Question_Title_FOR_TEST_CHANGE_STATE&apos;, &apos;PENDING&apos;, 2, &apos;JUSTIFICATION&apos;, 70000);</stringProp>
+          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id, approved, status_approved) VALUES (50500,&apos;Question_Content_Approved&apos;,100, 70, &apos;Question_Title_FOR_TEST_APPROVE_STATE&apos;, &apos;AVAILABLE&apos;, 2, &apos;JUSTIFICATION&apos;, 676, false, &apos;DISAPPROVED&apos;);</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="variableNames"></stringProp>
@@ -135,7 +135,7 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login as Teacher User" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login as User" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -258,7 +258,7 @@
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/questions/showMyQuestions/${userId}</stringProp>
+            <stringProp name="HTTPSampler.path">/questions/showMyQuestions/</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -436,7 +436,7 @@
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM questions WHERE id=60000;</stringProp>
+          <stringProp name="query">DELETE FROM questions WHERE id=50500;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
