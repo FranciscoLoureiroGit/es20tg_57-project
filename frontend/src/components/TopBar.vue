@@ -258,7 +258,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/public-dashboard">
-              <v-list-item-action data-cy="userStats">
+              <v-list-item-action data-cy="allUserStats">
                 <v-icon>fas fa-globe</v-icon>
               </v-list-item-action>
               <v-list-item-content>

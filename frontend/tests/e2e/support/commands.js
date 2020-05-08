@@ -406,7 +406,7 @@ Cypress.Commands.add('changeClarificationPrivacy', (title) => {
 Cypress.Commands.add('showPublicClarifications', () => {
   cy.get('[data-cy="quizzesButton"]').click();
   cy.get('[data-cy="clarificationsButton"]').click();
-  cy.contains('Public Clarifications').click();
+  cy.contains('Public Clarifications').click({force: true});
 });
 
 Cypress.Commands.add('openQuestionPublicClarifications', () => {
