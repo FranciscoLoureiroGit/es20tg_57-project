@@ -97,6 +97,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getStudentQuestionStats(): Promise<StudentQuestionStats> {
+    return httpClient
+        .get(
+            '/executions/stats/student-questions'
+        )
+        .then(response => {
+          return new StudentQuestionStats(response.data);
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async getQuestions(): Promise<Question[]> {
     return httpClient
       .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions`)

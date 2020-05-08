@@ -1,4 +1,3 @@
-<!--
 <template>
   <div class="container">
     <h2>Statistics</h2>
@@ -39,7 +38,7 @@
     async created() {
       await this.$store.dispatch('loading');
       try {
-        this.stats = await RemoteServices.getUserStats();
+        this.stats = await RemoteServices.getStudentQuestionStats();
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -107,4 +106,4 @@
       transform: translateY(5px);
     }
   }
-</style>-->
+</style>
