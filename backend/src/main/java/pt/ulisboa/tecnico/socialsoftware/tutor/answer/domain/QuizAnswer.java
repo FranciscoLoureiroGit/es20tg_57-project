@@ -175,11 +175,6 @@ public class QuizAnswer implements DomainEntity {
             getQuestionAnswers().forEach(questionAnswer ->
                     questionAnswer.getQuizQuestion().getQuestion().addAnswerStatistics(questionAnswer));
 
-            if (getQuiz().isTournamentQuiz()){
-                getQuiz().getQuestionsTournament().checkTournamentWinner(this);
-                if( user.equals(getQuiz().getQuestionsTournament().getTournamentWinner()))
-                    user.increaseNumberOfTournamentsWon();
-            }
 
             this.usedInStatistics = true;
         }

@@ -231,10 +231,8 @@ class GetTournamentStatsTest extends Specification {
         assert tournament1.isClosed()
 
         then:
-        assert tournament1.getTournamentWinner() == user
         result.getCorrectAnswers() == 3
         result.getTotalAnswers() == 3
-        result.getTournamentsWon() == 1
         result.getTotalTournaments() == 1
     }
 
@@ -297,11 +295,8 @@ class GetTournamentStatsTest extends Specification {
         assert tournament1.isClosed()
 
         then:
-        tournament1.getTournamentWinner() == user
-        tournament2.getTournamentWinner() == user
         result.getCorrectAnswers() == 5
         result.getTotalAnswers() == 6
-        result.getTournamentsWon() == 2
         result.getTotalTournaments() == 2
     }
 
@@ -362,15 +357,13 @@ class GetTournamentStatsTest extends Specification {
         assert tournament1.isClosed()
 
         then:
-        assert tournament1.getTournamentWinner() == user2
-        assert tournament1.getWinnerQuizAnswer() == quizAnswer2
         result.getCorrectAnswers() == 2
         result.getTotalAnswers() == 3
-        result.getTournamentsWon() == 0
+
         result.getTotalTournaments() == 1
         result2.getCorrectAnswers() == 3
         result2.getTotalAnswers() == 3
-        result2.getTournamentsWon() == 1
+
         result2.getTotalTournaments() == 1
     }
 
