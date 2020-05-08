@@ -110,9 +110,13 @@ export default class RemoteServices {
       });
   }
 
-  static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<Question[]> {
+  static async getFilteredQuestionsIncludeStudentQuestionAvailable(): Promise<
+    Question[]
+  > {
     return httpClient
-      .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`)
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/availableFiltered`
+      )
       .then(response => {
         return response.data.map((question: any) => {
           return new Question(question);
@@ -125,15 +129,17 @@ export default class RemoteServices {
 
   static async getQuestionsSubmittedByStudents(): Promise<Question[]> {
     return httpClient
-        .get(`/courses/${Store.getters.getCurrentCourse.courseId}/questions/studentQuestions`)
-        .then(response => {
-          return response.data.map((question: any) => {
-            return new Question(question);
-          });
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questions/studentQuestions`
+      )
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new Question(question);
         });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async getStudentQuestions(): Promise<Question[]> {
@@ -227,7 +233,10 @@ export default class RemoteServices {
     clarification: Clarification
   ): Promise<Clarification> {
     return httpClient
-      .post(`/question-answer/${questionAnswerId}/clarifications`, clarification)
+      .post(
+        `/question-answer/${questionAnswerId}/clarifications`,
+        clarification
+      )
       .then(response => {
         return new Clarification(response.data);
       })
@@ -241,7 +250,10 @@ export default class RemoteServices {
     clarificationAnswer: ClarificationAnswer
   ): Promise<ClarificationAnswer> {
     return httpClient
-      .post(`/question-answer/${questionAnswerId}/clarifications/answer`, clarificationAnswer)
+      .post(
+        `/question-answer/${questionAnswerId}/clarifications/answer`,
+        clarificationAnswer
+      )
       .then(response => {
         return new ClarificationAnswer(response.data);
       })
@@ -527,6 +539,14 @@ export default class RemoteServices {
     }
   }
 
+  static async setTournamentPrivacyStatus(privacyStatus: String) {
+    return httpClient
+      .post('/privacy/tournamentsStats', privacyStatus)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async saveTournament(
     tournament: QuestionsTournament
   ): Promise<QuestionsTournament> {
@@ -734,11 +754,11 @@ export default class RemoteServices {
       });
   }
 
-  static async getTournamentQuiz(tournament: QuestionsTournament): Promise<StatementQuiz> {
+  static async getTournamentQuiz(
+    tournament: QuestionsTournament
+  ): Promise<StatementQuiz> {
     return httpClient
-      .get(
-        `/questionsTournament/${tournament.id}/quiz`
-      )
+      .get(`/questionsTournament/${tournament.id}/quiz`)
       .then(response => {
         return new StatementQuiz(response.data);
       })
@@ -764,9 +784,7 @@ export default class RemoteServices {
 
   static async cancelTournament(questionsTournamentId: number) {
     return httpClient
-      .post(
-        `/questionsTournament/${questionsTournamentId}/cancelTournament`
-      )
+      .post(`/questionsTournament/${questionsTournamentId}/cancelTournament`)
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
