@@ -233,4 +233,43 @@ public class StatsService {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         user.setTournamentsStatsPrivacy(privacyStatus);
     }
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationStatsDto getClarificationMonthlyStats(int userId, int executionId, int yearMonth) {    //If executionId < 0, return all clarifications
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        ClarificationStatsDto clarificationStatsDto = new ClarificationStatsDto();
+
+        Map<Integer, Long> clarificationStatsPerMonth;
+
+        int month = yearMonth % 100;
+        int year = yearMonth / 100;
+
+        if(executionId > 0){
+            clarificationStatsPerMonth = user.getClarifications().stream()
+
+                    .filter(clarification -> clarification.getCreationDate().getYear() == year &&
+                                             clarification.getCreationDate().getMonth().getValue() == month &&
+                                             clarification.getQuestionAnswer().getCourseExecution().getId() == executionId)
+                    .map(clarification -> clarification.getCreationDate().getDayOfMonth())
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        }
+        else {
+            clarificationStatsPerMonth = user.getClarifications().stream()
+                    .filter(clarification -> clarification.getCreationDate().getYear() == year &&
+                                             clarification.getCreationDate().getMonth().getValue() == month)
+                    .map(clarification -> clarification.getCreationDate().getDayOfMonth())
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        }
+
+        clarificationStatsDto.setClarificationsPerMonth(clarificationStatsPerMonth);
+
+        return clarificationStatsDto;
+    }
+
 }

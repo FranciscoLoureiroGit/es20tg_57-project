@@ -149,12 +149,14 @@ class GetClarificationStatsServiceSpockTest extends Specification {
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 0)
 
+        date = LocalDateTime.now()
+
         clarificationRequest = new Clarification()
         clarificationRequest.setUser(userStudent)
         clarificationRequest.setTitle("TITLE")
         clarificationRequest.setDescription("DESC")
         clarificationRequest.setQuestionAnswer(questionAnswer)
-        clarificationRequest.setCreationDate(LocalDateTime.now())
+        clarificationRequest.setCreationDate(date)
 
         userStudent.addClarification(clarificationRequest)
 
@@ -197,6 +199,15 @@ class GetClarificationStatsServiceSpockTest extends Specification {
         result.publicClarifications == 0
         result.reopenedClarifications == 0
         result.clarificationsPerMonth.size() == 1
+    }
+
+    def 'get a students clarification stats for a specific month'() {
+        when:
+            def result = statsService.getClarificationMonthlyStats(userStudent.getId(), courseExec.getId(), date.getYear() * 100 + date.getMonth().getValue())
+
+        then: 'returned data is correct'
+            result.clarificationsPerMonth != null
+            result.clarificationsPerMonth.size() == 1
     }
 
 

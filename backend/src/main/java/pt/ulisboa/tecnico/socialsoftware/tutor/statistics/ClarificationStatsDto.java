@@ -14,7 +14,10 @@ public class ClarificationStatsDto implements Serializable {
     private Integer publicClarifications = 0;
     private Integer answeredClarifications = 0;
     private Integer reopenedClarifications = 0;
+
     private Map<Integer, Long> clarificationsPerMonth = new HashMap<>(); //Map of format YYYYMM, nrOfClarifications
+
+    private Map<Integer, Long> clarificationsPerWeek = new HashMap<>();
 
 
     public ClarificationStatsDto(){}
@@ -52,6 +55,7 @@ public class ClarificationStatsDto implements Serializable {
         this.reopenedClarifications = reopenedClarifications;
     }
 
+
     public Map<Integer, Long> getClarificationsPerMonth() {
         return clarificationsPerMonth;
     }
@@ -60,10 +64,13 @@ public class ClarificationStatsDto implements Serializable {
         this.clarificationsPerMonth = clarificationsPerMonth;
     }
 
-    public void addClarificationsPerMonth(Integer yearMonth, Long total) {
-        this.clarificationsPerMonth.put(yearMonth, total);
+    public Map<Integer, Long> getClarificationsPerWeek() {
+        return clarificationsPerWeek;
     }
 
+    public void setClarificationsPerWeek(Map<Integer, Long> clarificationsPerWeek) {
+        this.clarificationsPerWeek = clarificationsPerWeek;
+    }
 
 
 }

@@ -239,38 +239,19 @@
               </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
-          <!--  <v-list-item to="/student/profile">
-              <v-list-item-action data-cy="userProfile">
-                <v-icon>mdi-account-box</v-icon>
-              </v-list-item-action >
-              <v-list-item-content>
-                <v-list-item-title align="left" >Your Profile</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>  -->
-            <v-list-item to="/student/stats">
-              <v-list-item-action data-cy="userStats">
-                <v-icon>mdi-chart-areaspline</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title align="left" >Your Stats</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          <!--  <v-list-item to="/student/dashboard">
-              <v-list-item-action data-cy="userDashboard">
-                <v-icon>create</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title align="left">Dashboard</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+          
             <v-list-item to="/student/dashboard">
-              <v-list-item-action data-cy="userFeeedback">
-                <v-icon>mdi-message-alert</v-icon>
+              <v-list-item-action data-cy="userStats">
+                <v-icon>fas fa-tachometer-alt</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title align="left">Feedback</v-list-item-title>
+                <v-list-item-title align="left" >Dashboard</v-list-item-title>
               </v-list-item-content>
-            </v-list-item> -->
+            </v-list-item>
+
+           
+
+            
           </v-list>
         </v-menu>
 
@@ -294,10 +275,7 @@
           </v-badge>
         </v-btn>
 
-        <v-btn to="/student/stats" v-if="isStudent && currentCourse" text dark>
-          Stats
-          <v-icon>fas fa-user</v-icon>
-        </v-btn>
+        
 
         <v-btn
                 v-if="isLoggedIn && moreThanOneCourse"

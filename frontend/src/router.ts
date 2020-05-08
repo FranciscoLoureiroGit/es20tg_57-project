@@ -35,6 +35,8 @@ import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.
 import ClarificationDialogue from '@/views/student/clarifications/ClarificationDialogue.vue';
 import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClariifcationDialog.vue';
 import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
+import ClarificationStatsView from '@/views/student/stats/ClarificationStatsView.vue';
+import DashboardView from '@/views/student/stats/DashboardView.vue';
 
 Vue.use(Router);
 
@@ -279,6 +281,24 @@ let router = new Router({
           component: StatsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Stats',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'clarificationStats',
+          name: 'clarificationStats',
+          component: ClarificationStatsView,
+          meta:{
+            title: process.env.VUE_APP_NAME + ' - Clarification Stats',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'dashboard',
+          name: 'dashboard',
+          component: DashboardView,
+          meta:{
+            title: process.env.VUE_APP_NAME + ' - Dashboard',
             requiredAuth: 'Student'
           }
         },
