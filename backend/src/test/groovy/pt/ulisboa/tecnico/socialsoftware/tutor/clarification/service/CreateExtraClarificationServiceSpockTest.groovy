@@ -20,6 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.NotificationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
@@ -330,7 +331,10 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
         ClarificationService clarificationService() {
             return new ClarificationService()
         }
-
+        @Bean
+        NotificationService notificationService() {
+            return new NotificationService()
+        }
     }
 }
 
