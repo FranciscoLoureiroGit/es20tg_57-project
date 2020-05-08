@@ -20,70 +20,60 @@
       </template>
 
       <template v-slot:item.numberOfTournaments="{ item }">
-        <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectAnswers)"
-          dark
-          >{{ item.percentageOfCorrectAnswers + '%' }}</v-chip
+        <span>{{ item.studentTournamentStats.totalTournaments}}</span
         >
       </template>
 
       <template v-slot:item.numberOfTournamentQuestionsSolved="{ item }">
         <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectTeacherAnswers)"
+          :color="getPercentageColor((item.studentTournamentStats.totalAnswers / item.studentTournamentStats.totalTournaments)*100)"
           dark
-          >{{ item.percentageOfCorrectTeacherAnswers + '%' }}</v-chip
+          >{{ (item.studentTournamentStats.totalAnswers / item.studentTournamentStats.totalTournaments)*100 }}%</v-chip
         >
       </template>
       <template v-slot:item.percentageOfCorrectTournamentAnswers="{ item }">
         <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectAnswers)"
+          :color="getPercentageColor((item.studentTournamentStats.correctAnswers / item.studentTournamentStats.totalTournaments)*100)"
           dark
-          >{{ item.percentageOfCorrectAnswers + '%' }}</v-chip
+        >{{ (item.studentTournamentStats.correctAnswers / item.studentTournamentStats.totalTournaments)*100 }}%</v-chip
         >
       </template>
 
       <template v-slot:item.numberOfClarifications="{ item }">
-        <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectTeacherAnswers)"
-          dark
-          >{{ item.percentageOfCorrectTeacherAnswers + '%' }}</v-chip
-        >
+        <span>{{item.studentClarificationStats.totalClarifications}}</span>
       </template>
       <template v-slot:item.percentageOfPublicClarifications="{ item }">
         <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectAnswers)"
+          :color="getPercentageColor((item.studentClarificationStats.publicClarifications / item.studentClarificationStats.totalClarifications)*100)"
           dark
-          >{{ item.percentageOfCorrectAnswers + '%' }}</v-chip
+        >{{ (item.studentClarificationStats.publicClarifications / item.studentClarificationStats.totalClarifications)*100 }}%</v-chip
         >
       </template>
 
       <template v-slot:item.percentageOfAnsweredClarifications="{ item }">
         <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectTeacherAnswers)"
+          :color="getPercentageColor((item.studentClarificationStats.answeredClarifications / item.studentClarificationStats.totalClarifications)*100)"
           dark
-          >{{ item.percentageOfCorrectTeacherAnswers + '%' }}</v-chip
+        >{{ (item.studentClarificationStats.answeredClarifications / item.studentClarificationStats.totalClarifications)*100 }}%</v-chip
         >
       </template>
       <template v-slot:item.percentageOfReopenedClarifications="{ item }">
         <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectAnswers)"
+          :color="getPercentageColor((item.studentClarificationStats.reopenedClarifications / item.studentClarificationStats.totalClarifications)*100)"
           dark
-          >{{ item.percentageOfCorrectAnswers + '%' }}</v-chip
+        >{{ (item.studentClarificationStats.reopenedClarifications / item.studentClarificationStats.totalClarifications)*100 }}%</v-chip
         >
       </template>
 
       <template v-slot:item.numberOfQuestionsSubmitted="{ item }">
-        <v-chip
-          :color="getPercentageColor(item.percentageOfCorrectTeacherAnswers)"
-          dark
-          >{{ item.percentageOfCorrectTeacherAnswers + '%' }}</v-chip
+        <span>{{ item.studentQuestionStats.nrTotalQuestions }}%</span
         >
       </template>
       <template v-slot:item.percentageOfApprovedQuestions="{ item }">
         <v-chip
           :color="getPercentageColor(item.percentageOfCorrectTeacherAnswers)"
           dark
-          >{{ item.percentageOfCorrectTeacherAnswers + '%' }}</v-chip
+        >{{ (item.studentQuestionStats.nrApprovedQuestions / item.studentQuestionStats.nrTotalQuestions)*100 }}%</v-chip
         >
       </template>
     </v-data-table>
