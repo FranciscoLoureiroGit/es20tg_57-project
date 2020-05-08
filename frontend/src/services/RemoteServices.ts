@@ -18,6 +18,7 @@ import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 import Notification from '@/models/management/Notification';
+import StudentQuestionStats from '@/models/statement/StudentQuestionStats';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -754,11 +755,11 @@ export default class RemoteServices {
       });
   }
 
-  static async getTournamentQuiz(tournament: QuestionsTournament): Promise<StatementQuiz> {
+  static async getTournamentQuiz(
+    tournament: QuestionsTournament
+  ): Promise<StatementQuiz> {
     return httpClient
-      .get(
-        `/questionsTournament/${tournament.id}/quiz`
-      )
+      .get(`/questionsTournament/${tournament.id}/quiz`)
       .then(response => {
         return new StatementQuiz(response.data);
       })
@@ -784,27 +785,29 @@ export default class RemoteServices {
 
   static async cancelTournament(questionsTournamentId: number) {
     return httpClient
-      .post(
-        `/questionsTournament/${questionsTournamentId}/cancelTournament`
-      )
+      .post(`/questionsTournament/${questionsTournamentId}/cancelTournament`)
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
 
   // NOTIFICATION SYSTEM SERVICES
-  static async notifyStudent(notification: Notification): Promise<Notification> {
+  static async notifyStudent(
+    notification: Notification
+  ): Promise<Notification> {
     return httpClient
       .post('/notifications/create-one', notification)
       .then(response => {
-          return new Notification(response.data);
+        return new Notification(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
 
-  static async notifyAllStudents(notifications: Notification[]): Promise<Notification[]> {
+  static async notifyAllStudents(
+    notifications: Notification[]
+  ): Promise<Notification[]> {
     return httpClient
       .post('/notifications/create-many', notifications)
       .then(response => {
@@ -816,7 +819,6 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
-
 
   static async getUserNotifications(): Promise<Notification[]> {
     return httpClient

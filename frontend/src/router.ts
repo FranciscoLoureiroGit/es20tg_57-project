@@ -18,7 +18,6 @@ import QuizView from '@/views/student/quiz/QuizView.vue';
 import ResultsView from '@/views/student/quiz/ResultsView.vue';
 import StatsView from '@/views/student/StatsView.vue';
 import ScanView from '@/views/student/ScanView.vue';
-import SubmitQuestionView from '@/views/student/questions/SubmitQuestionView.vue';
 import StudentQuestionView from '@/views/student/questions/StudentQuestionView.vue';
 import ClarificationsView from './views/student/clarifications/ClarificationsView.vue';
 
@@ -33,6 +32,7 @@ import ClarificationsManagementView from '@/views/teacher/clarifications/Clarifi
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
 import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
+import StudentStatisticsView from '@/views/student/questions/StudentStatisticsView.vue';
 
 Vue.use(Router);
 
@@ -183,6 +183,15 @@ let router = new Router({
           component: StudentQuestionView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Submit Question',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'studentStatistics',
+          name: 'student-statistics',
+          component: StudentStatisticsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Student Statistics',
             requiredAuth: 'Student'
           }
         },
