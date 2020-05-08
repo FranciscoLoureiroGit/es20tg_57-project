@@ -47,4 +47,13 @@ describe('Student clarifications walkthrough', () => {
     cy.openClarificationDescription('TITLE_' + String(variation));
   });
 
+  it('login create clarification visualizes stats', ()=>{
+    cy.contains('User').click();
+    cy.get('[data-cy="userStats"]').click();
+    cy.get('[data-cy="clarificationShow"]').click();
+    cy.get('[data-cy="clarificationStats"]').click();
+
+    cy.get('[data-cy="totalClarifications"]').contains("Total Clarifications");
+  });
+
 });

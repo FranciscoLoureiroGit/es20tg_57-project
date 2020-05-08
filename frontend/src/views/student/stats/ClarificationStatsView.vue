@@ -7,7 +7,7 @@
         <v-card class="mt-3 mx-auto"
                 max-width="400" >
           <v-card-title class="justify-center" style="background-color: #1976D2">
-            <div class="font-weight-bold" style="color: white">Total Clarifications</div>
+            <div data-cy="totalClarifications" class="font-weight-bold" style="color: white">Total Clarifications</div>
           </v-card-title>
           <v-card>
             <v-divider/>
@@ -15,7 +15,7 @@
           <v-card-text >
             <v-row align="center">
               <v-col cols="12" class="display-3">
-                <span style="font-size: 100px">{{studentClarificationStats.totalClarifications}}</span>
+                <span style="font-size: 100px" >{{studentClarificationStats.totalClarifications}}</span>
               </v-col>
             </v-row>
           </v-card-text>
