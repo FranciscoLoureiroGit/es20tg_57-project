@@ -39,12 +39,12 @@
         </v-list-item>
 
         <v-list-item>
-          <v-list-item-action @click="mini = false">
+          <v-list-item-action @click="mini = false" data-cy="clarificationShow">
             <v-icon>
               mdi-comment-question
             </v-icon>
           </v-list-item-action>
-          <v-list-item-content @click="showClarificationStats">
+          <v-list-item-content @click="showClarificationStats" data-cy="clarificationStats">
             Clarifications
           </v-list-item-content>
         </v-list-item>
