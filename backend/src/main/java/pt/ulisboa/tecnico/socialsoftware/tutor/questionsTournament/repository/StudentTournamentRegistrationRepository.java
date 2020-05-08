@@ -15,5 +15,5 @@ public interface StudentTournamentRegistrationRepository extends JpaRepository<S
     Optional<StudentTournamentRegistration> findByTournamentAndStudent(Integer tournamentId, Integer userId);
 
     @Query(value = "DELETE from student_tournament_registrations tr where tr.questions_tournament_id = :tournamentId", nativeQuery = true)
-    Optional<StudentTournamentRegistration> deleteTournamentRegistrations(Integer tournamentId);
+    void deleteTournamentRegistrations(Integer tournamentId);
 }

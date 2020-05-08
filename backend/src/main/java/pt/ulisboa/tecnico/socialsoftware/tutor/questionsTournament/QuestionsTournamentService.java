@@ -169,7 +169,7 @@ public class QuestionsTournamentService {
         CourseExecution courseExecution = tournament.getCourseExecution();
 
         if(!userIsNotTheCreator(user,tournament)){
-            registrationRepository.deleteTournamentRegistrations(tournamentId);
+            //registrationRepository.deleteTournamentRegistrations(tournamentId);
             tournamentRepository.deleteById(tournamentId);
             courseExecution.deleteTournament(tournament);
         } else{
