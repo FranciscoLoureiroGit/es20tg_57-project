@@ -15,6 +15,11 @@
           style="position: absolute; padding-top: 10px; padding-bottom: 20px;"
         >
           <span class="subtitle-1">{{ createAnswerFormSubtitle() }}</span>
+          <span
+            v-if="this.parentExtraClarification != null"
+            class="subtitle-2"
+            >{{ questionDetails() }}</span
+          >
         </v-card-subtitle>
 
         <v-card-text style="padding-top: 20px;">
@@ -22,9 +27,9 @@
             <v-layout column wrap>
               <v-flex xs24 sm12 md8>
                 <v-text-field
-                  v-model="clarificationAnswer.answer"
-                  label="Answer"
-                  data-cy="answerField"
+                  v-model="extraClarification.comment"
+                  label="Comment"
+                  data-cy="commentField"
                 />
               </v-flex>
             </v-layout>
@@ -36,8 +41,8 @@
           <v-btn color="blue darken-1" @click="$emit('close-dialog')"
             >Cancel</v-btn
           >
-          <v-btn color="blue darken-1" @click="$emit('save-answer')"
-            >Save</v-btn
+          <v-btn data-cy="submitButton" color="blue darken-1" @click="$emit('submit-comment')"
+            >Submit</v-btn
           >
         </v-card-actions>
       </v-card>
@@ -47,22 +52,31 @@
 
 <script lang="ts">
 import { Component, Model, Prop, Vue } from 'vue-property-decorator';
-import ClarificationAnswer from '@/models/management/ClarificationAnswer';
+import ExtraClarification from '@/models/management/ExtraClarification';
 
 @Component({
   components: {}
 })
-export default class ClarificationAnswerView extends Vue {
+export default class ExtraClarificationDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: ClarificationAnswer, required: true })
-  readonly clarificationAnswer!: ClarificationAnswer;
+  @Prop({ type: ExtraClarification, required: true })
+  readonly extraClarification!: ExtraClarification;
+
+  @Prop({ type: ExtraClarification, required: false })
+  readonly parentExtraClarification: ExtraClarification | undefined;
 
   createAnswerFormTitle() {
-    return 'Clarification Request Answer';
+    if (this.parentExtraClarification) return 'Extra Clarification Answer';
+    else return 'Extra Clarification Request';
   }
 
   createAnswerFormSubtitle() {
-    return 'Please enter the answer to this clarification request';
+    if (this.parentExtraClarification) return 'Please enter your answer:';
+    else return 'Please enter your question';
+  }
+
+  questionDetails() {
+    return this.parentExtraClarification!.comment;
   }
 }
 </script>

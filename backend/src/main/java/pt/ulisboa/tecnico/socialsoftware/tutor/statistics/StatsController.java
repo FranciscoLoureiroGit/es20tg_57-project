@@ -36,6 +36,12 @@ public class StatsController {
         return statsService.getStats(user.getId(), executionId);
     }
 
+    @GetMapping("/executions/{executionId}/stats-clarifications/{executionRequest}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public ClarificationStatsDto getClarificationStats(Principal principal, @PathVariable int executionId, @PathVariable int executionRequest){
+        return statsService.getClarificationStats(((User)((Authentication)principal).getPrincipal()).getId(), executionRequest);
+    }
+
     @PostMapping("/privacy/tournamentsStats")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity setTournamentPrivacyStatus(Principal principal, @Valid @RequestBody String privacyStatus) {
@@ -66,5 +72,12 @@ public class StatsController {
         }
 
         return statsService.getTournamentStats(user.getId(), executionId);
+    }
+
+    @GetMapping("/executions/{executionId}/stats-clarifications/{executionRequest}/{yearMonth}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public ClarificationStatsDto getClarificationStats(Principal principal, @PathVariable int executionId,
+                                                       @PathVariable int executionRequest, @PathVariable int yearMonth){
+        return statsService.getClarificationMonthlyStats(((User)((Authentication)principal).getPrincipal()).getId(), executionRequest, yearMonth);
     }
 }

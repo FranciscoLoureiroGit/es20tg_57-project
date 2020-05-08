@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statistics;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
@@ -20,6 +24,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -29,6 +36,9 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.US
 
 @Service
 public class StatsService {
+
+    @Autowired
+    private ClarificationRepository clarificationRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -138,8 +148,128 @@ public class StatsService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationStatsDto getClarificationStats(int userId, int executionId){    //If executionId < 0, return all clarifications
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        ClarificationStatsDto clarificationStatsDto = new ClarificationStatsDto();
+
+        int totalClarifications;
+        int publicClarifications;
+        int answeredClarifications;
+        int reopenedClarifications;
+        Map<Integer, Long> clarificationsPerMonth;
+
+        if(executionId > 0) {
+            //Filtering for a specific course
+
+            //Check if course exists
+            courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+
+            totalClarifications = (int) user.getClarifications().stream().filter(clarification -> clarification.getQuestionAnswer()
+                    .getCourseExecution().getId() == executionId).count();
+
+            publicClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .filter(clarification -> clarification.getPublic())
+                    .count();
+
+
+            answeredClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .filter(clarification -> clarification.getHasAnswer())
+                    .count();
+
+            reopenedClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .filter(clarification -> !clarification.getExtraClarificationList().isEmpty())
+                    .count();
+
+
+            clarificationsPerMonth = user.getClarifications().stream()
+                    .filter(clarification -> clarification.getQuestionAnswer()
+                            .getCourseExecution().getId() == executionId)
+                    .map(clarification -> clarification.getCreationDate().getYear() * 100 + clarification.getCreationDate().getMonthValue())    //Mapping local date time into a YYYYMM format, which is easier to sort
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+
+        } else {
+            //Return all clarifications
+            totalClarifications = (int) user.getClarifications().stream().count();
+
+            publicClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getPublic())
+                    .count();
+
+
+            answeredClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> clarification.getHasAnswer())
+                    .count();
+
+            reopenedClarifications = (int) user.getClarifications().stream()
+                    .filter(clarification -> !clarification.getExtraClarificationList().isEmpty())
+                    .count();
+
+
+            clarificationsPerMonth = user.getClarifications().stream()
+                    .map(clarification -> clarification.getCreationDate().getYear() * 100 + clarification.getCreationDate().getMonthValue())    //Mapping local date time into a YYYYMM format, which is easier to sort
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        }
+
+
+
+
+        clarificationStatsDto.setTotalClarifications(totalClarifications);
+        clarificationStatsDto.setPublicClarifications(publicClarifications);
+        clarificationStatsDto.setAnsweredClarifications(answeredClarifications);
+        clarificationStatsDto.setReopenedClarifications(reopenedClarifications);
+        clarificationStatsDto.setClarificationsPerMonth(clarificationsPerMonth);
+
+        return clarificationStatsDto;
+    }
     public void setTournamentsStatsPrivacy(Integer userId, User.PrivacyStatus privacyStatus) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         user.setTournamentsStatsPrivacy(privacyStatus);
     }
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationStatsDto getClarificationMonthlyStats(int userId, int executionId, int yearMonth) {    //If executionId < 0, return all clarifications
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        ClarificationStatsDto clarificationStatsDto = new ClarificationStatsDto();
+
+        Map<Integer, Long> clarificationStatsPerMonth;
+
+        int month = yearMonth % 100;
+        int year = yearMonth / 100;
+
+        if(executionId > 0){
+            clarificationStatsPerMonth = user.getClarifications().stream()
+
+                    .filter(clarification -> clarification.getCreationDate().getYear() == year &&
+                                             clarification.getCreationDate().getMonth().getValue() == month &&
+                                             clarification.getQuestionAnswer().getCourseExecution().getId() == executionId)
+                    .map(clarification -> clarification.getCreationDate().getDayOfMonth())
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        }
+        else {
+            clarificationStatsPerMonth = user.getClarifications().stream()
+                    .filter(clarification -> clarification.getCreationDate().getYear() == year &&
+                                             clarification.getCreationDate().getMonth().getValue() == month)
+                    .map(clarification -> clarification.getCreationDate().getDayOfMonth())
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        }
+
+        clarificationStatsDto.setClarificationsPerMonth(clarificationStatsPerMonth);
+
+        return clarificationStatsDto;
+    }
+
 }

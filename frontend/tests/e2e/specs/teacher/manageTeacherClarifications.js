@@ -19,9 +19,17 @@ describe('Teacher clarifications walkthrough', () => {
     cy.listClarificationWithAnswer('TITLE_' + String(variation))
   })
 
+  it('student reopens clarification with additional question', () => {
+    cy.get('[data-cy="logoutButton"]').click()
+    cy.demoStudentLogin();
+    cy.showClarificationRequests();
+    cy.addCommentToClarification('TITLE_' + String(variation));
+  })
 
-
-
+  it('teacher answers additional question', () => {
+    cy.listAdditionalClarification('TITLE_' + String(variation));
+    cy.answerToAdditionalClarification('TITLE_' + String(variation), 'COMMENT' + String(variation));
+  })
 
 
 });
