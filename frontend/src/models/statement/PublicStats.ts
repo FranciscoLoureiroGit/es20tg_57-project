@@ -2,11 +2,12 @@ import StudentClarificationStats from '@/models/statement/StudentClarificationSt
 import StudentQuestionStats from '@/models/statement/StudentQuestionStats';
 import StudentTournamentStats from '@/models/statement/StudentTournamentStats';
 
+
 export class PublicStats {
   username!: string;
   studentClarificationStats!: StudentClarificationStats;
   studentQuestionStats!: StudentQuestionStats;
-  studentClarificationStatsstudentTournamentStats!: StudentTournamentStats;
+  studentTournamentStats!: StudentTournamentStats;
 
   constructor(jsonObj?: PublicStats) {
     if (jsonObj) {

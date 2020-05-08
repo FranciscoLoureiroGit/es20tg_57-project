@@ -49,30 +49,9 @@
           </v-list-item-content>
         </v-list-item>
 
-
-
-            <v-expansion-panels >
-              <v-expansion-panel style="padding-top: 1vh; padding-bottom: 1vh; ">
-                <v-expansion-panel-header style="horiz-align: left">
-                  <v-icon>
-                    fas fa-cog
-                  </v-icon>
-                  <li style="justify-content: space-between">
-                    <span>
-                    Settings</span>
-                  </li>
-                  </v-expansion-panel-header>
-                <v-expansion-panel-content class="font-weight-light">
-                  <v-checkbox
-                          style="padding-left: 1vh"
-                          class="mx-2"
-                          label="Dashboard is public"
-                          v-model="is_public"
-                  ></v-checkbox><v-btn @click="changePrivacy">Save</v-btn>
-                <span v-if="saved" style="padding-left: 2vh">Saved!</span></v-expansion-panel-content>
-
-              </v-expansion-panel>
-            </v-expansion-panels>
+        <v-list-item>
+          <v-divider></v-divider>
+        </v-list-item>
 
         <v-list-item>
           <v-list-item-action @click="mini = false">
@@ -100,9 +79,28 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item>
-          <v-divider></v-divider>
-        </v-list-item>
+        <v-expansion-panels >
+          <v-expansion-panel style="padding-top: 1vh; padding-bottom: 1vh; ">
+            <v-expansion-panel-header style="horiz-align: left">
+              <v-icon>
+                fas fa-cog
+              </v-icon>
+              <li style="justify-content: space-between">
+                    <span>
+                    Settings</span>
+              </li>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content class="font-weight-light">
+              <v-checkbox
+                      style="padding-left: 1vh"
+                      class="mx-2"
+                      label="Dashboard is public"
+                      v-model="is_public"
+              ></v-checkbox><v-btn @click="changePrivacy">Save</v-btn>
+              <span v-if="saved" style="padding-left: 2vh">Saved!</span></v-expansion-panel-content>
+
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-list>
     </v-navigation-drawer>
 
@@ -147,8 +145,11 @@ export default class DashboardView extends Vue {
   async changePrivacy() {
     await this.$store.dispatch('loading');
     try {
-      await RemoteServices.changeStudentDashboardPrivacy(this.is_public ? 'PUBLIC' : 'PRIVATE');
-      this.saved = true;
+      if (this.is_public)
+        await RemoteServices.changeStudentDashboardPrivacy('PUBLIC');
+      else
+        await RemoteServices.changeStudentDashboardPrivacy('PRIVATE');
+      this.saved = !this.saved;
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
