@@ -364,6 +364,10 @@ Cypress.Commands.add('notifyDemoStudent', (title, description) => {
   cy.contains('Students').click();
   cy.wait(2000);
   cy.contains('Demo Student')
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
     .find('[data-cy="notifyStudent"]')
     .click({ force: true });
   cy.get('[data-cy="NotificationTitle"]').type(title);
