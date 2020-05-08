@@ -216,6 +216,26 @@
           <v-icon>fas fa-user</v-icon>
         </v-btn>
 
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" text dark data-cy="dashboardButton">
+              Student Dashboard
+              <v-icon>fas fa-file-alt</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <!--NEW-->
+            <v-list-item to="/student/studentStatistics">
+              <v-list-item-action>
+                <v-icon>assignment</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="statisticsButton">Question Statistics</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
         <v-btn
           v-if="isLoggedIn && moreThanOneCourse"
           to="/courses"

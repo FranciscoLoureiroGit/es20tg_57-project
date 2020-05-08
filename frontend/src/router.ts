@@ -32,6 +32,7 @@ import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 import ClarificationsManagementView from '@/views/teacher/clarifications/ClarificationsManagementView.vue';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
+import StudentStatisticsView from '@/views/student/questions/StudentStatisticsView.vue';
 
 Vue.use(Router);
 
@@ -173,6 +174,15 @@ let router = new Router({
           component: StudentQuestionView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Submit Question',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'studentStatistics',
+          name: 'student-statistics',
+          component: StudentStatisticsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Student Statistics',
             requiredAuth: 'Student'
           }
         },
