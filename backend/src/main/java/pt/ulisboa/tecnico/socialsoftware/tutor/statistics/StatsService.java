@@ -17,6 +17,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
@@ -25,6 +26,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -235,6 +237,26 @@ public class StatsService {
         user.setDashboardPrivacy(privacyStatus);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public StudentQuestionStatsDto getStudentQuestionsStatus(int studentId) {
+        int count = 0; //By default, the number of questions approved is zero
+        StudentQuestionStatsDto studentQuestionStatsDto = new StudentQuestionStatsDto();
+        List<QuestionDto> questionStudent = questionRepository.findQuestionsByStudentId(studentId).stream().map(QuestionDto::new).collect(Collectors.toList());
+
+        studentQuestionStatsDto.setNrTotalQuestions(questionStudent.size());
+
+        for (QuestionDto auxQuest: questionStudent) {
+            if(auxQuest.getApproved().equals(Question.Status.APPROVED.name()))
+                count++;
+        }
+
+        studentQuestionStatsDto.setNrApprovedQuestions(count);
+
+        return studentQuestionStatsDto;
+    }
 
     @Retryable(
             value = { SQLException.class },

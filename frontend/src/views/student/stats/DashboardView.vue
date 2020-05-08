@@ -50,6 +50,17 @@
         </v-list-item>
 
         <v-list-item>
+          <v-list-item-action @click="mini = false">
+            <v-icon>
+              fas fa-file-alt
+            </v-icon>
+          </v-list-item-action>
+          <v-list-item-content @click="showStudentQuestionStats">
+            Student Questions
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item>
           <v-divider></v-divider>
         </v-list-item>
 
@@ -72,7 +83,12 @@
 
     <!-- Extra Components to display go here -->
     <question-stats v-if="displayQuestionStats" />
+
     <tournaments-stats v-if="displayTournamentStats" />
+
+    <student-questions-stats v-if="displayStudentQuestionStats" />
+
+
     <clarification-stats v-if="displayClarificationStats" />
   </div>
 </template>
@@ -82,16 +98,19 @@ import { Component, Vue } from 'vue-property-decorator';
 import StatsView from '../StatsView.vue';
 import ClarificationStatsView from './ClarificationStatsView.vue';
 import TournamentStatsView from '@/views/student/stats/TournamentStatsView.vue';
+import StudentStatisticsView from '@/views/student/stats/StudentStatisticsView.vue';
 
 @Component({
   components: {
     'clarification-stats': ClarificationStatsView,
     'tournaments-stats': TournamentStatsView,
+    'student-questions-stats': StudentStatisticsView,
     'question-stats': StatsView
   }
 })
 export default class DashboardView extends Vue {
   displayQuestionStats: boolean = true;
+  displayStudentQuestionStats: boolean = true;
   displayClarificationStats: boolean = false;
   displayTournamentStats: boolean = false;
   drawer: boolean = true;
@@ -99,6 +118,7 @@ export default class DashboardView extends Vue {
 
   resetViews() {
     this.displayQuestionStats = false;
+    this.displayStudentQuestionStats = false;
     this.displayClarificationStats = false;
     this.displayTournamentStats = false;
     this.mini = true;
@@ -107,6 +127,11 @@ export default class DashboardView extends Vue {
   showClarificationStats() {
     this.resetViews();
     this.displayClarificationStats = true;
+  }
+
+  showStudentQuestionStats() {
+    this.resetViews();
+    this.displayStudentQuestionStats = true;
   }
 
   showQuestionStats() {

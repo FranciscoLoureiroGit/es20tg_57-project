@@ -117,15 +117,15 @@ public class QuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<QuestionDto> findAvailableQuestionsWithStudentsIncluded(int courseId) {
+    public List<QuestionDto> findApprovedQuestions(int courseId) {
         List<QuestionDto> av = questionRepository.findQuestions(courseId).stream().map(QuestionDto::new).collect(Collectors.toList());
         List<QuestionDto> output = new ArrayList<QuestionDto>();
         for (QuestionDto question : av) {
-            if (question.getRoleAuthor() == null) //for old data inside database (a.k.a demo.sql), however, the question IS NEVER NULL!
+            if (question.getRoleAuthor() == null || question.getApproved() == null) //for old data inside database (a.k.a demo.sql), however, the question IS NEVER NULL!
                 output.add(question);
             else if(question.getRoleAuthor().equals(User.Role.TEACHER.name()))
                 output.add(question);
-            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()) && question.getStatus().equals(Question.Status.AVAILABLE.name()))
+            else if(question.getRoleAuthor().equals(User.Role.STUDENT.name()) && question.getApproved().equals(Question.Status.APPROVED.name()))
                 output.add(question);
         }
 
@@ -192,6 +192,20 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
 
         question.setStatus(status);
+        return new QuestionDto(question);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public QuestionDto questionSetApproved(Integer questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+
+        if ( question.getStatus() != Question.Status.AVAILABLE)
+            throw new TutorException(QUESTION_APPROVED_WHILE_NOT_AVAILABLE, questionId);
+
+        question.setApproved();
         return new QuestionDto(question);
     }
 

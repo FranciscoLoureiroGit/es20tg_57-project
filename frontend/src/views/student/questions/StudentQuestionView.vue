@@ -64,7 +64,6 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -73,6 +72,19 @@
             >
           </template>
           <span>Show Question</span>
+        </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2"
+              v-on="on"
+              @click="resubmitDialog(item)"
+              data-cy="resubmit-question"
+              >replay</v-icon
+            >
+          </template>
+          <span>Resubmit Question</span>
         </v-tooltip>
 
         <!-- <v-tooltip bottom v-if="item.numberOfAnswers === 0">
@@ -125,6 +137,12 @@
       :question="currentQuestion"
       v-on:close-show-question-dialog="onCloseShowQuestionDialog"
     />
+    <resubmit-question-dialog
+      v-if="currentQuestion"
+      v-model="resubmitQuestionDialog"
+      :question="currentQuestion"
+      v-on:save-question="onSaveQuestion"
+    />
   </v-card>
 </template>
 
@@ -138,11 +156,13 @@ import Topic from '@/models/management/Topic';
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import EditQuestionDialogStudent from '@/views/student/questions/EditQuestionDialogStudent.vue';
 import EditQuestionTopics from '@/views/teacher/questions/EditQuestionTopics.vue';
+import ResubmitQuestionDialog from '@/views/student/questions/ResubmitQuestionDialog.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
     'edit-question-dialog': EditQuestionDialogStudent,
+    'resubmit-question-dialog': ResubmitQuestionDialog,
     'edit-question-topics': EditQuestionTopics
   }
 })
@@ -151,6 +171,7 @@ export default class StudentQuestionView extends Vue {
   topics: Topic[] = [];
   currentQuestion: Question | null = null;
   editQuestionDialog: boolean = false;
+  resubmitQuestionDialog: boolean = false;
   questionDialog: boolean = false;
   search: string = '';
   statusList = ['DISABLED', 'AVAILABLE', 'REMOVED', 'PENDING'];
@@ -274,6 +295,11 @@ export default class StudentQuestionView extends Vue {
     this.questionDialog = true;
   }
 
+  resubmitDialog(question: Question) {
+    this.currentQuestion = question;
+    this.resubmitQuestionDialog = true;
+  }
+
   onCloseShowQuestionDialog() {
     this.questionDialog = false;
   }
@@ -283,21 +309,11 @@ export default class StudentQuestionView extends Vue {
     this.editQuestionDialog = true;
   }
 
-  editQuestion(question: Question) {
-    this.currentQuestion = question;
-    this.editQuestionDialog = true;
-  }
-
-  duplicateQuestion(question: Question) {
-    this.currentQuestion = new Question(question);
-    this.currentQuestion.id = null;
-    this.editQuestionDialog = true;
-  }
-
   async onSaveQuestion(question: Question) {
     this.questions = this.questions.filter(q => q.id !== question.id);
     this.questions.unshift(question);
     this.editQuestionDialog = false;
+    this.resubmitQuestionDialog = false;
     this.currentQuestion = null;
   }
 
