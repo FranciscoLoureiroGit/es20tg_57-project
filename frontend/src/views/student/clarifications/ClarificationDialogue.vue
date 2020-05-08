@@ -79,7 +79,7 @@
         </template>
       </div>
 
-      <div v-if="clarification.clarificationAnswerDto && !questionId && !public">
+      <div v-if="clarification.clarificationAnswerDto && !questionId ">
         <template>
           <div class="container">
             <v-card-title style="padding-left: 4vh"
@@ -97,7 +97,7 @@
               class="list-row"
               style="padding-left: 3vh; padding-bottom: 2vh; font-size: 1.3vh"
             >
-              <v-tooltip bottom>
+              <v-tooltip bottom v-if="!public">
                 <template v-slot:activator="{ on }">
                   <v-icon
                     medium
