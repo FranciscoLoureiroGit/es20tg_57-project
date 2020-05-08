@@ -32,7 +32,7 @@ import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 import ClarificationsManagementView from '@/views/teacher/clarifications/ClarificationsManagementView.vue';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
 import OpenTournamentsView from '@/views/student/tournament/OpenTournamentsView.vue';
-import StudentStatisticsView from '@/views/student/questions/StudentStatisticsView.vue';
+import RegisteredTournamentsView from '@/views/student/tournament/RegisteredTournamentsView.vue';
 
 Vue.use(Router);
 
@@ -130,29 +130,29 @@ let router = new Router({
           meta: {
             title: process.env.VUE_APP_NAME + ' - ImpExp',
             requiredAuth: 'Teacher'
-            }
-          },
+          }
+        },
         {
-            path: 'clarifications',
-            name: 'clarifications-management',
-            component: ClarificationsManagementView,
-            children: [
-              {
-                path: 'answer',
-                name: 'clarification-answer',
-                component: ClarificationAnswerView,
-                meta: {
-                  title: process.env.VUE_APP_NAME + ' - Clarification Answer',
-                  requiredAuth: 'Teacher'
-                }
-              },
-            ],
-            meta: {
-              title: process.env.VUE_APP_NAME + ' - Clarifications',
-              requiredAuth: 'Teacher'
+          path: 'clarifications',
+          name: 'clarifications-management',
+          component: ClarificationsManagementView,
+          children: [
+            {
+              path: 'answer',
+              name: 'clarification-answer',
+              component: ClarificationAnswerView,
+              meta: {
+                title: process.env.VUE_APP_NAME + ' - Clarification Answer',
+                requiredAuth: 'Teacher'
+              }
             }
+          ],
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Clarifications',
+            requiredAuth: 'Teacher'
+          }
         }
-        ]
+      ]
     },
     {
       path: '/student',
@@ -169,20 +169,20 @@ let router = new Router({
           }
         },
         {
+          path: 'registeredTournaments',
+          name: 'registered-tournaments',
+          component: RegisteredTournamentsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Registered Tournaments',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'submitQuestion',
           name: 'submit-question',
           component: StudentQuestionView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Submit Question',
-            requiredAuth: 'Student'
-          }
-        },
-        {
-          path: 'studentStatistics',
-          name: 'student-statistics',
-          component: StudentStatisticsView,
-          meta: {
-            title: process.env.VUE_APP_NAME + ' - Student Statistics',
             requiredAuth: 'Student'
           }
         },

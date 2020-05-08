@@ -1,8 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -12,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "quiz_answers")
@@ -39,7 +43,8 @@ public class QuizAnswer implements DomainEntity {
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "quizAnswer", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "quizAnswer", fetch = FetchType.EAGER, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<QuestionAnswer> questionAnswers = new ArrayList<>();
 
     public QuizAnswer() {
@@ -160,6 +165,10 @@ public class QuizAnswer implements DomainEntity {
         if (!this.usedInStatistics) {
             user.increaseNumberOfQuizzes(getQuiz().getType());
 
+            if (getQuiz().isTournamentQuiz()){
+                if( user.equals(getQuiz().getQuestionsTournament().getTournamentWinner()))
+                    user.increaseNumberOfTournamentsWon();
+            }
             getQuestionAnswers().forEach(questionAnswer -> {
                 user.increaseNumberOfAnswers(getQuiz().getType());
                 if (questionAnswer.getOption() != null && questionAnswer.getOption().getCorrect()) {
@@ -182,5 +191,17 @@ public class QuizAnswer implements DomainEntity {
         quiz = null;
 
         questionAnswers.clear();
+    }
+
+    public boolean isTournamentQuizAnswer(){
+        return this.quiz.isTournamentQuiz();
+    }
+
+    public long getNumberOfCorrectAnswers(){
+        return this.getQuestionAnswers().stream()
+                .map(QuestionAnswer::getOption)
+                .filter(Objects::nonNull)
+                .filter(Option::getCorrect)
+                .count();
     }
 }

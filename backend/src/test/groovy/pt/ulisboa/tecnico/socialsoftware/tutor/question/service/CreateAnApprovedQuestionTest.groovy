@@ -183,7 +183,7 @@ class CreateAnApprovedQuestionTest extends Specification{
         q2.getTitle() == QUESTION_TITLE
         q2.getStatus() == Question.Status.AVAILABLE.name()
         q2.getJustification() == JUSTIFICATION
-        q2.getApproved() == true
+        q2.getApproved() == Question.Status.APPROVED.name()
     }
 
     @TestConfiguration

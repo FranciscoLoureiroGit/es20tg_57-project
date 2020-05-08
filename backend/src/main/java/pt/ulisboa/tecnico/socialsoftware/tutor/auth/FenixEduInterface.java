@@ -53,6 +53,8 @@ public class FenixEduInterface {
         return String.valueOf(person.get("username")).replaceAll("^\"|\"$", "");
     }
 
+    public String getPersonEmail() { return String.valueOf(person.get("email")).replaceAll("^\"|\"$", ""); }
+
     private JsonObject getPersonCourses() {
         String academicTerm = client.getAbout().get("currentAcademicTerm").getAsString();
         Matcher currentYearMatcher = Pattern.compile("([0-9]+/[0-9]+)").matcher(academicTerm);

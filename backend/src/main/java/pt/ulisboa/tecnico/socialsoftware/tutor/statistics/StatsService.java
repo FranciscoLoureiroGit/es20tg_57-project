@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -20,6 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -100,5 +102,67 @@ public class StatsService {
             statsDto.setImprovedCorrectAnswers(((float)uniqueCorrectAnswers)*100/uniqueQuestions);
         }
         return statsDto;
+    }
+
+    public TournamentStatsDto getTournamentStats(int userId, int executionId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        TournamentStatsDto tournamentStatsDto = new TournamentStatsDto();
+
+        int tournamentsWon = user.getNumberOfTournamentsWon();
+        int totalTournaments = user.getStudentTournamentRegistrations().size();
+
+        int totalAnswers = (int) user.getQuizAnswers().stream()
+                .filter(QuizAnswer::isTournamentQuizAnswer)
+                .map(QuizAnswer::getQuestionAnswers)
+                .mapToLong(Collection::size)
+                .sum();
+
+        int correctAnswers = (int) user.getQuizAnswers().stream()
+                .filter(QuizAnswer::isTournamentQuizAnswer)
+                .map(QuizAnswer::getQuestionAnswers)
+                .flatMap(Collection::stream)
+                .map(QuestionAnswer::getOption)
+                .filter(Objects::nonNull)
+                .filter(Option::getCorrect)
+                .count();
+
+        tournamentStatsDto.setTournamentsWon(tournamentsWon);
+        tournamentStatsDto.setCorrectAnswers(correctAnswers);
+        tournamentStatsDto.setTotalAnswers(totalAnswers);
+        tournamentStatsDto.setTotalTournaments(totalTournaments);
+        tournamentStatsDto.setPrivacyStatus(user.getTournamentsStatsPrivacy());
+
+        return tournamentStatsDto;
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void setTournamentsStatsPrivacy(Integer userId, User.PrivacyStatus privacyStatus) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        user.setTournamentsStatsPrivacy(privacyStatus);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public StudentQuestionStatsDto getStudentQuestionsStatus(int studentId) {
+        int count = 0; //By default, the number of questions approved is zero
+        StudentQuestionStatsDto studentQuestionStatsDto = new StudentQuestionStatsDto();
+        List<QuestionDto> questionStudent = questionRepository.findQuestionsByStudentId(studentId).stream().map(QuestionDto::new).collect(Collectors.toList());
+
+        studentQuestionStatsDto.setNrTotalQuestions(questionStudent.size());
+
+        for (QuestionDto auxQuest: questionStudent) {
+            if(auxQuest.getApproved().equals(Question.Status.APPROVED.name()))
+                count++;
+        }
+
+        studentQuestionStatsDto.setNrApprovedQuestions(count);
+
+        return studentQuestionStatsDto;
     }
 }

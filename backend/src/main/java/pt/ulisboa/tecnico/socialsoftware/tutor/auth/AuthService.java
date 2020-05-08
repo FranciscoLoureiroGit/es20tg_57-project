@@ -51,12 +51,12 @@ public class AuthService {
 
         // If user is student and is not in db
         if (user == null && !activeAttendingCourses.isEmpty()) {
-            user = this.userService.createUser(fenix.getPersonName(), username, User.Role.STUDENT);
+            user = this.userService.createUserWithEmail(fenix.getPersonName(), username, User.Role.STUDENT, fenix.getPersonEmail());
         }
 
         // If user is teacher and is not in db
         if (user == null && !fenixTeachingCourses.isEmpty()) {
-            user = this.userService.createUser(fenix.getPersonName(), username, User.Role.TEACHER);
+            user = this.userService.createUserWithEmail(fenix.getPersonName(), username, User.Role.TEACHER, fenix.getPersonEmail());
         }
 
         if (user == null) {
@@ -132,11 +132,12 @@ public class AuthService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AuthDto demoStudentAuth() {
         User user;
-//        if (activeProfile.equals("dev")) {
-//            user = this.userService.createDemoStudent();
-//        } else {
+        if (activeProfile.equals("dev")) {
+            //user = this.userService.createDemoStudent();
             user = this.userService.getDemoStudent();
-//        }
+        } else {
+            user = this.userService.getDemoStudent();
+      }
 
         return new AuthDto(JwtTokenProvider.generateToken(user), new AuthUserDto(user));
     }
