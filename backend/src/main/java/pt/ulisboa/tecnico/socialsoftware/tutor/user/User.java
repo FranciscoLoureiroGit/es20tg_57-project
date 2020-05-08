@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain.Notification;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 public class User implements UserDetails, DomainEntity {
     public enum Role {STUDENT, TEACHER, ADMIN, DEMO_ADMIN}
+    public enum PrivacyStatus {PUBLIC, PRIVATE}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +39,9 @@ public class User implements UserDetails, DomainEntity {
     @Column(unique=true)
     private String username;
 
+    @Column
+    private String email;
+
     private String name;
     private String enrolledCoursesAcronyms;
 
@@ -49,6 +54,11 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfCorrectTeacherAnswers;
     private Integer numberOfCorrectInClassAnswers;
     private Integer numberOfCorrectStudentAnswers;
+    private Integer numberOfTournamentsWon;
+    private Integer numberOfTournamentQuestionsAnswers;
+    private Integer numberOfCorrectTournamentQuestionsAnswers;
+
+    private PrivacyStatus tournamentStatsPrivacy;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -56,7 +66,7 @@ public class User implements UserDetails, DomainEntity {
     @Column(name = "last_access")
     private LocalDateTime lastAccess;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval=true)
     private Set<QuizAnswer> quizAnswers = new HashSet<>();
 
     @ManyToMany
@@ -68,8 +78,11 @@ public class User implements UserDetails, DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ClarificationAnswer> clarificationAnswers = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch=FetchType.LAZY, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch=FetchType.EAGER, orphanRemoval=true)
     private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Notification> notifications = new HashSet<>();
 
     public User() {
     }
@@ -89,6 +102,18 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+        this.numberOfTournamentsWon = 0;
+        this.numberOfTournamentQuestionsAnswers = 0;
+        this.numberOfCorrectTournamentQuestionsAnswers = 0;
+        this.tournamentStatsPrivacy = PrivacyStatus.PUBLIC;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
@@ -319,6 +344,20 @@ public class User implements UserDetails, DomainEntity {
         return numberOfCorrectStudentAnswers;
     }
 
+    public Integer getNumberOfTournamentsWon() {
+        return this.numberOfTournamentsWon = (int) this.getStudentTournamentRegistrations().stream()
+                .filter(StudentTournamentRegistration::isWinner)
+                .count();
+    }
+
+    public Integer getNumberOfTournamentQuestionsAnswers() {
+        return numberOfTournamentQuestionsAnswers;
+    }
+
+    public Integer getNumberOfCorrectTournamentQuestionsAnswers() {
+        return numberOfCorrectTournamentQuestionsAnswers;
+    }
+
     public void setNumberOfCorrectStudentAnswers(Integer numberOfCorrectStudentAnswers) {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
@@ -394,6 +433,18 @@ public class User implements UserDetails, DomainEntity {
         }
     }
 
+    public void increaseNumberOfTournamentsWon() {
+        this.numberOfTournamentsWon = getNumberOfTournamentsWon() + 1;
+    }
+
+    public void increaseNumberOfTournamentQuestionsAnswers() {
+        this.numberOfTournamentQuestionsAnswers = getNumberOfTournamentQuestionsAnswers() + 1;
+    }
+
+    public void increaseNumberOfCorrectTournamentQuestionsAnswers() {
+        this.numberOfCorrectTournamentQuestionsAnswers = getNumberOfCorrectTournamentQuestionsAnswers() + 1;
+    }
+
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
@@ -414,6 +465,26 @@ public class User implements UserDetails, DomainEntity {
 
     public boolean isInCourseExecution(CourseExecution courseExecution) {
         return this.getCourseExecutions().contains(courseExecution);
+    }
+
+    public void setNumberOfTournamentsWon(Integer numberOfTournamentsWon) {
+        this.numberOfTournamentsWon = numberOfTournamentsWon;
+    }
+
+    public void setNumberOfTournamentQuestionsAnswers(Integer numberOfTournamentQuestionsAnswers) {
+        this.numberOfTournamentQuestionsAnswers = numberOfTournamentQuestionsAnswers;
+    }
+
+    public void setNumberOfCorrectTournamentQuestionsAnswers(Integer numberOfCorrectTournamentQuestionsAnswers) {
+        this.numberOfCorrectTournamentQuestionsAnswers = numberOfCorrectTournamentQuestionsAnswers;
+    }
+
+    public PrivacyStatus getTournamentsStatsPrivacy() {
+        return tournamentStatsPrivacy;
+    }
+
+    public void setTournamentsStatsPrivacy(PrivacyStatus privacyStatus) {
+        this.tournamentStatsPrivacy = privacyStatus;
     }
 
     @Override
@@ -509,5 +580,21 @@ public class User implements UserDetails, DomainEntity {
 
     public void removeClarificationAnswer(ClarificationAnswer clarificationAnswer){
         this.clarificationAnswers.remove(clarificationAnswer);
+    }
+
+    public Set<Notification> getNotifications() { return notifications; }
+
+    public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
+
+    public void addNotification(Notification notification) {
+        this.notifications.add(notification);
+    }
+
+    public void removeNotification(Notification notification) {
+        this.notifications.remove(notification);
+    }
+
+    public void removeAllNotifications() {
+        this.notifications = new HashSet<>();
     }
 }

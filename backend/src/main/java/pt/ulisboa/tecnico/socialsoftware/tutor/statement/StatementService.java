@@ -157,12 +157,14 @@ public class StatementService {
 
         Set<Integer> studentQuizIds =  user.getQuizAnswers().stream()
                 .filter(quizAnswer -> quizAnswer.getQuiz().getCourseExecution().getId() == executionId)
+                .filter(quizAnswer -> quizAnswer.getQuiz().getQuestionsTournament() == null)
                 .map(QuizAnswer::getQuiz)
                 .map(Quiz::getId)
                 .collect(Collectors.toSet());
 
         // create QuizAnswer for quizzes
         quizRepository.findQuizzes(executionId).stream()
+                .filter(quiz -> quiz.getQuestionsTournament() == null)
                 .filter(quiz -> !quiz.isQrCodeOnly())
                 .filter(quiz -> !quiz.getType().equals(Quiz.QuizType.GENERATED))
                 .filter(quiz -> quiz.getAvailableDate() == null || quiz.getAvailableDate().isBefore(now))
@@ -176,6 +178,7 @@ public class StatementService {
 
         return user.getQuizAnswers().stream()
                 .filter(quizAnswer -> !quizAnswer.isCompleted())
+                .filter(quizAnswer -> quizAnswer.getQuiz().getQuestionsTournament() == null)
                 .filter(quizAnswer -> !quizAnswer.getQuiz().isOneWay() || quizAnswer.getCreationDate() == null)
                 .filter(quizAnswer -> quizAnswer.getQuiz().getCourseExecution().getId() == executionId)
                 .filter(quizAnswer -> quizAnswer.getQuiz().getConclusionDate() == null || DateHandler.now().isBefore(quizAnswer.getQuiz().getConclusionDate()))
@@ -194,6 +197,7 @@ public class StatementService {
 
         return user.getQuizAnswers().stream()
                 .filter(quizAnswer -> quizAnswer.canResultsBePublic(executionId))
+                .filter(quizAnswer -> quizAnswer.getQuiz().getQuestionsTournament() == null)
                 .map(SolvedQuizDto::new)
                 .sorted(Comparator.comparing(SolvedQuizDto::getAnswerDate))
                 .collect(Collectors.toList());

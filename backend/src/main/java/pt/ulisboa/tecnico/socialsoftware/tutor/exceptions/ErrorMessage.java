@@ -91,10 +91,13 @@ public enum ErrorMessage {
 
     USER_NOT_STUDENT("User is not a student"),
     STUDENT_NOT_ON_COURSE_EXECUTION("Student is not on the course execution"),
+    USER_NOT_TOURNAMENT_CREATOR("User can't delete tournament which didn't create"),
     TOURNAMENT_ENDED("Tournament already ended"),
     TOURNAMENT_ALREADY_STARTED("Tournament already started"),
     TOURNAMENT_NOT_EXIST("Tournament doesn't exist"),
     TOURNAMENT_NOT_FOUND("Tournament not found with id %d"),
+    TOURNAMENT_NOT_AVAILABLE("Tournament not started or ended"),
+    TOURNAMENT_QUIZ_NOT_GENERATED("Tournament Quiz was not generated"),
     DUPLICATED_REGISTRATION("User already registered in tournament"),
     NULLID("null userId or questionsTournamentId"),
     NO_CLARIFICATION_REQUEST("No such Clarification Request"),
@@ -102,7 +105,13 @@ public enum ErrorMessage {
     CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request"),
     NO_SUCH_USER("No such user"),
     ALREADY_HAS_ANSWER("Clarification already has an answer"),
-    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty");
+    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty"),
+
+    NOTIFICATION_STATUS_NOT_ALLOWED("The specified status is not allowed at creation"),
+    NOTIFICATION_DELIVER_DATE_INVALID("The specififed deliver date for notification is invalid"),
+    NOTIFICATION_MISSING_DATA("Notification has invalid data"),
+    NOTIFICATION_NOT_FOUND("Notification %d was not found"),
+    MAIL_ERROR("Error while sending mail");
 
     public final String label;
 

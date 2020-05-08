@@ -202,8 +202,8 @@ VALUES (1, NOW() + interval &apos;12 hour&apos;, NOW() + interval &apos;24 hour&
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert user id" enabled="true">
               <stringProp name="JSON_PATH">$.userId</stringProp>
-              <stringProp name="EXPECTED_VALUE">676</stringProp>
-              <boolProp name="JSONVALIDATION">true</boolProp>
+              <stringProp name="EXPECTED_VALUE"></stringProp>
+              <boolProp name="JSONVALIDATION">false</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
               <boolProp name="ISREGEX">false</boolProp>
@@ -322,9 +322,11 @@ VALUES (1, NOW() + interval &apos;12 hour&apos;, NOW() + interval &apos;24 hour&
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq1</stringProp>
           <stringProp name="queryType">Callable Statement</stringProp>
-          <stringProp name="query">DELETE FROM student_tournament_registrations where user_id = 676;
+          <stringProp name="query">START TRANSACTION;
+DELETE FROM quizzes where questions_tournament_id = 1;
+DELETE FROM student_tournament_registrations;
 DELETE FROM questionstournaments where id = 1;
-</stringProp>
+COMMIT;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="variableNames"></stringProp>
