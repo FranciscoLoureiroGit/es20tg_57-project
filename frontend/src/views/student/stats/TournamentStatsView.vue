@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2>Tournament Statistics</h2>
-    <div v-if="stats != null" class="stats-container">
+    <div v-if="stats != null" class="stats-container mb-12">
       <div class="items">
         <div class="icon-wrapper" ref="totalTournaments">
           <animated-number :number="stats.totalTournaments" />
@@ -55,16 +55,17 @@
         color="#82C7EB"
         :sync="false"
         :labels="{ checked: 'Private', unchecked: 'Public' }"
-        height="70"
-        width="200"
-        font-size="35"
+        :height="70"
+        :width="200"
+        :font-size="35"
+        data-cy="togglePrivacy"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
 import StudentTournamentStats from '@/models/statement/StudentTournamentStats';
@@ -89,7 +90,7 @@ export default class TournamentStatsView extends Vue {
   async onChangeEventHandler() {
     try {
       if (this.stats != null) {
-        this.stats.privacyStatusBoolean = !this.stats.privacyStatusBoolean
+        this.stats.privacyStatusBoolean = !this.stats.privacyStatusBoolean;
       }
       await RemoteServices.setTournamentPrivacyStatus(
         this.calculatePrivacyStatus()
@@ -104,11 +105,10 @@ export default class TournamentStatsView extends Vue {
   }
 
   calculatePrivacyStatus(): String {
-    if (this.isPrivate()){
-      return 'PUBLIC'
-    }
-    else {
-      return 'PRIVATE'
+    if (this.isPrivate()) {
+      return 'PUBLIC';
+    } else {
+      return 'PRIVATE';
     }
   }
 }

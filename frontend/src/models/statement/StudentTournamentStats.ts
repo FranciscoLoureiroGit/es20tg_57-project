@@ -3,8 +3,8 @@ export default class StudentTournamentStats {
   totalTournaments!: number;
   totalAnswers!: number;
   correctAnswers!: number;
-  privacyStatus!: String
-  privacyStatusBoolean!: boolean
+  privacyStatus!: String;
+  privacyStatusBoolean!: boolean;
   constructor(jsonObj?: StudentTournamentStats) {
     if (jsonObj) {
       this.totalTournaments = jsonObj.totalTournaments;
@@ -12,10 +12,9 @@ export default class StudentTournamentStats {
       this.tournamentsWon = jsonObj.tournamentsWon;
       this.correctAnswers = jsonObj.correctAnswers;
       this.privacyStatus = jsonObj.privacyStatus;
-      if (this.privacyStatus == 'PRIVATE'){
+      if (this.privacyStatus == 'PRIVATE') {
         this.privacyStatusBoolean = true;
-      }
-      else{
+      } else {
         this.privacyStatusBoolean = false;
       }
     }
