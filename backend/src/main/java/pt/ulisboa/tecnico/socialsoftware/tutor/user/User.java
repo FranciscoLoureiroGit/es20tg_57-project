@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.StudentTournamentRegistration;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain.Notification;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,6 +38,9 @@ public class User implements UserDetails, DomainEntity {
 
     @Column(unique=true)
     private String username;
+
+    @Column
+    private String email;
 
     private String name;
     private String enrolledCoursesAcronyms;
@@ -77,6 +81,9 @@ public class User implements UserDetails, DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch=FetchType.EAGER, orphanRemoval=true)
     private Set<StudentTournamentRegistration> studentTournamentRegistrations = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Notification> notifications = new HashSet<>();
+
     public User() {
     }
 
@@ -99,6 +106,14 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfTournamentQuestionsAnswers = 0;
         this.numberOfCorrectTournamentQuestionsAnswers = 0;
         this.tournamentStatsPrivacy = PrivacyStatus.PUBLIC;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
@@ -566,5 +581,21 @@ public class User implements UserDetails, DomainEntity {
 
     public void removeClarificationAnswer(ClarificationAnswer clarificationAnswer){
         this.clarificationAnswers.remove(clarificationAnswer);
+    }
+
+    public Set<Notification> getNotifications() { return notifications; }
+
+    public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
+
+    public void addNotification(Notification notification) {
+        this.notifications.add(notification);
+    }
+
+    public void removeNotification(Notification notification) {
+        this.notifications.remove(notification);
+    }
+
+    public void removeAllNotifications() {
+        this.notifications = new HashSet<>();
     }
 }

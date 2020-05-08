@@ -18,7 +18,10 @@ import ClarificationAnswer from '@/models/management/ClarificationAnswer';
 import { QuestionsTournament } from '@/models/management/QuestionsTournament';
 import { QuestionsTournamentRegistration } from '@/models/management/QuestionsTournamentRegistration';
 import StudentTournamentStats from '@/models/statement/StudentTournamentStats';
-import TournamentStatsView from '@/views/student/TournamentStatsView.vue';
+import ExtraClarification from '@/models/management/ExtraClarification';
+import Notification from '@/models/management/Notification';
+import StudentClarificationStats from '@/models/statement/StudentClarificationStats';
+
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -214,6 +217,46 @@ export default class RemoteServices {
       });
   }
 
+  static async getPublicClarifications(): Promise<Clarification[]> {
+    return httpClient
+      .get('/clarifications/public')
+      .then(response => {
+        return response.data.map((clarification: any) => {
+          return new Clarification(clarification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getPublicQuestionClarifications(questionAnswerId: number): Promise<Clarification[]> {
+    return httpClient
+      .get(`/question-answer/${questionAnswerId}/clarifications/public`)
+      .then(response => {
+        return response.data.map((clarification: any) => {
+          return new Clarification(clarification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async setClarificationPrivacy(clarification: Clarification): Promise<Clarification> {
+    return httpClient
+      .put(
+        `/clarifications/${clarification.id}/privacy`,
+        clarification
+      )
+      .then(response => {
+        return new Clarification(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createQuestion(question: Question): Promise<Question> {
     return httpClient
       .post(
@@ -256,6 +299,38 @@ export default class RemoteServices {
       )
       .then(response => {
         return new ClarificationAnswer(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createExtraClarification(
+    questionAnswerId: number,
+    extraClarification: ExtraClarification
+  ): Promise<ExtraClarification> {
+    return httpClient
+      .post(
+        `/question-answer/${questionAnswerId}/clarifications/extra`,
+        extraClarification
+      )
+      .then(response => {
+        return new ExtraClarification(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getClarificationStats(
+    executionRequest: number
+  ): Promise<StudentClarificationStats> {
+    return httpClient
+      .get(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/stats-clarifications/${executionRequest}`
+      )
+      .then(response => {
+        return new StudentClarificationStats(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
@@ -788,6 +863,67 @@ export default class RemoteServices {
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  // NOTIFICATION SYSTEM SERVICES
+  static async notifyStudent(notification: Notification): Promise<Notification> {
+    return httpClient
+      .post('/notifications/create-one', notification)
+      .then(response => {
+          return new Notification(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async notifyAllStudents(notifications: Notification[]): Promise<Notification[]> {
+    return httpClient
+      .post('/notifications/create-many', notifications)
+      .then(response => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
+  static async getUserNotifications(): Promise<Notification[]> {
+    return httpClient
+      .get('/user/notifications')
+      .then(response => {
+        return response.data.map((notification: any) => {
+          return new Notification(notification);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async changeNotificationStatus(notification: Notification) {
+    return httpClient
+      .put('/notifications/change-status', notification)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteNotification(notification: Notification) {
+    return httpClient
+      .post('/notifications/delete', notification)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteAllUserNotifications() {
+    return httpClient.delete('/notifications/delete-all').catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 
   static async exportAll() {

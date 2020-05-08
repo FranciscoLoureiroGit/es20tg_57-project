@@ -38,12 +38,12 @@ public enum ErrorMessage {
     CANNOT_DELETE_COURSE_EXECUTION("The course execution cannot be deleted %s"),
     USERNAME_NOT_FOUND("Username %d not found"),
 
-    CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty %d"),
-    CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty %d"),
-    CLARIFICATION_MISSING_DATA("Clarification data not consistent %d"),
-    CLARIFICATION_NOT_FOUND("Clarification id was not found %d"),
-    CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed %d"),
-    CLARIFICATION_EXISTS("User has already created a clarification for this question answer"),
+    CLARIFICATION_TITLE_IS_EMPTY("The clarification title is empty"),
+    CLARIFICATION_DESCRP_IS_EMPTY("The clarification description is empty"),
+    CLARIFICATION_MISSING_DATA("Clarification data is empty"),
+    CLARIFICATION_NOT_FOUND("Clarification %d was not found"),
+    CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed"),
+    CLARIFICATION_EXISTS("You have already created a clarification for this question"),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),
@@ -104,7 +104,19 @@ public enum ErrorMessage {
     CANNOT_ANSWER_CLARIFICATION("User is not allowed to answer this request"),
     NO_SUCH_USER("No such user"),
     ALREADY_HAS_ANSWER("Clarification already has an answer"),
-    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty");
+    NULL_CLARIFICATION_ANSWER_INPUT("Clarification answer details are empty"),
+
+    EMPTY_EXTRA_CLARIFICATION_COMMENT("Extra clarification comment is empty"),
+    NO_EXTRA_CLARIFICATION_TYPE("Extra clarification type is undefined"),
+    NO_EXTRA_CLARIFICATION_PARENT("Extra clarification parent is undefined"),
+    EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION("User is not allowed to perform this action"),
+    EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE("Next comment cannot be of type %s"),
+
+    NOTIFICATION_STATUS_NOT_ALLOWED("The specified status is not allowed at creation"),
+    NOTIFICATION_DELIVER_DATE_INVALID("The specififed deliver date for notification is invalid"),
+    NOTIFICATION_MISSING_DATA("Notification has invalid data"),
+    NOTIFICATION_NOT_FOUND("Notification %d was not found"),
+    MAIL_ERROR("Error while sending mail");
 
     public final String label;
 

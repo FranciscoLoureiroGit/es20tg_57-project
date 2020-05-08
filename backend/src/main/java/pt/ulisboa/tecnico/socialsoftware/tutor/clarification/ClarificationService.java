@@ -9,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ExtraClarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ExtraClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ExtraClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
@@ -36,23 +39,18 @@ public class ClarificationService {
     @Autowired
     private ClarificationRepository clarificationRepository;
 
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationDto getClarificationById(Integer clarificationId) {
-        return clarificationRepository.findById(clarificationId).map(ClarificationDto::new)
-                .orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
-    }
+    @Autowired
+    private ExtraClarificationRepository extraClarificationRepository;
+
+    // ---- GET Services ----
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getClarificationsByQuestion(int questionAnswerId) {
-        return clarificationRepository.findByQuestionAnswer(questionAnswerId).stream().map(ClarificationDto::new)
-                .sorted(Comparator.comparing(ClarificationDto::getTitle))
-                .collect(Collectors.toList());
+    public ClarificationDto findClarificationById(Integer clarificationId) {
+        return clarificationRepository.findById(clarificationId).map(ClarificationDto::new)
+                .orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
     }
 
     @Retryable(
@@ -74,29 +72,6 @@ public class ClarificationService {
     }
 
     @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getPublicClarifications() {
-        return this.getAllClarifications().stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationDto getClarification(int studentId, int questionAnswerId) {
-        List<ClarificationDto> clarificationDtoList = getClarificationsByQuestion(questionAnswerId);
-
-        for (ClarificationDto cc : clarificationDtoList ) {
-            if (cc.getStudentId().equals(studentId)) {
-                return cc;
-            }
-        }
-        throw new TutorException(NO_CLARIFICATION_REQUEST);
-    }
-
-    @Retryable(
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -108,18 +83,36 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationDto> getPublicQuestionClarification(int questionAnswerId) {
-        return getClarificationsByQuestion(questionAnswerId).stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
+    public List<ClarificationDto> getPublicClarifications() {
+        return this.getAllClarifications().stream().filter(ClarificationDto::getPublic).collect(Collectors.toList());
     }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void setPrivacy(int clarificationId, boolean isPublic) {
+    public List<ClarificationDto> getPublicQuestionClarifications(int questionAnswerId) {
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() ->
+                new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
+        return clarificationRepository.findByQuestion(questionAnswer.getQuizQuestion().getQuestion().getId())
+                .stream().map(ClarificationDto::new)
+                .sorted(Comparator.comparing(ClarificationDto::getTitle))
+                .collect(Collectors.toList());
+    }
+
+
+    // ------- SET / CREATE Services -------
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ClarificationDto setPrivacy(int clarificationId, boolean isPublic) {
         Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
                 new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
         clarification.setPublic(isPublic);
+        return new ClarificationDto(clarification);
     }
 
     @Retryable(
@@ -140,6 +133,49 @@ public class ClarificationService {
             return new ClarificationDto(clarification);
         }
         throw new TutorException(CLARIFICATION_MISSING_DATA);
+    }
+
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation =  Isolation.REPEATABLE_READ)
+    public ExtraClarificationDto createExtraClarification(ExtraClarificationDto extraClarificationDto, Integer userId){
+
+        if(extraClarificationDto.getComment() == null || extraClarificationDto.getComment().equals("")){
+            throw new TutorException(EMPTY_EXTRA_CLARIFICATION_COMMENT);
+        }
+        if(extraClarificationDto.getCommentType() == null || extraClarificationDto.getCommentType().equals("")){
+            throw new TutorException(NO_EXTRA_CLARIFICATION_TYPE);
+        }
+        if(extraClarificationDto.getParentClarificationId() == null){
+            throw new TutorException(NO_EXTRA_CLARIFICATION_PARENT);
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        if( !(user.getRole() == User.Role.STUDENT && extraClarificationDto.getCommentType().equals("QUESTION"))
+                && !(user.getRole() == User.Role.TEACHER && extraClarificationDto.getCommentType().equals("ANSWER"))){
+            throw new TutorException(EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION);
+        }
+
+        Clarification clarification = clarificationRepository.findById(extraClarificationDto.getParentClarificationId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, extraClarificationDto.getParentClarificationId()));
+
+        if( (extraClarificationDto.getCommentType().equals("QUESTION") && clarification.getExtraClarificationList().size()%2 != 0)
+                || (extraClarificationDto.getCommentType().equals("ANSWER") && clarification.getExtraClarificationList().size()%2 != 1)){
+            throw new TutorException(EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE, extraClarificationDto.getCommentType());
+        }
+
+        ExtraClarification extraClarification = new ExtraClarification(extraClarificationDto);
+        extraClarification.setParentClarification(clarification);
+        extraClarification.setCreationDate(LocalDateTime.now());
+
+
+        clarification.addExtraClarification(extraClarification);
+
+        extraClarificationRepository.save(extraClarification);
+
+        return new ExtraClarificationDto(extraClarification);
+
     }
 
     private QuestionAnswer getQuestionAnswer(int questionAnswerId) {

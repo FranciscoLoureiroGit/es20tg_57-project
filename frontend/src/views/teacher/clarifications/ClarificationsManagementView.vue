@@ -31,7 +31,7 @@
       /></template>
 
       <template v-slot:item.description="{ item }">
-        <p v-html="item.description" @click="showClarificationDialog(item)"
+        <p v-html="convertMarkDown(item.description, null)" @click="showClarificationDialog(item)"
       /></template>
 
       <template v-slot:item.status="{ item }">
@@ -40,26 +40,32 @@
         </v-chip>
       </template>
 
+      <template v-slot:item.privacy="{ item }">
+        <v-chip :color="getPrivacyColor(item.public)" small>
+          <span data-cy="requestPrivacy">{{ getPrivacy(item) }}</span>
+        </v-chip>
+      </template>
+
       <template v-slot:item.answers="{ item }">
-        <span v-html="getAnswer(item)" />
+        <span v-html="getAnswer(item)" @click="showClarificationAnswerDialog(item)" />
       </template>
 
       <template v-slot:item.action="{ item }">
-        <v-tooltip bottom v-if="getAnswer(item) != 'None'">
+        <v-tooltip bottom v-if="getAnswer(item) !== 'None'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
               class="mr-2"
               v-on="on"
-              @click="showClarificationAnswerDialog(item)"
+              @click="showExtraClarificationDialog(item)"
               data-cy="showAnswer"
-              >visibility</v-icon
+              >mdi-forum</v-icon
             >
           </template>
-          <span>Show Answer</span>
+          <span>Show Discussion</span>
         </v-tooltip>
 
-        <v-tooltip bottom v-if="getAnswer(item) == 'None'">
+        <v-tooltip bottom v-if="getAnswer(item) === 'None'">
           <template v-slot:activator="{ on }">
             <v-icon
               small
@@ -71,6 +77,50 @@
             >
           </template>
           <span>Answer</span>
+        </v-tooltip>
+
+        <v-tooltip bottom v-if="getAnswer(item) !== 'None' && getStatus(item) === 'OPEN'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+                    small
+                    class="mr-2"
+                    v-on="on"
+                    @click="showCreateExtraClarificationDialog(item)"
+                    data-cy="answerExtraClarification"
+            >edit</v-icon
+            >
+          </template>
+          <span>Answer</span>
+        </v-tooltip>
+
+
+
+        <v-tooltip bottom v-if="getPrivacy(item) === 'Private'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="changePrivacy(item)"
+              data-cy="changePrivacy"
+              >mdi-lock</v-icon
+            >
+          </template>
+          <span>Set Public</span>
+        </v-tooltip>
+
+        <v-tooltip bottom v-if="getPrivacy(item) === 'Public'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="changePrivacy(item)"
+              data-cy="changePrivacy"
+              >mdi-lock-open-variant</v-icon
+            >
+          </template>
+          <span>Set Private</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -100,6 +150,40 @@
       v-on:close-dialog="closeCreateClarificationAnswerDialog"
       v-on:save-answer="saveCreateClarificationAnswerDialog"
     />
+
+    <create-extra-clarification-answer-dialog
+      v-if="extraClarification"
+      v-model="createExtraClarificationDialog"
+      :extra-clarification="extraClarification"
+      :parent-extra-clarification="currentExtraClarification"
+      v-on:close-dialog="closeCreateExtraClarificationDialog"
+      v-on:submit-comment="saveCreateExtraClarificationDialog"
+    />
+
+      <v-dialog
+          v-if="extraClarificationDialog"
+          v-model="extraClarificationDialog"
+
+          >
+          <list-extra-clarification-dialog
+              :clarification="currentClarification"/>
+          <v-card>
+
+              <v-card-actions>
+                  <v-spacer />
+                  <v-btn
+                          data-cy="closeButton"
+                          dark
+                          color="blue darken-1"
+                          @click="closeExtraClarificationDialog"
+                  >close</v-btn
+                  >
+              </v-card-actions></v-card>
+
+
+      </v-dialog>
+
+
   </v-card>
 </template>
 
@@ -115,13 +199,19 @@ import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue
 import Image from '@/models/management/Image';
 import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import ClarificationAnswerView from '@/views/teacher/clarifications/ClarificationAnswerView.vue';
+import ExtraClariifcationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
+import ExtraClarification from '@/models/management/ExtraClarification';
+import ExtraClarificationListDialog from '@/views/student/clarifications/ExtraClarificationListDialog.vue';
+import ExtraClarificationDialog from '@/views/student/clarifications/ExtraClarificationDialog.vue';
 
 @Component({
   components: {
     'show-clarification-answer-dialog': ShowClarificationAnswerDialog,
     'show-clarification-dialog': ShowClarificationDialog,
     'show-question-dialog': ShowQuestionDialog,
-    'create-clarification-answer-dialog': ClarificationAnswerView
+    'create-clarification-answer-dialog': ClarificationAnswerView,
+    'create-extra-clarification-answer-dialog': ExtraClarificationDialog,
+    'list-extra-clarification-dialog': ExtraClarificationListDialog
   }
 })
 export default class ClarificationsManagementView extends Vue {
@@ -133,6 +223,11 @@ export default class ClarificationsManagementView extends Vue {
   clarificationAnswerDialog: boolean = false;
   clarificationDialog: boolean = false;
   questionDialog: boolean = false;
+  extraClarificationDialog: boolean = false;
+
+  createExtraClarificationDialog: boolean = false;
+  extraClarification: ExtraClarification | null = null;
+  currentExtraClarification: ExtraClarification | null = null;
 
   createClarificationAnswerDialog: boolean = false;
   clarificationAnswer: ClarificationAnswer | null = null;
@@ -147,6 +242,7 @@ export default class ClarificationsManagementView extends Vue {
       align: 'left'
     },
     { text: 'Status', value: 'status', align: 'center' },
+    { text: 'Privacy', value: 'privacy', align: 'center' },
     { text: 'Teacher Response', value: 'answers', align: 'left' },
     {
       text: 'Creation Date',
@@ -166,10 +262,24 @@ export default class ClarificationsManagementView extends Vue {
     else return 'green';
   }
 
+  getPrivacyColor(isPublic: boolean) {
+    if (isPublic) return 'green';
+    else return 'red';
+  }
+
   getAnswer(clarification: Clarification) {
     if (clarification.clarificationAnswerDto)
       return clarification.clarificationAnswerDto.answer;
     else return 'None';
+  }
+
+  getStatus(clarification: Clarification) {
+    return clarification.status == 'OPEN' ? 'OPEN' : 'CLOSED';
+  }
+
+  getPrivacy(clarification: Clarification) {
+    if (clarification.public) return 'Public';
+    else return 'Private';
   }
 
   async created() {
@@ -227,6 +337,8 @@ export default class ClarificationsManagementView extends Vue {
           this.currentClarification!.questionAnswerDto!.id,
           this.clarificationAnswer
         );
+        this.currentClarification!.clarificationAnswerDto = this.clarificationAnswer;
+        this.currentClarification!.status = 'CLOSED';
       }
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -234,6 +346,69 @@ export default class ClarificationsManagementView extends Vue {
     this.closeCreateClarificationAnswerDialog();
   }
 
+  showCreateExtraClarificationDialog(clarification : Clarification) {
+    this.currentClarification = clarification;
+    this.extraClarification = new ExtraClarification();
+    this.extraClarification.commentType = 'ANSWER';
+    this.extraClarification.parentClarificationId = clarification!.id;
+    this.currentExtraClarification = clarification.extraClarificationDtos[clarification.extraClarificationDtos.length - 1];
+
+    this.createExtraClarificationDialog = true;
+  }
+
+  closeCreateExtraClarificationDialog(){
+    this.createExtraClarificationDialog = false;
+  }
+
+  async saveCreateExtraClarificationDialog(){
+    try{
+      if(this.extraClarification) {
+        this.extraClarification = await RemoteServices.createExtraClarification(
+                this.currentClarification!.questionAnswerDto!.id,
+                this.extraClarification
+        );
+        this.currentClarification!.extraClarificationDtos[this.currentClarification!.extraClarificationDtos!.length] = this.extraClarification;
+        this.currentClarification!.status = 'CLOSED';
+
+      }
+
+    }catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+
+    this.closeCreateExtraClarificationDialog();
+  }
+
+  showExtraClarificationDialog(clarification: Clarification) {
+    this.currentClarification = clarification;
+    this.extraClarificationDialog = true;
+  }
+
+  closeExtraClarificationDialog() {
+    this.extraClarificationDialog = false;
+  }
+
+  async changePrivacy(clarification: Clarification) {
+    try {
+      if (confirm('Are you sure you want to change the privacy?')) {
+        if (clarification.public) clarification.public = false;
+        else clarification.public = true;
+
+        let newClarification = await RemoteServices.setClarificationPrivacy(
+          clarification
+        );
+        let clarification_helper = this.clarifications.find(
+          clarification_helper =>
+            clarification_helper.id === newClarification.id
+        );
+        if (clarification_helper) {
+          clarification_helper.public = newClarification.public;
+        }
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+  }
   convertMarkDown(text: string, image: Image | null = null): string {
     return convertMarkDown(text, image);
   }

@@ -66,12 +66,15 @@ import { Component, Vue } from 'vue-property-decorator';
 import StudentStats from '@/models/statement/StudentStats';
 import RemoteServices from '@/services/RemoteServices';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
+import StudentClarificationStats from '@/models/statement/StudentClarificationStats';
 
 @Component({
-  components: { AnimatedNumber }
+  components: { AnimatedNumber,
+  }
 })
 export default class StatsView extends Vue {
   stats: StudentStats | null = null;
+
 
   async created() {
     await this.$store.dispatch('loading');
