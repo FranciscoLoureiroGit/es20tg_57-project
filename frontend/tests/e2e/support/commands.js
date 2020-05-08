@@ -493,6 +493,14 @@ Cypress.Commands.add('answerToAdditionalClarification', (title, comment) => {
   cy.contains(comment);
 });
 
+
+Cypress.Commands.add('goToTournamentDashboard', () => {
+  cy.get('[data-cy=userButton]').click();
+  cy.contains('Dashboard').click();
+  cy.get('.pt-0 > :nth-child(6) > .v-list-item__action > .v-icon').click();
+  cy.get(':nth-child(6) > .v-list-item__content').click();
+});
+
 Cypress.Commands.add('changeQuestionToRemovedTest', (title) => {
   cy.get('[data-cy="search"]').click({force:true})
   cy.get('[data-cy="search"]').type(title,{force:true})
@@ -528,3 +536,4 @@ Cypress.Commands.add('checkStudentQStats', title => {
   cy.get('[data-cy="userStats"]').click();
   cy.wait(2000);
 });
+

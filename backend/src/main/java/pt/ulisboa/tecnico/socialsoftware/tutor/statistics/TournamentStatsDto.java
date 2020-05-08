@@ -9,7 +9,7 @@ public class TournamentStatsDto implements Serializable {
     private Integer totalTournaments = 0;
     private Integer totalAnswers = 0;
     private Integer correctAnswers = 0;
-    private User.PrivacyStatus privacyStatus = User.PrivacyStatus.PUBLIC;
+
 
     public Integer getTournamentsWon() {
         return tournamentsWon;
@@ -41,13 +41,5 @@ public class TournamentStatsDto implements Serializable {
 
     public void setCorrectAnswers(Integer correctAnswers) {
         this.correctAnswers = correctAnswers;
-    }
-
-    public User.PrivacyStatus getPrivacyStatus() {
-        return privacyStatus;
-    }
-
-    public void setPrivacyStatus(User.PrivacyStatus privacyStatus) {
-        this.privacyStatus = privacyStatus;
     }
 }

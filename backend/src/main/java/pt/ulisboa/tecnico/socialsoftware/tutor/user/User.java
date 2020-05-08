@@ -58,7 +58,7 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfTournamentQuestionsAnswers;
     private Integer numberOfCorrectTournamentQuestionsAnswers;
 
-    private PrivacyStatus tournamentStatsPrivacy;
+    private PrivacyStatus dashboardPrivacy;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -105,7 +105,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfTournamentsWon = 0;
         this.numberOfTournamentQuestionsAnswers = 0;
         this.numberOfCorrectTournamentQuestionsAnswers = 0;
-        this.tournamentStatsPrivacy = PrivacyStatus.PUBLIC;
+        this.dashboardPrivacy = PrivacyStatus.PUBLIC;
     }
 
     public String getEmail() {
@@ -345,17 +345,18 @@ public class User implements UserDetails, DomainEntity {
     }
 
     public Integer getNumberOfTournamentsWon() {
+
         return this.numberOfTournamentsWon = (int) this.getStudentTournamentRegistrations().stream()
                 .filter(StudentTournamentRegistration::isWinner)
                 .count();
     }
 
     public Integer getNumberOfTournamentQuestionsAnswers() {
-        return numberOfTournamentQuestionsAnswers;
+        return Objects.requireNonNullElse(this.numberOfTournamentQuestionsAnswers, 0);
     }
 
     public Integer getNumberOfCorrectTournamentQuestionsAnswers() {
-        return numberOfCorrectTournamentQuestionsAnswers;
+        return Objects.requireNonNullElse(this.numberOfCorrectTournamentQuestionsAnswers, 0);
     }
 
     public void setNumberOfCorrectStudentAnswers(Integer numberOfCorrectStudentAnswers) {
@@ -479,12 +480,12 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTournamentQuestionsAnswers = numberOfCorrectTournamentQuestionsAnswers;
     }
 
-    public PrivacyStatus getTournamentsStatsPrivacy() {
-        return tournamentStatsPrivacy;
+    public PrivacyStatus getDashboardPrivacy() {
+        return dashboardPrivacy;
     }
 
-    public void setTournamentsStatsPrivacy(PrivacyStatus privacyStatus) {
-        this.tournamentStatsPrivacy = privacyStatus;
+    public void setDashboardPrivacy(PrivacyStatus privacyStatus) {
+        this.dashboardPrivacy = privacyStatus;
     }
 
     @Override

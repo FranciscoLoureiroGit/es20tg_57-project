@@ -285,8 +285,6 @@ public class Quiz implements DomainEntity {
 
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
-        if (this.isTournamentQuiz())
-            this.questionsTournament.checkTournamentWinner(quizAnswer);
     }
 
     @Override

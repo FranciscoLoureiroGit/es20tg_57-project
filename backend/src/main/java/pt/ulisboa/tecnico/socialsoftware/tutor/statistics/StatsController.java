@@ -42,11 +42,11 @@ public class StatsController {
         return statsService.getClarificationStats(((User)((Authentication)principal).getPrincipal()).getId(), executionRequest);
     }
 
-    @PostMapping("/privacy/tournamentsStats")
+    @PostMapping("/privacy/dashboard")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public ResponseEntity setTournamentPrivacyStatus(Principal principal, @Valid @RequestBody String privacyStatus) {
+    public ResponseEntity setDashboardPrivacyStatus(Principal principal, @Valid @RequestBody String privacyStatus) {
         User user = getAuthenticationUser(principal);
-        statsService.setTournamentsStatsPrivacy(user.getId(), User.PrivacyStatus.valueOf(privacyStatus));
+        statsService.setDashboardPrivacy(user.getId(), User.PrivacyStatus.valueOf(privacyStatus));
         return ResponseEntity.ok().build();
     }
 

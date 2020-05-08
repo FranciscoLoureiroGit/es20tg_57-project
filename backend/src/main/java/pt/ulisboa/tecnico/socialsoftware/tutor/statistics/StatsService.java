@@ -19,6 +19,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.questionsTournament.domain.QuestionsTournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
@@ -107,6 +108,7 @@ public class StatsService {
         statsDto.setTotalAnswers(totalAnswers);
         statsDto.setTotalUniqueQuestions(uniqueQuestions);
         statsDto.setTotalAvailableQuestions(totalAvailableQuestions);
+        statsDto.setPrivacyStatus(user.getDashboardPrivacy());
         if (totalAnswers != 0) {
             statsDto.setCorrectAnswers(((float)correctAnswers)*100/totalAnswers);
             statsDto.setImprovedCorrectAnswers(((float)uniqueCorrectAnswers)*100/uniqueQuestions);
@@ -141,7 +143,6 @@ public class StatsService {
         tournamentStatsDto.setCorrectAnswers(correctAnswers);
         tournamentStatsDto.setTotalAnswers(totalAnswers);
         tournamentStatsDto.setTotalTournaments(totalTournaments);
-        tournamentStatsDto.setPrivacyStatus(user.getTournamentsStatsPrivacy());
 
         return tournamentStatsDto;
     }
@@ -231,9 +232,9 @@ public class StatsService {
 
         return clarificationStatsDto;
     }
-    public void setTournamentsStatsPrivacy(Integer userId, User.PrivacyStatus privacyStatus) {
+    public void setDashboardPrivacy(Integer userId, User.PrivacyStatus privacyStatus) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
-        user.setTournamentsStatsPrivacy(privacyStatus);
+        user.setDashboardPrivacy(privacyStatus);
     }
 
     @Retryable(

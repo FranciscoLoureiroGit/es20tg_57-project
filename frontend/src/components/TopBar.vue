@@ -2,9 +2,9 @@
   <nav>
     <v-app-bar color="primary" clipped-left>
       <v-app-bar-nav-icon
-              @click.stop="drawer = !drawer"
-              class="hidden-md-and-up"
-              aria-label="Menu"
+        @click.stop="drawer = !drawer"
+        class="hidden-md-and-up"
+        aria-label="Menu"
       />
 
       <v-toolbar-title>
@@ -19,7 +19,7 @@
         >
           {{ currentCourse.name }}
         </v-btn>
-        <v-btn  dark active-class="no-active" text tile to="/" v-else>
+        <v-btn dark active-class="no-active" text tile to="/" v-else>
           {{ appName }}
         </v-btn>
       </v-toolbar-title>
@@ -227,33 +227,37 @@
           <template v-slot:activator="{ on }">
             <v-btn data-cy="userButton" v-on="on" text dark>
               User
+
               <v-icon>fas fa-user</v-icon>
             </v-btn>
           </template>
           <v-list dense>
-
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title> <span style="font-size: 1.2vh;">Signed in as
-                  <b>{{this.$store.getters.getUser.name.split(' ')[0] + ' '
-                    + this.$store.getters.getUser.name.split(' ')[this.$store.getters.getUser.name.split(' ').length - 1]
-                  }}</b></span> </v-list-item-title>
+                <v-list-item-title>
+                  <span style="font-size: 1.2vh;"
+                    >Signed in as
+                    <b>{{
+                      this.$store.getters.getUser.name.split(' ')[0] +
+                        ' ' +
+                        this.$store.getters.getUser.name.split(' ')[
+                          this.$store.getters.getUser.name.split(' ').length - 1
+                        ]
+                    }}</b></span
+                  >
+                </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
-          
+
             <v-list-item to="/student/dashboard">
               <v-list-item-action data-cy="userStats">
                 <v-icon>fas fa-tachometer-alt</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title align="left" >Dashboard</v-list-item-title>
+                <v-list-item-title align="left">Dashboard</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-
-           
-
-            
           </v-list>
         </v-menu>
 
@@ -278,11 +282,11 @@
         </v-btn>
 
         <v-btn
-                v-if="isLoggedIn && moreThanOneCourse"
-                to="/courses"
-                active-class="no-active"
-                text
-                dark
+          v-if="isLoggedIn && moreThanOneCourse"
+          to="/courses"
+          active-class="no-active"
+          text
+          dark
         >
           Change course
           <v-icon>fa fa-book</v-icon>
@@ -316,10 +320,23 @@
       right
     >
       <div style="background-color: #1976D2">
-        <v-card-text  class="font-weight-bold" style="font-size: 1.7vh; padding-top: 3vh; padding-bottom: 3vh; color: white"
-        ><v-icon data-cy="exitButton" style="padding-right: 4vh" x-large @click="notificationDrawer = false">mdi-arrow-left</v-icon ><span v-if="newNotifications === 0" style="padding-right: 7vh">Notifications</span>
-          <span style="color: #761515; padding-right: 3vh; font-size: 1.4vh" v-if="newNotifications > 0"
-          ><span style="color: white; font-size: 1.7vh">Notifications</span> ({{ newNotifications }} new)</span
+        <v-card-text
+          class="font-weight-bold"
+          style="font-size: 1.7vh; padding-top: 3vh; padding-bottom: 3vh; color: white"
+          ><v-icon
+            data-cy="exitButton"
+            style="padding-right: 4vh"
+            x-large
+            @click="notificationDrawer = false"
+            >mdi-arrow-left</v-icon
+          ><span v-if="newNotifications === 0" style="padding-right: 7vh"
+            >Notifications</span
+          >
+          <span
+            style="color: #761515; padding-right: 3vh; font-size: 1.4vh"
+            v-if="newNotifications > 0"
+            ><span style="color: white; font-size: 1.7vh">Notifications</span>
+            ({{ newNotifications }} new)</span
           >
         </v-card-text>
         <v-divider></v-divider>
@@ -350,10 +367,13 @@
                   >
                 </li></v-expansion-panel-header
               >
-              <v-expansion-panel-header
-                v-if="item.status === 'READ'"
+              <v-expansion-panel-header v-if="item.status === 'READ'"
                 ><li style="justify-content: space-between">
-                  <v-icon @click="deleteNotification(item)" style="padding-right: 1.5vh">mdi-close</v-icon>
+                  <v-icon
+                    @click="deleteNotification(item)"
+                    style="padding-right: 1.5vh"
+                    >mdi-close</v-icon
+                  >
                   <span>{{ item.title }}</span
                   ><span
                     style="font-size: 1.2vh; font-weight: normal; color: #818181"
@@ -372,13 +392,14 @@
       <v-card-text style="font-size: 1.4vh" v-if="notifications.length === 0"
         >You have no notifications</v-card-text
       >
-      <v-btn small v-if="notifications.length > 0"
-             @click="deleteAllUserNotifications" data-cy="clearAllButton">
-
-
-
-      Clear All</v-btn>
-
+      <v-btn
+        small
+        v-if="notifications.length > 0"
+        @click="deleteAllUserNotifications"
+        data-cy="clearAllButton"
+      >
+        Clear All</v-btn
+      >
     </v-navigation-drawer>
 
     <!-- Start of mobile side menu -->
@@ -394,13 +415,13 @@
       <v-list class="pt-0" dense>
         <!-- Administration Group-->
         <v-list-group
-                prepend-icon="fas fa-file-alt"
-                :value="false"
-                v-if="isAdmin"
+          prepend-icon="fas fa-file-alt"
+          :value="false"
+          v-if="isAdmin"
         >
           <template v-slot:activator>
             <v-list-item-title data-cy="Administration"
-            >Administration</v-list-item-title
+              >Administration</v-list-item-title
             >
           </template>
           <v-list-item to="/admin/courses">
@@ -415,9 +436,9 @@
 
         <!-- Management Group-->
         <v-list-group
-                prepend-icon="fas fa-file-alt"
-                :value="false"
-                v-if="isTeacher && currentCourse"
+          prepend-icon="fas fa-file-alt"
+          :value="false"
+          v-if="isTeacher && currentCourse"
         >
           <template v-slot:activator>
             <v-list-item-title>Management</v-list-item-title>
@@ -482,17 +503,17 @@
 
         <!-- Student Group-->
         <v-list-group
-                prepend-icon="account_circle"
-                :value="false"
-                v-if="isStudent && currentCourse"
+          prepend-icon="account_circle"
+          :value="false"
+          v-if="isStudent && currentCourse"
         >
           <template v-slot:activator>
             <v-list-item-title>Student</v-list-item-title>
           </template>
 
           <v-list-item
-                  to="/student/openTournaments"
-                  v-if="isStudent && currentCourse"
+            to="/student/openTournaments"
+            v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>assignment</v-icon>
@@ -523,8 +544,8 @@
           <!-- Implementation for a student submit a question and check then STARTS HERE -->
 
           <v-list-item
-                  to="/student/submitQuestion"
-                  v-if="isStudent && currentCourse"
+            to="/student/submitQuestion"
+            v-if="isStudent && currentCourse"
           >
             <v-list-item-action>
               <v-icon>create</v-icon>
@@ -555,11 +576,11 @@
             <v-list-item-content>Solved Quizzes</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/stats">
+          <v-list-item to="/student/stats/tournaments">
             <v-list-item-action>
-              <v-icon>fas fa-user</v-icon>
+              <v-icon>assignment</v-icon>
             </v-list-item-action>
-            <v-list-item-content>Stats</v-list-item-content>
+            <v-list-item-content>Tournaments</v-list-item-content>
           </v-list-item>
 
           <v-list-item to="/student/clarifications">
@@ -771,11 +792,11 @@ export default class TopBar extends Vue {
 </script>
 
 <style lang="scss" scoped>
-  .no-active::before {
-    opacity: 0 !important;
-  }
+.no-active::before {
+  opacity: 0 !important;
+}
 
-  nav {
-    z-index: 300;
-  }
+nav {
+  z-index: 300;
+}
 </style>

@@ -38,7 +38,7 @@ class CancelTournamentTest extends Specification{
     public static final Integer NUMBER_OF_QUESTIONS = 13
 
     @Autowired
-    CourseRepository courseRepository
+    private CourseRepository courseRepository
 
     @Autowired
     private CourseExecutionRepository courseExecutionRepository;
@@ -157,6 +157,5 @@ class CancelTournamentTest extends Specification{
         QuestionService questionService() {
             return new QuestionService()
         }
-
     }
 }

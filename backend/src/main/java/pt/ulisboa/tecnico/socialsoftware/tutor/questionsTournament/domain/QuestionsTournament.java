@@ -46,14 +46,11 @@ public class QuestionsTournament {
 
     private int numberOfQuestions;
 
-    @OneToOne
-    private QuizAnswer winnerQuizAnswer;
-
     @ManyToOne
     @JoinColumn(name= "user_id")
     private User studentTournamentCreator;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionsTournament", fetch=FetchType.LAZY, orphanRemoval=true)
+    @OneToMany(mappedBy = "questionsTournament", fetch=FetchType.LAZY, orphanRemoval=true)
     private List<StudentTournamentRegistration> studentTournamentRegistrations = new ArrayList<>();
 
     public QuestionsTournament(){
@@ -249,26 +246,6 @@ public class QuestionsTournament {
     private void checkTopic(Topic topic){
         if(!courseExecution.getCourse().getTopics().contains(topic)){
             throw new TutorException(TOPIC_IN_COURSE_NOT_FOUND, topic.getId());
-        }
-    }
-
-    public QuizAnswer getWinnerQuizAnswer() {
-        return winnerQuizAnswer;
-    }
-
-    public void checkTournamentWinner(QuizAnswer quizAnswer) {
-        if (this.tournamentWinner == null){
-            this.tournamentWinner = quizAnswer.getUser();
-            this.winnerQuizAnswer = quizAnswer;
-        }
-        else{
-            int oldWinnerCorrectAnswers = (int) winnerQuizAnswer.getNumberOfCorrectAnswers();
-            int newCorrectAnswers = (int) quizAnswer.getNumberOfCorrectAnswers();
-
-            if (newCorrectAnswers > oldWinnerCorrectAnswers){
-                this.tournamentWinner = quizAnswer.getUser();
-                this.winnerQuizAnswer = quizAnswer;
-            }
         }
     }
 }
