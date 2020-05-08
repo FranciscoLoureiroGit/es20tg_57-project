@@ -81,7 +81,7 @@
 
         <v-expansion-panels >
           <v-expansion-panel style="padding-top: 1vh; padding-bottom: 1vh; ">
-            <v-expansion-panel-header style="horiz-align: left">
+            <v-expansion-panel-header style="horiz-align: left" data-cy="settingsPrivacy">
               <v-icon>
                 fas fa-cog
               </v-icon>
@@ -91,12 +91,12 @@
               </li>
             </v-expansion-panel-header>
             <v-expansion-panel-content class="font-weight-light">
-              <v-checkbox
+              <v-checkbox data-cy="privacyCheckbox"
                       style="padding-left: 1vh"
                       class="mx-2"
                       label="Dashboard is public"
                       v-model="is_public"
-              ></v-checkbox><v-btn @click="changePrivacy">Save</v-btn>
+              ></v-checkbox><v-btn @click="changePrivacy" data-cy="privacySave">Save</v-btn>
               <span v-if="saved" style="padding-left: 2vh">Saved!</span></v-expansion-panel-content>
 
           </v-expansion-panel>
