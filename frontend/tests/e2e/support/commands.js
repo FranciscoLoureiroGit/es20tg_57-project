@@ -425,3 +425,10 @@ Cypress.Commands.add('answerToAdditionalClarification', (title, comment) => {
     .click({multiple: true, force: true});
   cy.contains(comment);
 });
+
+Cypress.Commands.add('goToDashboard', () => {
+  cy.get('[data-cy=userButton]').click();
+  cy.contains('Dashboard').click();
+  cy.get('.pt-0 > :nth-child(5) > .v-list-item__action > .v-icon').click();
+  cy.get(':nth-child(5) > .v-list-item__content').click();
+})
