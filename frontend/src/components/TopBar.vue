@@ -245,7 +245,23 @@
                 <v-icon>fas fa-tachometer-alt</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title align="left" >Dashboard</v-list-item-title>
+                <v-list-item-title align="left" >My Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/student/dashboard">
+              <v-list-item-action data-cy="userStats">
+                <v-icon>fa-globe</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left" >Public Dashboards</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/student/dashboard">
+              <v-list-item-action data-cy="userStats">
+                <v-icon>fa-cog</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title align="left" >Settings</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
