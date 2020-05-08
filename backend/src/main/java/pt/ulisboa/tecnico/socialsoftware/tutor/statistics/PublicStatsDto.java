@@ -8,7 +8,7 @@ public class PublicStatsDto implements Serializable {
     String username;
     ClarificationStatsDto clarificationStatsDto;
     TournamentStatsDto tournamentStatsDto;
-    StudentQuestionsStatsDto studentQuestionsStatsDto;
+    StudentQuestionStatsDto studentQuestionsStatsDto;
 
     public PublicStatsDto(){}
 
@@ -36,11 +36,11 @@ public class PublicStatsDto implements Serializable {
         this.tournamentStatsDto = tournamentStatsDto;
     }
 
-    public StudentQuestionsStatsDto getStudentQuestionsStatsDto() {
+    public StudentQuestionStatsDto getStudentQuestionsStatsDto() {
         return studentQuestionsStatsDto;
     }
 
-    public void setStudentQuestionsStatsDto(StudentQuestionsStatsDto studentQuestionsStatsDto) {
+    public void setStudentQuestionsStatsDto(StudentQuestionStatsDto studentQuestionsStatsDto) {
         this.studentQuestionsStatsDto = studentQuestionsStatsDto;
     }
 

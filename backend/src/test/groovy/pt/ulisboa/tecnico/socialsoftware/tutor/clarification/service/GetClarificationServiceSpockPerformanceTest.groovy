@@ -12,7 +12,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationServic
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarification;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.NotificationService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -126,6 +127,9 @@ public class GetClarificationServiceSpockPerformanceTest extends Specification {
         ClarificationService clarificationService() {
             return new ClarificationService()
         }
-
+        @Bean
+        NotificationService notificationService() {
+            return new NotificationService()
+        }
     }
 }

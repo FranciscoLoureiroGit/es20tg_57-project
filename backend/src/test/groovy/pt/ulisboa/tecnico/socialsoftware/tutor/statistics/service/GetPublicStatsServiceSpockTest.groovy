@@ -70,8 +70,8 @@ class GetPublicStatsServiceSpockTest extends Specification {
 
     def 'get all public stats, 0 students'(){
         given: 'public stats on student 1'
-        userStudent.setPrivacyStats('PRIVATE')
-        userStudent2.setPrivacyStats('PRIVATE')
+        userStudent.setStatsPrivacy(User.PrivacyStatus.PRIVATE)
+        userStudent2.setStatsPrivacy(User.PrivacyStatus.PRIVATE)
 
         when:
         def result = statsService.getPublicStats(userStudent.getId(), courseExec.getId())
@@ -82,8 +82,8 @@ class GetPublicStatsServiceSpockTest extends Specification {
 
     def 'get all public stats, 1 student'(){
         given: 'public stats on student 1'
-        userStudent.setPrivacyStats('PUBLIC')
-        userStudent2.setPrivacyStats('PRIVATE')
+        userStudent.setStatsPrivacy(User.PrivacyStatus.PUBLIC)
+        userStudent2.setStatsPrivacy(User.PrivacyStatus.PRIVATE)
 
         when:
         def result = statsService.getPublicStats(userStudent.getId(), courseExec.getId())
@@ -94,8 +94,8 @@ class GetPublicStatsServiceSpockTest extends Specification {
 
     def 'get all public stats, 2 students'(){
         given: 'public stats on student 1'
-        userStudent.setPrivacyStats('PUBLIC')
-        userStudent2.setPrivacyStats('PUBLIC')
+        userStudent.setStatsPrivacy(User.PrivacyStatus.PUBLIC)
+        userStudent2.setStatsPrivacy(User.PrivacyStatus.PUBLIC)
 
         when:
         def result = statsService.getPublicStats(userStudent.getId(), courseExec.getId())
