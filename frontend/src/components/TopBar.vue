@@ -232,7 +232,10 @@
 
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title> <span style="font-size: 1.2vh;">Signed in as <b>{{this.currentUsername}}</b></span> </v-list-item-title>
+                <v-list-item-title> <span style="font-size: 1.2vh;">Signed in as
+                  <b>{{this.$store.getters.getUser.name.split(' ')[0] + ' '
+                    + this.$store.getters.getUser.name.split(' ')[this.$store.getters.getUser.name.split(' ').length - 1]
+                  }}</b></span> </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
