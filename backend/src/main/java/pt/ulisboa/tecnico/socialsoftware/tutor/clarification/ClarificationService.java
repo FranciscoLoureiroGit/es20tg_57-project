@@ -15,6 +15,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ExtraClarificat
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.repository.ExtraClarificationRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.NotificationService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.domain.Notification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.notification.dto.NotificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -26,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
+import static pt.ulisboa.tecnico.socialsoftware.tutor.notification.NotificationMessages.*;
 
 @Service
 public class ClarificationService {
@@ -41,6 +45,9 @@ public class ClarificationService {
 
     @Autowired
     private ExtraClarificationRepository extraClarificationRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // ---- GET Services ----
 
@@ -112,6 +119,16 @@ public class ClarificationService {
         Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
                 new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
         clarification.setPublic(isPublic);
+
+        // create notification for this service (notify student)
+        if (isPublic) {
+            NotificationDto notificationDto = new NotificationDto(CLARIFICATION_PUBLIC_TITLE.label, CLARIFICATION_PUBLIC_DESCRIPTION.label, Notification.Status.DELIVERED.name(), clarification.getUser().getUsername());
+            notificationService.createNotification(notificationDto, clarification.getUser().getUsername());
+        } else {
+            NotificationDto notificationDto = new NotificationDto(CLARIFICATION_PRIVATE_TITLE.label, CLARIFICATION_PRIVATE_DESCRIPTION.label, Notification.Status.DELIVERED.name(), clarification.getUser().getUsername());
+            notificationService.createNotification(notificationDto, clarification.getUser().getUsername());
+        }
+
         return new ClarificationDto(clarification);
     }
 
@@ -173,6 +190,10 @@ public class ClarificationService {
         clarification.addExtraClarification(extraClarification);
 
         extraClarificationRepository.save(extraClarification);
+
+        // create notification for this service (notify teacher)
+        NotificationDto notificationDto = new NotificationDto(EXTRA_CLARIFICATION_TITLE.label,EXTRA_CLARIFICATION_DESCRIPTION.label, "DELIVERED", clarification.getClarificationAnswer().getUser().getUsername());
+        notificationService.createNotification(notificationDto, clarification.getClarificationAnswer().getUser().getUsername());
 
         return new ExtraClarificationDto(extraClarification);
 

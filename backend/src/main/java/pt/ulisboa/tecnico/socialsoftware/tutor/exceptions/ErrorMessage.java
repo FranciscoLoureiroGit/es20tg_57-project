@@ -82,6 +82,7 @@ public enum ErrorMessage {
 
     //NEW
     QUESTION_DISABLED_WITHOUT_JUSTIFICATION("Question Disabled without a justification"),
+    QUESTION_APPROVED_WHILE_NOT_AVAILABLE("Question Approved without its status being Available"),
 
     ACCESS_DENIED("You do not have permission to view this resource"),
     NOT_ALLOWED_CREATE_QUESTION("You do not have Role enough to create questions"),

@@ -17,6 +17,7 @@ export default class Question {
   image: Image | null = null;
   sequence: number | null = null;
   justification: string = '';
+  approved: Boolean = false;
 
   options: Option[] = [new Option(), new Option(), new Option(), new Option()];
   topics: Topic[] = [];
@@ -35,6 +36,7 @@ export default class Question {
       this.creationDate = ISOtoString(jsonObj.creationDate);
       this.image = jsonObj.image;
       this.justification = jsonObj.justification;
+      this.approved = jsonObj.approved;
 
       this.options = jsonObj.options.map(
         (option: Option) => new Option(option)

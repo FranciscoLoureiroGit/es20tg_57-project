@@ -76,6 +76,19 @@ public class StatsController {
         return statsService.getTournamentStats(user.getId(), executionId);
     }
 
+    @GetMapping("/executions/stats/student-questions")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public StudentQuestionStatsDto getStudentQuestionsStatus(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+
+        if (user == null) {
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return statsService.getStudentQuestionsStatus(user.getId());
+    }
+
     @GetMapping("/executions/{executionId}/stats-clarifications/{executionRequest}/{yearMonth}")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
     public ClarificationStatsDto getClarificationStats(Principal principal, @PathVariable int executionId,

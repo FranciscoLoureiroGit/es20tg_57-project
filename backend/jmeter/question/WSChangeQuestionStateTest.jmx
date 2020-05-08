@@ -78,7 +78,7 @@
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">newReq</stringProp>
           <stringProp name="queryType">Callable Statement</stringProp>
-          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id) VALUES (50000,&apos;Question_Content&apos;,100, 70, &apos;Question_Title_FOR_TEST_CHANGE_STATE&apos;, &apos;PENDING&apos;, 2, &apos;JUSTIFICATION&apos;, 3);</stringProp>
+          <stringProp name="query">INSERT INTO questions (id,content,number_of_answers,number_of_correct,title,status,course_id, justification, student_id, approved, status_approved) VALUES (50000,&apos;Question_Content&apos;,100, 70, &apos;Question_Title_FOR_TEST_CHANGE_STATE&apos;, &apos;PENDING&apos;, 2, &apos;JUSTIFICATION&apos;, 3, false, &apos;DISAPPROVED&apos;);</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="variableNames"></stringProp>
