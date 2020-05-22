@@ -35,6 +35,8 @@ public class QuestionDto implements Serializable {
     private Integer user_id;
     private String roleAuthor = "";
     private String approved = Question.Status.DISAPPROVED.name();
+    private String motivo = Question.Status.NOMOTIVO.name();
+    private String tipo = "";
 
     public QuestionDto() {
     }
@@ -68,6 +70,8 @@ public class QuestionDto implements Serializable {
         this.user_id = question.getStudent_id();
         this.roleAuthor = question.getRoleAuthor();
         this.approved = question.getApproved();
+        this.motivo = question.getMotivo();
+        this.tipo = question.getType();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -116,8 +120,24 @@ public class QuestionDto implements Serializable {
         this.difficulty = difficulty;
     }
 
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
+    }
+
     public int getNumberOfAnswers() {
         return numberOfAnswers;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public void setNumberOfAnswers(int numberOfAnswers) {

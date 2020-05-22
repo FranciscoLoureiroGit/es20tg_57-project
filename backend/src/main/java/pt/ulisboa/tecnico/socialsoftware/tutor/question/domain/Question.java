@@ -23,7 +23,11 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Table(name = "questions")
 public class Question implements DomainEntity {
     public enum Status {
-        DISABLED, REMOVED, AVAILABLE, PENDING, APPROVED, DISAPPROVED
+        DISABLED, REMOVED, AVAILABLE, PENDING, APPROVED, DISAPPROVED, NOMOTIVO
+    }
+
+    public enum Type{
+        A, B, C
     }
 
     @Id
@@ -82,6 +86,12 @@ public class Question implements DomainEntity {
     @Column(name = "status_approved")
     private String approved = Status.DISAPPROVED.name();
 
+    @Column(name = "motivo")
+    private String motivo = "";
+
+    @Column(name = "tipo")
+    private String tipo = "";
+
     public Question() {
     }
 
@@ -93,6 +103,8 @@ public class Question implements DomainEntity {
         setCreationDate(DateHandler.toLocalDateTime(questionDto.getCreationDate()));
         setCourse(course);
         setOptions(questionDto.getOptions());
+        setMotivo(questionDto.getMotivo());
+        setType(questionDto.getTipo());
         this.roleAuthor = questionDto.getRoleAuthor();
         this.student_id = questionDto.getUser_id();
         if(questionDto.getApproved() != null && questionDto.getApproved().equals(Status.APPROVED.name()))
@@ -216,6 +228,26 @@ public class Question implements DomainEntity {
 
     public void setNumberOfAnswers(Integer numberOfAnswers) {
         this.numberOfAnswers = numberOfAnswers;
+    }
+
+    public void addType(String type){
+        this.tipo = type;
+    }
+
+    public String getType(){
+        return this.tipo;
+    }
+
+    public void setType(String type){
+        this.tipo = type;
+    }
+
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
     }
 
     public Integer getNumberOfCorrect() {

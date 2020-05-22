@@ -157,6 +157,8 @@ class CreateTopicQuestionTest extends Specification{
         questionDto.setUser(student)
         questionDto.setUser_id(student.getId())
         questionDto.setOptions(options)
+        questionDto.setTipo(Question.Type.A.name())
+        questionDto.setMotivo("MOTIVO")
 
         when:
         def result = questionService.createQuestion(course.getId(), questionDto)
@@ -166,6 +168,8 @@ class CreateTopicQuestionTest extends Specification{
         result.getContent() == QUESTION_CONTENT
         result.getId() == QUESTION_ID
         result.getOptions().size() == 4
+        result.getMotivo() == "MOTIVO"
+        result.getTipo() == Question.Type.A.name()
         and: "question was created on service"
         questionService.findQuestionById(QUESTION_ID).getContent() == QUESTION_CONTENT
         questionService.findQuestionByKey(KEY_QUESTION).getContent() == QUESTION_CONTENT
