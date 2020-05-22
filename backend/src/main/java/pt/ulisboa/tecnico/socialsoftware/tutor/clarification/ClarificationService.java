@@ -247,4 +247,28 @@ public class ClarificationService {
         return clarification;
     }
 
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation =  Isolation.REPEATABLE_READ)
+    public ClarificationDto terminateClarification(ClarificationDto clarificationDto, Integer userId){
+        User teacher = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        if(teacher.getRole() != User.Role.TEACHER){
+            throw new TutorException(CLARIFICATION_USER_NOT_ALLOWED, userId);
+        }
+
+        if(clarificationDto.getStatus().equals(Clarification.Status.TERMINATED)) {
+            throw new TutorException(CLARIFICATION_TERMINATED);
+        }
+
+        Clarification clarification = clarificationRepository.findById(clarificationDto.getId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, clarificationDto.getId()));
+
+        clarification.setStatus(Clarification.Status.TERMINATED);
+
+        return new ClarificationDto(clarification);
+
+    }
+
+
 }

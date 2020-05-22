@@ -86,4 +86,12 @@ public class ClarificationController {
         return clarificationService.setPrivacy(clarificationId, clarificationDto.getPublic());
     }
 
+    @PutMapping("/clarifications/{clarificationId}/terminate")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public ClarificationDto setClarificationTerminate(@PathVariable int clarificationId, @RequestBody ClarificationDto clarificationDto, Principal principal){
+        return clarificationService.terminateClarification(clarificationDto, ((User)((Authentication) principal).getPrincipal()).getId() );
+    }
+
+
+
 }

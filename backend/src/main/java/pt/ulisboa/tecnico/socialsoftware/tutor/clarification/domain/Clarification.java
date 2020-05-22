@@ -20,7 +20,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Table(name = "clarifications")
 public class Clarification {
     public enum Status {
-        OPEN, CLOSED
+        OPEN, CLOSED, TERMINATED
     }
 
     @Id
@@ -170,6 +170,8 @@ public class Clarification {
     }
 
     public void addExtraClarification(ExtraClarification extraClarification){
+        if(this.status == Status.TERMINATED) throw new TutorException(CLARIFICATION_TERMINATED);
+
         this.extraClarificationList.add(extraClarification);
         if(this.extraClarificationList.size()%2 == 0){
             this.status = Status.CLOSED;

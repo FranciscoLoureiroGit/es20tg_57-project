@@ -118,7 +118,11 @@ public enum ErrorMessage {
     NOTIFICATION_DELIVER_DATE_INVALID("The specififed deliver date for notification is invalid"),
     NOTIFICATION_MISSING_DATA("Notification has invalid data"),
     NOTIFICATION_NOT_FOUND("Notification %d was not found"),
-    MAIL_ERROR("Error while sending mail");
+    MAIL_ERROR("Error while sending mail"),
+
+    CLARIFICATION_TERMINATED("This Discussion is terminated, no extra clarification can be added");
+
+
 
     public final String label;
 

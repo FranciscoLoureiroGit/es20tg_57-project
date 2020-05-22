@@ -37,6 +37,7 @@ import spock.lang.Unroll
 
 import java.time.LocalDateTime
 
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CLARIFICATION_TERMINATED
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.EMPTY_EXTRA_CLARIFICATION_COMMENT
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.EXTRA_CLARIFICATION_NO_COMMENT_PERMISSION
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.NO_EXTRA_CLARIFICATION_PARENT
@@ -321,6 +322,27 @@ class CreateExtraClarificationServiceSpockTest extends Specification {
         then:
         def error = thrown(TutorException)
         error.errorMessage == NO_EXTRA_CLARIFICATION_PARENT
+    }
+
+    def "terminate and answer"(){
+
+
+        given:
+        def clarificationDto = new ClarificationDto(clarificationRequest)
+
+        def extraClarificationDto = new ExtraClarificationDto();
+        extraClarificationDto.setComment(extraClarificationComment1)
+        extraClarificationDto.setCommentType("QUESTION")
+        extraClarificationDto.setParentClarificationId(clarificationDto.getId())
+
+        when:
+        def result = clarificationService.terminateClarification(clarificationDto, userTeacher.getId())
+        def result2 = clarificationService.createExtraClarification(extraClarificationDto, userStudent.getId())
+
+        then:
+
+        def error = thrown(TutorException)
+        error.errorMessage == CLARIFICATION_TERMINATED
     }
 
 
