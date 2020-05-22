@@ -42,6 +42,9 @@ public class Clarification {
     @Column(name = "is_public")
     private Boolean isPublic = false;
 
+    @Column(name = "is_public")
+    private Boolean discussion = true;
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clarification")
     private Image image;
 
@@ -58,6 +61,8 @@ public class Clarification {
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+
+
 
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentClarification", fetch = FetchType.LAZY, orphanRemoval=true)
@@ -97,6 +102,14 @@ public class Clarification {
                     .map(extraClarificationDto -> new ExtraClarification(extraClarificationDto))
                     .collect(Collectors.toList());
         }
+    }
+
+    public void setDiscussion(Boolean discussion) {
+        this.discussion = discussion;
+    }
+
+    public Boolean getDiscussion() {
+        return this.discussion;
     }
 
     public ClarificationAnswer getClarificationAnswer() {

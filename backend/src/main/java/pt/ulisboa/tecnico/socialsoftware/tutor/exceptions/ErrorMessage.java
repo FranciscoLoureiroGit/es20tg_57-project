@@ -44,6 +44,7 @@ public enum ErrorMessage {
     CLARIFICATION_NOT_FOUND("Clarification %d was not found"),
     CLARIFICATION_USER_NOT_ALLOWED("The specified user is not allowed"),
     CLARIFICATION_EXISTS("You have already created a clarification for this question"),
+    CLARIFICATION_DISCUSSION_CLOSED("The discussion is closed."),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),

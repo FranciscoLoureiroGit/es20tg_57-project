@@ -32,6 +32,7 @@ public class ExtraClarification {
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
+
     public ExtraClarification(){};
 
     public ExtraClarification(ExtraClarificationDto extraClarificationDto){

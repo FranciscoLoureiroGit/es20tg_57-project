@@ -98,6 +98,22 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void closeDiscussion(Integer clarificationId, Integer userId) {
+        if (userId != null) {
+            User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+            if (user.getRole().equals(User.Role.TEACHER)) {
+                Clarification clarification = clarificationRepository.findById(clarificationId).orElseThrow(() ->
+                        new TutorException(CLARIFICATION_NOT_FOUND, clarificationId));
+                clarification.setDiscussion(Boolean.FALSE);
+            }
+        }
+    }
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ClarificationDto> getPublicQuestionClarifications(int questionAnswerId) {
         QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() ->
                 new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
@@ -177,25 +193,31 @@ public class ClarificationService {
 
         Clarification clarification = clarificationRepository.findById(extraClarificationDto.getParentClarificationId()).orElseThrow(() -> new TutorException(CLARIFICATION_NOT_FOUND, extraClarificationDto.getParentClarificationId()));
 
-        if( (extraClarificationDto.getCommentType().equals("QUESTION") && clarification.getExtraClarificationList().size()%2 != 0)
-                || (extraClarificationDto.getCommentType().equals("ANSWER") && clarification.getExtraClarificationList().size()%2 != 1)){
-            throw new TutorException(EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE, extraClarificationDto.getCommentType());
+        if (clarification.getDiscussion()) {
+            if( (extraClarificationDto.getCommentType().equals("QUESTION") && clarification.getExtraClarificationList().size()%2 != 0)
+                    || (extraClarificationDto.getCommentType().equals("ANSWER") && clarification.getExtraClarificationList().size()%2 != 1)){
+                throw new TutorException(EXTRA_CLARIFICATION_INVALID_NEXT_COMMENT_TYPE, extraClarificationDto.getCommentType());
+            }
+
+            ExtraClarification extraClarification = new ExtraClarification(extraClarificationDto);
+            extraClarification.setParentClarification(clarification);
+            extraClarification.setCreationDate(LocalDateTime.now());
+
+
+            clarification.addExtraClarification(extraClarification);
+
+            extraClarificationRepository.save(extraClarification);
+
+            // create notification for this service (notify teacher)
+            NotificationDto notificationDto = new NotificationDto(EXTRA_CLARIFICATION_TITLE.label,EXTRA_CLARIFICATION_DESCRIPTION.label, "DELIVERED", clarification.getClarificationAnswer().getUser().getUsername());
+            notificationService.createNotification(notificationDto, clarification.getClarificationAnswer().getUser().getUsername());
+
+            return new ExtraClarificationDto(extraClarification);
+        } else {
+            throw new TutorException(CLARIFICATION_DISCUSSION_CLOSED);
         }
 
-        ExtraClarification extraClarification = new ExtraClarification(extraClarificationDto);
-        extraClarification.setParentClarification(clarification);
-        extraClarification.setCreationDate(LocalDateTime.now());
 
-
-        clarification.addExtraClarification(extraClarification);
-
-        extraClarificationRepository.save(extraClarification);
-
-        // create notification for this service (notify teacher)
-        NotificationDto notificationDto = new NotificationDto(EXTRA_CLARIFICATION_TITLE.label,EXTRA_CLARIFICATION_DESCRIPTION.label, "DELIVERED", clarification.getClarificationAnswer().getUser().getUsername());
-        notificationService.createNotification(notificationDto, clarification.getClarificationAnswer().getUser().getUsername());
-
-        return new ExtraClarificationDto(extraClarification);
 
     }
 

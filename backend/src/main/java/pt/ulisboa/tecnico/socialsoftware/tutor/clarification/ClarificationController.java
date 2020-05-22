@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -84,6 +85,14 @@ public class ClarificationController {
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ClarificationDto setClarificationPrivacy(@PathVariable int clarificationId, @RequestBody ClarificationDto clarificationDto){
         return clarificationService.setPrivacy(clarificationId, clarificationDto.getPublic());
+    }
+
+    // === HTTP PUT REQUESTS ===
+    @PutMapping("/clarifications/{clarificationId}/discussion")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public ResponseEntity closeDiscussion(@PathVariable int clarificationId, Principal principal){
+        clarificationService.closeDiscussion(clarificationId, ((User)((Authentication) principal).getPrincipal()).getId());
+        return (ResponseEntity) ResponseEntity.ok();
     }
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load Test Web Service createClarificationAnswer" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -297,7 +297,7 @@ VALUES (1, ${extraComment1}, &apos;QUESTION&apos;, ${clarificationId});
 	&quot;comment&quot;: &quot;${extraComment2}&quot;,&#xd;
 	&#xd;
 	&quot;parentClarificationId&quot;: &quot;${clarificationId}&quot;&#xd;
-}&#xd;
+}&quot;&#xd;
 </stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
