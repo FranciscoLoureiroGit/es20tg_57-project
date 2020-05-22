@@ -25,6 +25,9 @@ public class Question implements DomainEntity {
     public enum Status {
         DISABLED, REMOVED, AVAILABLE, PENDING, APPROVED, DISAPPROVED
     }
+    public enum Type {
+        typeA, typeB, typeC
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +53,12 @@ public class Question implements DomainEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.DISABLED;
+
+    @Enumerated(EnumType.STRING)
+    private String type = "";
+
+    @Column(name = "comment")
+    private String comment;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "question")
     private Image image;
@@ -131,6 +140,7 @@ public class Question implements DomainEntity {
 
         this.content = content;
     }
+
 
     public Status getStatus() {
         return status;
@@ -267,6 +277,22 @@ public class Question implements DomainEntity {
     public void setUser(User user) { this.user = user; }
 
     public User getUser() { return this.user; }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getApproved(){
         return this.approved;

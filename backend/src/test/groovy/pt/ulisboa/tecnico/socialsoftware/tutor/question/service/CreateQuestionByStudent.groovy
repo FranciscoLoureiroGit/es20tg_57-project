@@ -51,6 +51,8 @@ class CreateTopicQuestionTest extends Specification{
     static final String STUDENT_NAME = "Name"
     static final String STUDENT_USERNAME = "UserName"
 
+
+
     /* CTEs Options */
     static final String OPTION_1 = "Option 1"
     static final String OPTION_2 = "Option 2"
@@ -62,6 +64,9 @@ class CreateTopicQuestionTest extends Specification{
     static final String QUESTION_TITLE = "Question about JMeter"
     static final String QUESTION2_TITLE = "About web cookies"
     static final String QUESTION2_CONTENT = "Why should we need cookies?"
+
+    static final String QUESTION_COMMENT = "Comment"
+    static final String QUESTION_TYPE = "typeA"
 
     /* CTEs Keys */
     static final int KEY_TEACHER = 1
@@ -157,23 +162,23 @@ class CreateTopicQuestionTest extends Specification{
         questionDto.setUser(student)
         questionDto.setUser_id(student.getId())
         questionDto.setOptions(options)
+        questionDto.setComment(QUESTION_COMMENT)
+        questionDto.setType(Question.Type.typeA.name())
 
         when:
-        def result = questionService.createQuestion(course.getId(), questionDto)
+        def result = questionService.createQuestionNEW(course.getId(), questionDto)
 
         then:"the returned data are correct"
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getId() == QUESTION_ID
         result.getOptions().size() == 4
-        and: "question was created on service"
-        questionService.findQuestionById(QUESTION_ID).getContent() == QUESTION_CONTENT
-        questionService.findQuestionByKey(KEY_QUESTION).getContent() == QUESTION_CONTENT
-        questionService.findQuestions(COURSE_ID).size() == 1
+        result.getComment() == QUESTION_COMMENT
+        result.getType() == Question.Type.typeA.name()
 
     }
 
-    def "the student exists and creates two questions to a course"(){
+ /*   def "the student exists and creates two questions to a course"(){
         given: "add and setup a question"
         questionDto = new QuestionDto()
         questionDto.setKey(KEY_QUESTION)
@@ -260,7 +265,7 @@ class CreateTopicQuestionTest extends Specification{
         then:"thrown the exception"
         thrown(TutorException)
 
-    }
+    }*/
 
     @TestConfiguration
     static class QuestionServiceImplTestContextConfiguration {

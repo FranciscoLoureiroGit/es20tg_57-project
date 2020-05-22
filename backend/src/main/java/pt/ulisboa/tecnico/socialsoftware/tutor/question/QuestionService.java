@@ -133,8 +133,8 @@ public class QuestionService {
     }
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuestionDto createQuestion(int courseId, QuestionDto questionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
@@ -146,6 +146,8 @@ public class QuestionService {
         }
 
         Question question = new Question(course, questionDto);
+        question.setComment(questionDto.getComment());
+        question.setType(questionDto.getType());
         questionRepository.save(question);
         return new QuestionDto(question);
     }

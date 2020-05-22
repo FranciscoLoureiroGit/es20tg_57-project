@@ -36,6 +36,12 @@ public class QuestionDto implements Serializable {
     private String roleAuthor = "";
     private String approved = Question.Status.DISAPPROVED.name();
 
+
+
+    private String comment;
+
+    private String type = "";
+
     public QuestionDto() {
     }
 
@@ -68,6 +74,8 @@ public class QuestionDto implements Serializable {
         this.user_id = question.getStudent_id();
         this.roleAuthor = question.getRoleAuthor();
         this.approved = question.getApproved();
+        this.comment = question.getComment();
+        this.type = question.getType();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -84,6 +92,23 @@ public class QuestionDto implements Serializable {
     public void setUser(User user){
         this.user = user;
         setUser_id(user.getId());
+    }
+
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public User getUser() { return this.user; }
