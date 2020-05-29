@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -192,5 +193,9 @@ public class CourseExecution implements DomainEntity {
 
         course.getCourseExecutions().remove(this);
         users.forEach(user -> user.getCourseExecutions().remove(this));
+    }
+
+    public List<QuestionsTournament> getSuggestedTournaments(){
+        return this.questionsTournaments.stream().filter(QuestionsTournament::isSuggested).collect(Collectors.toList());
     }
 }

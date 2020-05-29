@@ -63,6 +63,20 @@ public class QuestionsTournamentController {
         this.questionsTournamentService.cancelTournament(user.getId(), questionsTournamentId);
     }
 
+    @PostMapping("/questionsTournament/{questionsTournamentId}/suggest")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionsTournamentId, 'TOURNAMENT.ACCESS')")
+    public void suggestTournament(Principal principal, @PathVariable Integer questionsTournamentId) {
+        User user = getAuthenticationUser(principal);
+        this.questionsTournamentService.suggestTournament(user.getId(), questionsTournamentId);
+    }
+
+    @PostMapping("/questionsTournament/suggestedTournaments")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public void sugestTournament(Principal principal, @PathVariable Integer executionId) {
+        User user = getAuthenticationUser(principal);
+        this.questionsTournamentService.getSuggestedTournaments(user.getId(), executionId);
+    }
+
     private User getAuthenticationUser(Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         checkNullUser(user);

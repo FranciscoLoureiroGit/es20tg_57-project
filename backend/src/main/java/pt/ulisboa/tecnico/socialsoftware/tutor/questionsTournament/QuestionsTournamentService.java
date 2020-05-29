@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
@@ -34,9 +33,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -129,6 +127,34 @@ public class QuestionsTournamentService {
         }
         return getStatementQuizDto(user, quiz);
     }
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void suggestTournament(int userId, int tournamentId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
+        tournament.suggest();
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<QuestionsTournamentDto> getSuggestedTournaments(int userId, int executionId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        CourseExecution courseExecution = getCourseExecution(executionId);
+        List<QuestionsTournamentDto> tournamentDtos = new ArrayList<>();
+        for (QuestionsTournament tournament:  courseExecution.getSuggestedTournaments()) {
+            QuestionsTournamentDto tournamentDto = new QuestionsTournamentDto(tournament);
+            tournamentDtos.add(tournamentDto);
+        }
+        return tournamentDtos;
+    }
+
+
 
     private void checkTournament(QuestionsTournament tournament) {
         if(!tournament.isStarted())

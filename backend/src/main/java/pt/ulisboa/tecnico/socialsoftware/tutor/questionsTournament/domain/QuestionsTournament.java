@@ -46,6 +46,8 @@ public class QuestionsTournament {
 
     private int numberOfQuestions;
 
+    private boolean suggested;
+
     @ManyToOne
     @JoinColumn(name= "user_id")
     private User studentTournamentCreator;
@@ -247,5 +249,13 @@ public class QuestionsTournament {
         if(!courseExecution.getCourse().getTopics().contains(topic)){
             throw new TutorException(TOPIC_IN_COURSE_NOT_FOUND, topic.getId());
         }
+    }
+
+    public boolean isSuggested(){
+        return this.suggested;
+    }
+
+    public void suggest(){
+        this.suggested = true;
     }
 }
