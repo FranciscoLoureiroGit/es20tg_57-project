@@ -46,6 +46,8 @@ public class QuestionsTournament {
 
     private int numberOfQuestions;
 
+    private boolean suggested;
+
     @ManyToOne
     @JoinColumn(name= "user_id")
     private User studentTournamentCreator;
@@ -70,6 +72,14 @@ public class QuestionsTournament {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public boolean isSuggested(){
+        return suggested;
+    }
+
+    public void setSuggested(boolean suggested) {
+        this.suggested = suggested;
     }
 
     public LocalDateTime getStartingDate() {

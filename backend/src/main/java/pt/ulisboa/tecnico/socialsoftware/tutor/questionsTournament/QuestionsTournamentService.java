@@ -97,6 +97,8 @@ public class QuestionsTournamentService {
         return new QuestionsTournamentDto(questionsTournament);
     }
 
+
+
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
@@ -187,6 +189,25 @@ public class QuestionsTournamentService {
     public List<QuestionsTournamentDto> getOpenTournamentsByCourse(int executionId){
         CourseExecution courseExecution = getCourseExecution(executionId);
         return courseExecution.getOpenQuestionsTournamentsDto();
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<QuestionsTournamentDto> getSuggestedTournaments(int executionId){
+        CourseExecution courseExecution = getCourseExecution(executionId);
+        return courseExecution.getSuggestedTournamentsDto();
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void setSuggestedTournament(int userId, int tournamentId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        QuestionsTournament tournament = getTournamentFromRepository(tournamentId);
+        tournament.setSuggested(true);
     }
 
     @Retryable(

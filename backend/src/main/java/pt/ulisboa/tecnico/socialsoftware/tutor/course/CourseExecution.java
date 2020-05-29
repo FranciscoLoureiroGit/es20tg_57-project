@@ -151,6 +151,17 @@ public class CourseExecution implements DomainEntity {
         return questionsTournamentsDto;
     }
 
+    public List<QuestionsTournamentDto> getSuggestedTournamentsDto(){
+        List<QuestionsTournamentDto> questionsTournamentsDto = new ArrayList<>();
+        for (QuestionsTournament tournament: this.questionsTournaments) {
+            if(tournament.isSuggested()){
+                QuestionsTournamentDto tournamentDto = new QuestionsTournamentDto(tournament);
+                questionsTournamentsDto.add(tournamentDto);
+            }
+        }
+        return questionsTournamentsDto;
+    }
+
     public void addQuiz(Quiz quiz) {
         quizzes.add(quiz);
     }

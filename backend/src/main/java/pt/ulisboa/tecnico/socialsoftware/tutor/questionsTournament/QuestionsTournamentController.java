@@ -42,6 +42,19 @@ public class QuestionsTournamentController {
         return this.questionsTournamentService.getOpenTournamentsByCourse(executionId);
     }
 
+    @GetMapping("/executions/{executionId}/questionsTournament/suggested")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public List<QuestionsTournamentDto> getSuggestedTournamentsByCourse(@PathVariable int executionId) {
+        return this.questionsTournamentService.getSuggestedTournaments(executionId);
+    }
+
+    @PutMapping("/questionsTournament/{questionsTournamentId}/suggested")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public void setSuggested(Principal principal, @PathVariable Integer questionsTournamentId) {
+        User user = getAuthenticationUser(principal);
+        this.questionsTournamentService.setSuggestedTournament(user.getId(),questionsTournamentId);
+    }
+
     @GetMapping("/executions/{executionId}/questionsTournament/registered")
     @PreAuthorize("(hasRole('ROLE_STUDENT')) and hasPermission(#executionId, 'EXECUTION.ACCESS')")
     public List<QuestionsTournamentDto> getRegisteredTournaments(Principal principal, @PathVariable int executionId) {
